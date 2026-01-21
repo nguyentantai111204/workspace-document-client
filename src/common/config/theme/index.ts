@@ -5,6 +5,7 @@ import { shape } from './shape.config'
 import { shadows } from './shadow.config'
 import { components } from './components'
 import { basePalette, darkPalette, lightPalette } from './palete.config'
+import { breakpoints } from './breakpoints.config'
 
 export const createAppTheme = (mode: 'light' | 'dark') =>
     createTheme({
@@ -16,4 +17,5 @@ export const createAppTheme = (mode: 'light' | 'dark') =>
         shape,
         shadows,
         components,
+        breakpoints,
     })

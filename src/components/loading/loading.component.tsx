@@ -1,5 +1,5 @@
 import { CircularProgress, Stack, type SxProps, type Theme } from '@mui/material'
-import { FONT_SIZE_LOADING } from '../../constant/style.constant'
+import { FONT_SIZE_LOADING } from '../../common/constant/style.constant'
 
 export interface LoadingComponentProps {
     color?: string

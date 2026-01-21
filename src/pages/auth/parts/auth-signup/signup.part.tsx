@@ -1,14 +1,14 @@
 import { Formik } from 'formik'
-import { Box, Stack, Typography, Link } from '@mui/material'
+import { Box, Typography, Link } from '@mui/material'
 import { signupValidate } from './signup.constant'
 import { TextFieldComponent } from '../../../../components/textfield/text-field.component'
 import { CheckboxComponent } from '../../../../components/checkbox/checkbox.component'
 import { ButtonComponent } from '../../../../components/elements/button/button.component'
+import { StackRowAlignCenterJustBetween, StackRowAlignCenterJustCenter } from '../../../../components/mui-custom/stack/stack.mui-custom'
 
 const initialValues = {
     firstName: '',
     lastName: '',
-    company: '',
     email: '',
     password: '',
     acceptTerms: false,
@@ -34,26 +34,20 @@ export const SignUpForm = () => {
                 isSubmitting,
             }) => (
                 <Box component="form" onSubmit={handleSubmit}>
-                    {/* Header */}
-                    <Stack
-                        direction="row"
-                        justifyContent="space-between"
-                        alignItems="center"
-                        mb={3}
-                    >
+                    <StackRowAlignCenterJustBetween mb={3}>
                         <Typography variant="h4" fontWeight={600}>
                             Sign up
                         </Typography>
                         <Link href="/login" fontSize={13}>
                             Already have an account?
                         </Link>
-                    </Stack>
+                    </StackRowAlignCenterJustBetween>
 
-                    <Stack direction="row" spacing={2}>
+                    <StackRowAlignCenterJustCenter gap={2}>
                         <TextFieldComponent
                             sizeUI="sm"
                             name="firstName"
-                            label="First Name"
+                            label="Họ tên lót"
                             value={values.firstName}
                             onChange={handleChange}
                             error={!!errors.firstName && touched.firstName}
@@ -66,7 +60,7 @@ export const SignUpForm = () => {
                         <TextFieldComponent
                             sizeUI="sm"
                             name="lastName"
-                            label="Last Name"
+                            label="Tên"
                             value={values.lastName}
                             onChange={handleChange}
                             error={!!errors.lastName && touched.lastName}
@@ -75,17 +69,7 @@ export const SignUpForm = () => {
                             }
                             fullWidth
                         />
-                    </Stack>
-
-                    <TextFieldComponent
-                        sizeUI="sm"
-                        label="Company"
-                        name="company"
-                        value={values.company}
-                        onChange={handleChange}
-                        fullWidth
-                        sx={{ mt: 2 }}
-                    />
+                    </StackRowAlignCenterJustCenter>
 
                     <TextFieldComponent
                         sizeUI="sm"
@@ -112,7 +96,6 @@ export const SignUpForm = () => {
                         sx={{ mt: 2 }}
                     />
 
-                    {/* Terms */}
                     <Box mt={2}>
                         <CheckboxComponent
                             sizeUI="sm"
@@ -139,7 +122,6 @@ export const SignUpForm = () => {
                             )}
                     </Box>
 
-                    {/* Submit */}
                     <ButtonComponent
                         sizeUI="sm"
                         type="submit"
