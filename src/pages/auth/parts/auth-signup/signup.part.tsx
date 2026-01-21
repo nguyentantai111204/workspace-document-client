@@ -4,6 +4,7 @@ import { signupValidate } from './signup.constant'
 import { TextFieldComponent } from '../../../../components/textfield/text-field.component'
 import { CheckboxComponent } from '../../../../components/checkbox/checkbox.component'
 import { ButtonComponent } from '../../../../components/elements/button/button.component'
+import { AuthHeader } from '../auth-header.part'
 
 const initialValues = {
     fullName: '',
@@ -32,29 +33,7 @@ export const SignUpForm = () => {
                 isSubmitting,
             }) => (
                 <Box component="form" onSubmit={handleSubmit}>
-                    <Stack alignItems="center" mb={3} spacing={1}>
-                        <Box display="flex" alignItems="center" gap={1}>
-                            <Box
-                                sx={{
-                                    width: 40,
-                                    height: 40,
-                                    background: theme => `linear-gradient(135deg, ${theme.palette.primary.main} 0%, ${theme.palette.secondary.main} 100%)`,
-                                    borderRadius: '50%',
-                                    display: 'flex',
-                                    alignItems: 'center',
-                                    justifyContent: 'center',
-                                    color: 'white',
-                                    fontWeight: 'bold'
-                                }}
-                            >M</Box>
-                            <Typography variant="h4" fontWeight={700} color="text.primary">
-                                Modernize
-                            </Typography>
-                        </Box>
-                        <Typography variant="body2" color="text.secondary">
-                            Không gian làm việc hiện đại
-                        </Typography>
-                    </Stack>
+                    <AuthHeader />
 
                     <Box mb={2}>
                         <InputLabel

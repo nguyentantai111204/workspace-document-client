@@ -16,9 +16,9 @@ export const TextFieldPasswordComponent = (props: TextFieldIconProps) => {
             type={show ? 'text' : 'password'}
             endIcon={
                 show ? (
-                    <VisibilityOffIcon fontSize="small" />
-                ) : (
                     <VisibilityIcon fontSize="small" />
+                ) : (
+                    <VisibilityOffIcon fontSize="small" />
                 )
             }
             onEndIconClick={() => setShow((v) => !v)}

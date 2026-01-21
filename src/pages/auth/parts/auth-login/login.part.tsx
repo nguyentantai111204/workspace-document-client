@@ -1,7 +1,6 @@
-// pages/auth/parts/login-form/LoginForm.tsx
 
 import { Formik, Form, type FormikHelpers } from 'formik'
-import { Typography, Link, Box, Stack, InputLabel } from '@mui/material'
+import { Typography, Link, Box, InputLabel } from '@mui/material'
 
 import { loginValidate } from './login.constant'
 
@@ -13,6 +12,8 @@ import { ButtonComponent } from '../../../../components/elements/button/button.c
 import {
     StackRowAlignCenterJustBetween,
 } from '../../../../components/mui-custom/stack/stack.mui-custom'
+
+import { AuthHeader } from '../auth-header.part'
 
 interface LoginValues {
     email: string
@@ -56,29 +57,7 @@ export const LoginForm = () => {
             }) => (
                 <Form noValidate>
                     <Box width="100%">
-                        <Stack alignItems="center" mb={4} spacing={1}>
-                            <Box display="flex" alignItems="center" gap={1}>
-                                <Box
-                                    sx={{
-                                        width: 40,
-                                        height: 40,
-                                        background: theme => `linear-gradient(135deg, ${theme.palette.primary.main} 0%, ${theme.palette.secondary.main} 100%)`,
-                                        borderRadius: '50%',
-                                        display: 'flex',
-                                        alignItems: 'center',
-                                        justifyContent: 'center',
-                                        color: 'white',
-                                        fontWeight: 'bold'
-                                    }}
-                                >M</Box>
-                                <Typography variant="h4" fontWeight={700} color="text.primary">
-                                    Modernize
-                                </Typography>
-                            </Box>
-                            <Typography variant="body2" color="text.secondary">
-                                Không gian làm việc hiện đại
-                            </Typography>
-                        </Stack>
+                        <AuthHeader />
 
                         <Box mb={2}>
                             <InputLabel
@@ -178,6 +157,6 @@ export const LoginForm = () => {
                     </Box>
                 </Form>
             )}
-        </Formik>
+        </Formik >
     )
 }
