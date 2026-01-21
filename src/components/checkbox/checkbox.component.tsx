@@ -15,7 +15,7 @@ import {
 } from './checkbox.constant'
 
 interface CheckboxComponentProps {
-    label?: string
+    label?: React.ReactNode
     shape?: CheckboxShape
     variant?: CheckboxVariant
     iconType?: CheckboxIconType
@@ -120,11 +120,6 @@ export const CheckboxComponent = ({
                         cursor: 'pointer',
                         fontSize: sizeUI === 'sm' ? 13 : undefined,
                     }}
-                    onClick={(e) =>
-                        props.onChange?.(
-                            e as unknown as React.ChangeEvent<HTMLInputElement>
-                        )
-                    }
                 >
                     {label}
                 </Typography>

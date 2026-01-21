@@ -1,7 +1,7 @@
 import { ThemeProvider } from '@mui/material/styles'
 import { CssBaseline } from '@mui/material'
 import { createAppTheme } from '../common/config/theme'
-import { ReactNode, useMemo } from 'react'
+import { useMemo, type ReactNode } from 'react'
 import { StyledEngineProvider } from '@mui/material/styles'
 
 
@@ -10,7 +10,6 @@ interface AppThemeProviderProps {
 }
 
 export const AppThemeProvider = ({ children }: AppThemeProviderProps) => {
-    // TODO: Connect to Redux or Context for theme mode (light/dark)
     const mode = 'light'
 
     const theme = useMemo(() => createAppTheme(mode), [mode])

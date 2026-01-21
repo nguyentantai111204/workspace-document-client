@@ -1,14 +1,12 @@
 import { Formik } from 'formik'
-import { Box, Typography, Link } from '@mui/material'
+import { Box, Typography, Link, Stack, InputLabel } from '@mui/material'
 import { signupValidate } from './signup.constant'
 import { TextFieldComponent } from '../../../../components/textfield/text-field.component'
 import { CheckboxComponent } from '../../../../components/checkbox/checkbox.component'
 import { ButtonComponent } from '../../../../components/elements/button/button.component'
-import { StackRowAlignCenterJustBetween, StackRowAlignCenterJustCenter } from '../../../../components/mui-custom/stack/stack.mui-custom'
 
 const initialValues = {
-    firstName: '',
-    lastName: '',
+    fullName: '',
     email: '',
     password: '',
     acceptTerms: false,
@@ -34,72 +32,108 @@ export const SignUpForm = () => {
                 isSubmitting,
             }) => (
                 <Box component="form" onSubmit={handleSubmit}>
-                    <StackRowAlignCenterJustBetween mb={3}>
-                        <Typography variant="h4" fontWeight={600}>
-                            Sign up
+                    <Stack alignItems="center" mb={3} spacing={1}>
+                        <Box display="flex" alignItems="center" gap={1}>
+                            <Box
+                                sx={{
+                                    width: 40,
+                                    height: 40,
+                                    background: theme => `linear-gradient(135deg, ${theme.palette.primary.main} 0%, ${theme.palette.secondary.main} 100%)`,
+                                    borderRadius: '50%',
+                                    display: 'flex',
+                                    alignItems: 'center',
+                                    justifyContent: 'center',
+                                    color: 'white',
+                                    fontWeight: 'bold'
+                                }}
+                            >M</Box>
+                            <Typography variant="h4" fontWeight={700} color="text.primary">
+                                Modernize
+                            </Typography>
+                        </Box>
+                        <Typography variant="body2" color="text.secondary">
+                            Không gian làm việc hiện đại
                         </Typography>
-                        <Link href="/login" fontSize={13}>
-                            Already have an account?
-                        </Link>
-                    </StackRowAlignCenterJustBetween>
+                    </Stack>
 
-                    <StackRowAlignCenterJustCenter gap={2}>
+                    <Box mb={2}>
+                        <InputLabel
+                            sx={{
+                                mb: 0.5,
+                                fontSize: 13,
+                                fontWeight: 600,
+                                color: 'text.primary'
+                            }}
+                        >
+                            Họ và tên
+                        </InputLabel>
                         <TextFieldComponent
                             sizeUI="sm"
-                            name="firstName"
-                            label="Họ tên lót"
-                            value={values.firstName}
+                            name="fullName"
+                            placeholder="Nhập họ và tên"
+                            value={values.fullName}
                             onChange={handleChange}
-                            error={!!errors.firstName && touched.firstName}
-                            helperText={
-                                touched.firstName && errors.firstName
-                            }
+                            error={!!errors.fullName && touched.fullName}
+                            helperText={touched.fullName && errors.fullName}
                             fullWidth
                         />
+                    </Box>
 
+                    <Box mb={2}>
+                        <InputLabel
+                            sx={{
+                                mb: 0.5,
+                                fontSize: 13,
+                                fontWeight: 600,
+                                color: 'text.primary'
+                            }}
+                        >
+                            Địa chỉ Email
+                        </InputLabel>
                         <TextFieldComponent
                             sizeUI="sm"
-                            name="lastName"
-                            label="Tên"
-                            value={values.lastName}
+                            placeholder="Nhập địa chỉ email"
+                            name="email"
+                            value={values.email}
                             onChange={handleChange}
-                            error={!!errors.lastName && touched.lastName}
-                            helperText={
-                                touched.lastName && errors.lastName
-                            }
+                            error={!!errors.email && touched.email}
+                            helperText={touched.email && errors.email}
                             fullWidth
                         />
-                    </StackRowAlignCenterJustCenter>
+                    </Box>
 
-                    <TextFieldComponent
-                        sizeUI="sm"
-                        label="Email Address"
-                        name="email"
-                        value={values.email}
-                        onChange={handleChange}
-                        error={!!errors.email && touched.email}
-                        helperText={touched.email && errors.email}
-                        fullWidth
-                        sx={{ mt: 2 }}
-                    />
-
-                    <TextFieldComponent
-                        sizeUI="sm"
-                        label="Password"
-                        name="password"
-                        type="password"
-                        value={values.password}
-                        onChange={handleChange}
-                        error={!!errors.password && touched.password}
-                        helperText={touched.password && errors.password}
-                        fullWidth
-                        sx={{ mt: 2 }}
-                    />
+                    <Box mb={2}>
+                        <InputLabel
+                            sx={{
+                                mb: 0.5,
+                                fontSize: 13,
+                                fontWeight: 600,
+                                color: 'text.primary'
+                            }}
+                        >
+                            Mật khẩu
+                        </InputLabel>
+                        <TextFieldComponent
+                            sizeUI="sm"
+                            placeholder="Nhập mật khẩu"
+                            name="password"
+                            type="password"
+                            value={values.password}
+                            onChange={handleChange}
+                            error={!!errors.password && touched.password}
+                            helperText={touched.password && errors.password}
+                            fullWidth
+                        />
+                    </Box>
 
                     <Box mt={2}>
                         <CheckboxComponent
                             sizeUI="sm"
-                            label="I agree to the Terms & Privacy"
+                            label={
+                                <Box component="span">
+                                    Đồng ý với <Link href="#" underline="hover">Điều khoản & Điều kiện.</Link>
+                                </Box>
+                            }
                             checked={values.acceptTerms}
                             variant="outlined"
                             onChange={(e) =>
@@ -127,10 +161,15 @@ export const SignUpForm = () => {
                         type="submit"
                         fullWidth
                         loading={isSubmitting}
-                        sx={{ mt: 3 }}
+                        sx={{ mt: 3, mb: 3 }}
                     >
-                        Create account
+                        Đăng ký
                     </ButtonComponent>
+
+                    <Stack direction="row" justifyContent="center" spacing={0.5}>
+                        <Typography variant="body2">Đã có tài khoản?</Typography>
+                        <Link href="/login" underline="hover" fontWeight={500}>Đăng nhập</Link>
+                    </Stack>
                 </Box>
             )}
         </Formik>

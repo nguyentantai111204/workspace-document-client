@@ -2,17 +2,29 @@ import { alpha, type PaletteOptions } from '@mui/material/styles'
 
 export const basePalette: PaletteOptions = {
     primary: {
-        main: '#2563EB', // Blue-600
-        light: '#3B82F6',
-        dark: '#1E40AF',
+        light: '#E3F2FD', // Blue-50
+        main: '#2196F3', // Blue-500
+        dark: '#1E88E5', // Blue-600
+        800: '#1565C0', // Blue-800
     },
 
     secondary: {
-        main: '#7C3AED', // Violet-600
+        light: '#EDE7F6', // DeepPurple-50
+        main: '#673AB7', // DeepPurple-500
+        dark: '#5E35B1', // DeepPurple-600
+        800: '#4527A0', // DeepPurple-800
     },
 
-    success: { main: '#16A34A' },
-    warning: { main: '#D97706' },
+    success: {
+        light: '#B9F6CA',
+        main: '#00E676',
+        dark: '#00C853',
+    },
+    warning: {
+        light: '#FBE9E7', // Orange light
+        main: '#FFAB91', // Orange main
+        dark: '#D84315', // Orange dark
+    },
     error: { main: '#DC2626' },
 
     grey: {

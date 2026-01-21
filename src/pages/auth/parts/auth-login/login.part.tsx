@@ -1,7 +1,7 @@
 // pages/auth/parts/login-form/LoginForm.tsx
 
 import { Formik, Form, type FormikHelpers } from 'formik'
-import { Typography, Link } from '@mui/material'
+import { Typography, Link, Box, Stack, InputLabel } from '@mui/material'
 
 import { loginValidate } from './login.constant'
 
@@ -11,7 +11,6 @@ import { CheckboxComponent } from '../../../../components/checkbox/checkbox.comp
 import { ButtonComponent } from '../../../../components/elements/button/button.component'
 
 import {
-    StackColumn,
     StackRowAlignCenterJustBetween,
 } from '../../../../components/mui-custom/stack/stack.mui-custom'
 
@@ -56,54 +55,69 @@ export const LoginForm = () => {
                 isSubmitting,
             }) => (
                 <Form noValidate>
-                    <StackColumn
-                        sx={{
-                            gap: { xs: 1.25, sm: 2 },
-                            width: '100%',
-                        }}
-                    >
-                        <StackColumn spacing={0.5} mb={1.5}>
-                            <Typography
-                                variant="h4"
-                                fontWeight={600}
-                                fontSize={{ xs: 20, sm: 22 }}
-                            >
-                                Sign in
+                    <Box width="100%">
+                        <Stack alignItems="center" mb={4} spacing={1}>
+                            <Box display="flex" alignItems="center" gap={1}>
+                                <Box
+                                    sx={{
+                                        width: 40,
+                                        height: 40,
+                                        background: theme => `linear-gradient(135deg, ${theme.palette.primary.main} 0%, ${theme.palette.secondary.main} 100%)`,
+                                        borderRadius: '50%',
+                                        display: 'flex',
+                                        alignItems: 'center',
+                                        justifyContent: 'center',
+                                        color: 'white',
+                                        fontWeight: 'bold'
+                                    }}
+                                >M</Box>
+                                <Typography variant="h4" fontWeight={700} color="text.primary">
+                                    Modernize
+                                </Typography>
+                            </Box>
+                            <Typography variant="body2" color="text.secondary">
+                                Không gian làm việc hiện đại
                             </Typography>
+                        </Stack>
 
-                            <Typography
-                                variant="body2"
-                                color="text.secondary"
-                                fontSize={13}
+                        <Box mb={2}>
+                            <InputLabel
+                                sx={{
+                                    mb: 0.5,
+                                    fontSize: 13,
+                                    fontWeight: 600,
+                                    color: 'text.primary'
+                                }}
                             >
-                                Welcome back 👋
-                            </Typography>
-                        </StackColumn>
+                                Tên đăng nhập
+                            </InputLabel>
+                            <TextFieldComponent
+                                sizeUI="sm"
+                                name="email"
+                                placeholder="Nhập tên đăng nhập"
+                                value={values.email}
+                                onChange={handleChange}
+                                onBlur={handleBlur}
+                                error={touched.email && !!errors.email}
+                                helperText={touched.email && errors.email}
+                            />
+                        </Box>
 
-                        <TextFieldComponent
-                            sizeUI="sm"
-                            name="email"
-                            label="Email address"
-                            value={values.email}
-                            onChange={handleChange}
-                            onBlur={handleBlur}
-                            error={touched.email && !!errors.email}
-                            helperText={touched.email && errors.email}
-                        />
-
-                        <StackColumn gap={1} alignItems="flex-end">
-                            <Link
-                                href="/forgot-password"
-                                underline="hover"
-                                fontSize={13}
+                        <Box mb={2}>
+                            <InputLabel
+                                sx={{
+                                    mb: 0.5,
+                                    fontSize: 13,
+                                    fontWeight: 600,
+                                    color: 'text.primary'
+                                }}
                             >
-                                Forgot password?
-                            </Link>
-
+                                Mật khẩu
+                            </InputLabel>
                             <TextFieldPasswordComponent
                                 sizeUI="sm"
                                 name="password"
-                                label="Password"
+                                placeholder="Nhập mật khẩu"
                                 value={values.password}
                                 onChange={handleChange}
                                 onBlur={handleBlur}
@@ -111,12 +125,12 @@ export const LoginForm = () => {
                                 helperText={touched.password && errors.password}
                                 fullWidth
                             />
-                        </StackColumn>
+                        </Box>
 
-                        <StackRowAlignCenterJustBetween mt={0.5}>
+                        <StackRowAlignCenterJustBetween mt={1}>
                             <CheckboxComponent
                                 sizeUI="sm"
-                                label="Remember me"
+                                label="Ghi nhớ thiết bị này"
                                 checked={values.remember}
                                 shape="square"
                                 variant="outlined"
@@ -127,6 +141,16 @@ export const LoginForm = () => {
                                     )
                                 }
                             />
+                            <Link
+                                href="/forgot-password"
+                                underline="hover"
+                                fontSize={13}
+                                fontWeight={500}
+                                color="primary.main"
+                            >
+                                Quên mật khẩu?
+                            </Link>
+
                         </StackRowAlignCenterJustBetween>
 
                         <ButtonComponent
@@ -134,23 +158,24 @@ export const LoginForm = () => {
                             type="submit"
                             fullWidth
                             loading={isSubmitting}
-                            sx={{ mt: 1.5 }}
+                            sx={{ mt: 3, mb: 3 }}
                         >
-                            Sign in
+                            Đăng nhập
                         </ButtonComponent>
 
-                        <Typography
-                            variant="body2"
-                            align="center"
-                            fontSize={13}
-                            sx={{ mt: 1 }}
-                        >
-                            Don&apos;t have an account?{' '}
-                            <Link href="/register" underline="hover">
-                                Sign up
+                        <Box textAlign="center">
+                            <Typography
+                                variant="body2"
+                                component="span"
+                                fontSize={13}
+                            >
+                                Chưa có tài khoản?{' '}
+                            </Typography>
+                            <Link href="/register" underline="hover" fontWeight={500} fontSize={13}>
+                                Tạo tài khoản ngay
                             </Link>
-                        </Typography>
-                    </StackColumn>
+                        </Box>
+                    </Box>
                 </Form>
             )}
         </Formik>
