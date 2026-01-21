@@ -3,7 +3,7 @@ import { Box, Typography, Link, Stack, InputLabel } from '@mui/material'
 import { signupValidate } from './signup.constant'
 import { TextFieldComponent } from '../../../../components/textfield/text-field.component'
 import { CheckboxComponent } from '../../../../components/checkbox/checkbox.component'
-import { ButtonComponent } from '../../../../components/elements/button/button.component'
+import { ButtonComponent } from '../../../../components/button/button.component'
 import { AuthHeader } from '../auth-header.part'
 
 const initialValues = {

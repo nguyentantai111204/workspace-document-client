@@ -1,14 +1,14 @@
 import { Box, Typography } from '@mui/material'
 
-interface Props {
+interface EmptyComponentProps {
     title?: string
     description?: string
 }
 
-export function AppEmpty({
+export function EmptyComponent({
     title = 'Không có dữ liệu',
     description = 'Hiện chưa có dữ liệu về mục này',
-}: Props) {
+}: EmptyComponentProps) {
     return (
         <Box textAlign="center" py={6}>
             <Typography variant="subtitle1" fontWeight={600}>

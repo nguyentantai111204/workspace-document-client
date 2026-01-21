@@ -7,7 +7,7 @@ import { loginValidate } from './login.constant'
 import { TextFieldComponent } from '../../../../components/textfield/text-field.component'
 import { TextFieldPasswordComponent } from '../../../../components/textfield/text-field-password.component'
 import { CheckboxComponent } from '../../../../components/checkbox/checkbox.component'
-import { ButtonComponent } from '../../../../components/elements/button/button.component'
+import { ButtonComponent } from '../../../../components/button/button.component'
 
 import {
     StackRowAlignCenterJustBetween,
