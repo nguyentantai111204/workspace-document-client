@@ -14,6 +14,10 @@ import {
 } from '../../../../components/mui-custom/stack/stack.mui-custom'
 
 import { AuthHeader } from '../auth-header.part'
+import { useAppDispatch } from '../../../../redux/store.redux'
+import { login } from '../../../../redux/account/account.action'
+import { useNavigate } from 'react-router-dom'
+import { useSnackbar } from '../../../../hooks/use-snackbar.hook'
 
 interface LoginValues {
     email: string
@@ -29,12 +33,24 @@ const initialValues: LoginValues = {
 }
 
 export const LoginForm = () => {
+    const dispatch = useAppDispatch()
+    const navigate = useNavigate()
+    const { showSuccess, showError } = useSnackbar()
+
     const handleSubmit = async (
         values: LoginValues,
         { setSubmitting }: FormikHelpers<LoginValues>,
     ) => {
         try {
-            console.log('LOGIN:', values)
+            const result = await dispatch(login(values))
+            if (login.fulfilled.match(result)) {
+                showSuccess('Đăng nhập thành công!')
+                navigate('/')
+            } else if (login.rejected.match(result)) {
+                // result.payload is the error message string we extract in account.action.ts
+                const errorMsg = typeof result.payload === 'string' ? result.payload : 'Đăng nhập thất bại'
+                showError(errorMsg)
+            }
         } finally {
             setSubmitting(false)
         }
@@ -58,7 +74,6 @@ export const LoginForm = () => {
                 <Form noValidate>
                     <Box width="100%">
                         <AuthHeader />
-
                         <Box mb={2}>
                             <InputLabel
                                 sx={{
