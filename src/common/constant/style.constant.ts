@@ -3,3 +3,8 @@ export const FONT_SIZE_LOADING = {
     medium: 22.5,
     small: 16
 }
+
+
+export const HEADER_MOBILE = 64
+export const HEADER_DESKTOP = 72
+export const SIDEBAR_WIDTH = 300

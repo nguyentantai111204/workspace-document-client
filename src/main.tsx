@@ -7,14 +7,17 @@ import { PersistGate } from 'redux-persist/integration/react'
 import App from './App.tsx'
 import '../public/css/global.css'
 
-import { AppThemeProvider } from './providers/theme-provider.tsx'
+import { AppThemeProvider } from './providers/theme.provider.tsx'
+import { TimeProvider } from './providers/time-ago.provider.tsx'
 
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
     <Provider store={store}>
       <PersistGate loading={null} persistor={persistor}>
         <AppThemeProvider>
-          <App />
+          <TimeProvider>
+            <App />
+          </TimeProvider>
         </AppThemeProvider>
       </PersistGate>
     </Provider>

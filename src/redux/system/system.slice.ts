@@ -10,6 +10,7 @@ const initialState: SystemState = {
         message: '',
         severity: 'info',
     },
+    sidebarOpen: true,
 }
 
 export const systemSlice = createSlice({
@@ -27,9 +28,15 @@ export const systemSlice = createSlice({
         },
         hideSnackbar: (state) => {
             state.snackbar.open = false
+        },
+        toggleSidebar: (state) => {
+            state.sidebarOpen = !state.sidebarOpen
+        },
+        setSidebarOpen: (state, action: { payload: boolean }) => {
+            state.sidebarOpen = action.payload
         }
     },
 })
 
-export const { setMode, showSnackbar, hideSnackbar } = systemSlice.actions
+export const { setMode, showSnackbar, hideSnackbar, toggleSidebar, setSidebarOpen } = systemSlice.actions
 export default systemSlice.reducer

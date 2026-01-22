@@ -8,7 +8,7 @@ const axiosInstance = axios.create({
     'Content-Type': 'application/json',
     Accept: 'application/json',
   },
-  timeout: 10000,
+  timeout: 30000,
 })
 
 // Request Interceptor
@@ -74,10 +74,6 @@ axiosInstance.interceptors.response.use(
       isRefreshing = true
 
       try {
-        // Placeholder for refresh logic.
-        // For now, simply reject/logout to avoid complex circular deps until fully implemented.
-        // To implement properly: use a fresh axios instance to call refresh-token API.
-
         isRefreshing = false
         store.dispatch(logout())
         return Promise.reject(error)

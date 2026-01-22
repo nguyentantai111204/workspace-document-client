@@ -7,4 +7,5 @@ export interface SnackbarState {
 export interface SystemState {
     mode: 'light' | 'dark'
     snackbar: SnackbarState
+    sidebarOpen: boolean
 }
