@@ -2,18 +2,17 @@ import {
     IconButton,
     Badge,
     Button,
-    Stack,
-    Typography,
 } from '@mui/material'
 import NotificationsIcon from '@mui/icons-material/Notifications'
-import { useState } from 'react'
+import React, { useState } from 'react'
 import { BasePopoverComponent } from '../popover/base-popover.component'
+import { NotificationItemComponent } from './notification-item.component'
 
 export const NotificationBellComponent = () => {
     const [anchorEl, setAnchorEl] = useState<HTMLElement | null>(null)
 
     return (
-        <>
+        <React.Fragment>
             <IconButton onClick={(e) => setAnchorEl(e.currentTarget)}>
                 <Badge badgeContent={2} color="error">
                     <NotificationsIcon />
@@ -31,15 +30,13 @@ export const NotificationBellComponent = () => {
                     </Button>
                 }
             >
-                <Stack spacing={1.5} p={2}>
-                    <Typography variant="body2">
-                        New order received
-                    </Typography>
-                    <Typography variant="body2">
-                        Product out of stock
-                    </Typography>
-                </Stack>
+                <NotificationItemComponent
+                    avatar="https://api-dev-minimal-v6.vercel.app/assets/images/avatar/avatar-25.webp"
+                    userName="John Doe"
+                    action="liked your post"
+                    createdAt="2025-01-18T08:00:00"
+                />
             </BasePopoverComponent>
-        </>
+        </React.Fragment>
     )
 }

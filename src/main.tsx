@@ -6,6 +6,7 @@ import { PersistGate } from 'redux-persist/integration/react'
 
 import App from './App.tsx'
 import '../public/css/global.css'
+import './common/utils/dayjs.utils.ts'
 
 import { AppThemeProvider } from './providers/theme.provider.tsx'
 import { TimeProvider } from './providers/time-ago.provider.tsx'

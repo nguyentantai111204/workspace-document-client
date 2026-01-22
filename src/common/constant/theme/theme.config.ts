@@ -3,6 +3,7 @@ import { ThemeMode, getSystemPaletteMode } from './mode.constant'
 import { darkPalette } from './palete.dark.constant'
 import { lightPalette } from './palete.light.constant'
 import { typography } from './typography.constant'
+import { shadows } from '../../config/theme/shadow.config'
 
 export const buildTheme = (mode: ThemeMode) => {
     const resolvedMode =
@@ -14,5 +15,7 @@ export const buildTheme = (mode: ThemeMode) => {
             borderRadius: 10,
         },
         typography,
+        shadows,
+
     })
 }

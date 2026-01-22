@@ -3,8 +3,10 @@ import {
     Box,
     Typography,
     Divider,
+    useTheme,
 } from '@mui/material'
 import { ReactNode } from 'react'
+import { shadows } from '../../common/config/theme/shadow.config'
 
 interface BasePopoverProps {
     anchorEl: HTMLElement | null
@@ -26,7 +28,7 @@ export const BasePopoverComponent = ({
     width = 320,
 }: BasePopoverProps) => {
     const open = Boolean(anchorEl)
-
+    const theme = useTheme()
     return (
         <Popover
             open={open}
@@ -34,10 +36,13 @@ export const BasePopoverComponent = ({
             onClose={onClose}
             anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
             transformOrigin={{ vertical: 'top', horizontal: 'right' }}
-            PaperProps={{
-                sx: {
-                    width,
-                    borderRadius: 2,
+            slotProps={{
+                paper: {
+                    sx: {
+                        width,
+                        borderRadius: 2,
+                        boxShadow: `${theme.shadows[3]}`
+                    },
                 },
             }}
         >

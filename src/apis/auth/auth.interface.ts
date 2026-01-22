@@ -4,18 +4,16 @@ export interface LoginRequest {
 }
 
 export interface LoginResponse {
-    accessToken: string;
-    refreshToken: string;
-    user: UserProfile;
+    accessToken: string
+    refreshToken: string
+    user: UserProfile
 }
 
 export interface UserProfile {
-    id: string;
-    email: string;
-    fullName: string;
-    avatar?: string;
-    role?: string;
-    [key: string]: any;
+    id: string
+    email: string
+    fullName: string
+    avatarUrl: string | null
 }
 
 export interface RefreshTokenRequest {
@@ -23,6 +21,6 @@ export interface RefreshTokenRequest {
 }
 
 export interface RefreshTokenResponse {
-    accessToken: string;
-    refreshToken: string;
+    accessToken: string
+    refreshToken: string
 }

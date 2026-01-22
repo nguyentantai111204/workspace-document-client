@@ -6,7 +6,7 @@ interface TimeAgoProps {
     value: string | number | Date
 }
 
-export const TimeAgo = ({ value }: TimeAgoProps) => {
+export const TimeAgoComponent = ({ value }: TimeAgoProps) => {
     const now = useNow()
 
     return (

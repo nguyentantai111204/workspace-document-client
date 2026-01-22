@@ -1,9 +1,12 @@
 import type { RouteObject } from 'react-router-dom'
 import { MainLayout } from '../layouts/main.layout'
 import { ProtectedRoute } from './protected.route'
+import { useAppSelector } from '../redux'
 
 const DashboardPage = () => {
-    return <div>Dashboard works 🎉</div>
+    const user = useAppSelector((state) => state.account.user)
+    console.log("user: ", user)
+    return <div>Dashboard works 🎉 {user?.email}</div>
 }
 
 export const appRoutes: RouteObject = {

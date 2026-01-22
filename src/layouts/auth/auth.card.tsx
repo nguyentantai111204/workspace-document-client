@@ -10,7 +10,7 @@ export const AuthCard: React.FC<React.PropsWithChildren> = ({ children }) => {
                 borderRadius: { xs: 2, sm: 3 },
                 bgcolor: 'background.paper',
                 color: 'text.primary',
-                boxShadow: '0px 8px 24px rgba(149, 157, 165, 0.2)', // Soft custom shadow
+                boxShadow: '0px 8px 24px rgba(149, 157, 165, 0.2)',
             }}
         >
             {children}
