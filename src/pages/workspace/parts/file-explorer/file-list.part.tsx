@@ -1,4 +1,4 @@
-import { Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, useTheme, TablePagination } from '@mui/material'
+import { Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, useTheme, TablePagination, Box } from '@mui/material'
 import { FileResponse } from '../../../../apis/file/file.interface'
 import { FileRow } from './file-row.item'
 import { CheckboxComponent } from '../../../../components/checkbox/checkbox.component'
@@ -51,20 +51,23 @@ export const FileList = ({
                 overflow: 'hidden',
                 bgcolor: theme.palette.background.paper,
                 backgroundImage: 'none',
+                transition: theme.transitions.create(['background-color', 'border-color']),
             }}
         >
             <TableContainer sx={{ flex: 1 }}>
                 <Table stickyHeader>
                     <TableHead>
                         <TableRow>
-                            <TableCell padding="checkbox" sx={{ bgcolor: 'background.paper' }}>
-                                <CheckboxComponent
-                                    checked={isAllSelected}
-                                    indeterminate={isIndeterminate}
-                                    onChange={(e) => onCheckAll(e.target.checked, pageIds)}
-                                    sizeUI="sm"
-                                    shape="square" // Explicitly square for header if prefer
-                                />
+                            <TableCell padding="checkbox" sx={{ bgcolor: 'background.paper', transition: theme.transitions.create('background-color') }}>
+                                <Box display="flex" justifyContent="center">
+                                    <CheckboxComponent
+                                        checked={isAllSelected}
+                                        indeterminate={isIndeterminate}
+                                        onChange={(e) => onCheckAll(e.target.checked, pageIds)}
+                                        sizeUI="sm"
+                                        shape="square"
+                                    />
+                                </Box>
                             </TableCell>
                             <TableCell sx={{ fontWeight: 600, color: 'text.secondary', fontSize: 13, bgcolor: 'background.paper' }}>TÊN FILE</TableCell>
                             <TableCell sx={{ fontWeight: 600, color: 'text.secondary', fontSize: 13, bgcolor: 'background.paper' }}>KÍCH THƯỚC</TableCell>

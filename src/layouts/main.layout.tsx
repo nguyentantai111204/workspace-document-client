@@ -38,7 +38,15 @@ export const MainLayout = () => {
     }
 
     return (
-        <Box sx={{ display: 'flex', minHeight: '100vh', overflow: 'hidden', bgcolor: 'background.default' }}>
+        <Box sx={{
+            display: 'flex',
+            minHeight: '100vh',
+            overflow: 'hidden',
+            bgcolor: 'background.default',
+            transition: (theme) => theme.transitions.create('background-color', {
+                duration: theme.transitions.duration.standard, // Or custom duration if defined, but standard works well
+            })
+        }}>
             <HeaderLayout
                 breadcrumbs={breadcrumbs}
                 searchPlaceholder="Tìm kiếm tài liệu, người dùng..."

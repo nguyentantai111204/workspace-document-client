@@ -31,11 +31,17 @@ export const FileRow = ({ file, selected, onSelect }: FileRowProps) => {
             }}
         >
             <TableCell padding="checkbox">
-                <CheckboxComponent
-                    checked={selected}
-                    onChange={() => onSelect?.(file)}
-                    sizeUI="sm"
-                />
+                <Box
+                    display="flex"
+                    justifyContent="center"
+                    onClick={(e) => e.stopPropagation()}
+                >
+                    <CheckboxComponent
+                        checked={selected}
+                        onChange={() => onSelect?.(file)}
+                        sizeUI="sm"
+                    />
+                </Box>
             </TableCell>
 
             <TableCell>
@@ -50,7 +56,7 @@ export const FileRow = ({ file, selected, onSelect }: FileRowProps) => {
             <TableCell>
                 <Typography variant="body2" color="text.secondary">
                     {file.mimeType === 'folder'
-                        ? `${Math.floor(Math.random() * 20)} mục` // Mock item count
+                        ? `${file.itemCount || 0} mục`
                         : formatFileSize(file.size)
                     }
                 </Typography>

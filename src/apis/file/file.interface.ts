@@ -10,6 +10,7 @@ export interface FileResponse {
     ownerId: string
     createdAt: string
     updatedAt: string
+    itemCount?: number
 }
 
 export interface FileQuery {

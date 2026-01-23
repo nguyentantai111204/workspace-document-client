@@ -12,6 +12,7 @@ export const MOCK_FILES: FileResponse[] = [
         ownerId: 'user-1',
         createdAt: '2023-10-20T10:00:00Z',
         updatedAt: '2023-10-20T10:00:00Z',
+        itemCount: 17,
     },
     {
         id: '2',
@@ -24,6 +25,7 @@ export const MOCK_FILES: FileResponse[] = [
         ownerId: 'user-1',
         createdAt: '2023-10-18T14:30:00Z',
         updatedAt: '2023-10-18T14:30:00Z',
+        itemCount: 5,
     },
     {
         id: '3',

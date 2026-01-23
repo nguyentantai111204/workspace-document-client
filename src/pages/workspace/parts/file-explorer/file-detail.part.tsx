@@ -19,13 +19,14 @@ export const FileDetailSidebar = ({ file, onClose }: FileDetailSidebarProps) => 
     return (
         <Box
             sx={{
-                width: 320,
-                borderLeft: `1px solid ${theme.palette.divider}`,
+                width: { xs: '100%', md: 320 },
+                borderLeft: { md: `1px solid ${theme.palette.divider}` },
                 bgcolor: theme.palette.background.paper,
                 backgroundImage: 'none',
                 display: 'flex',
                 flexDirection: 'column',
                 height: '100%',
+                transition: theme.transitions.create(['background-color', 'border-color']),
             }}
         >
             <Box sx={{ p: 2, display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>

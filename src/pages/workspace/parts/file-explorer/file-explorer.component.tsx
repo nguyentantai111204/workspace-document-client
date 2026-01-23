@@ -1,4 +1,4 @@
-import { Box } from '@mui/material'
+import { Box, Drawer, useTheme, useMediaQuery } from '@mui/material'
 import { useState } from 'react'
 import { FileResponse } from '../../../../apis/file/file.interface'
 import { MOCK_FILES } from './explorer.constant'
@@ -8,11 +8,30 @@ import { FileList } from './file-list.part'
 import { FileDetailSidebar } from './file-detail.part'
 
 export const FileExplorerComponent = () => {
+    const theme = useTheme()
+    const isMobile = useMediaQuery('(max-width: 600px)')
     const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid')
     const [selectedItem, setSelectedItem] = useState<FileResponse | null>(null)
     const [selectedIds, setSelectedIds] = useState<string[]>([])
     const [page, setPage] = useState(0)
     const [rowsPerPage, setRowsPerPage] = useState(10)
+
+    const scrollbarStyle = {
+        '&::-webkit-scrollbar': {
+            width: '6px',
+            height: '6px',
+        },
+        '&::-webkit-scrollbar-track': {
+            backgroundColor: 'transparent',
+        },
+        '&::-webkit-scrollbar-thumb': {
+            backgroundColor: theme.palette.divider,
+            borderRadius: '3px',
+        },
+        '&::-webkit-scrollbar-thumb:hover': {
+            backgroundColor: theme.palette.text.secondary,
+        },
+    }
 
     const handleSelect = (file: FileResponse) => {
         setSelectedItem(file)
@@ -41,14 +60,19 @@ export const FileExplorerComponent = () => {
 
     const handleCheckAll = (checked: boolean, ids: string[]) => {
         if (checked) {
-            // Add all ids that are not already selected
             const newIds = ids.filter(id => !selectedIds.includes(id))
             setSelectedIds(prev => [...prev, ...newIds])
         } else {
-            // Remove ids from selection
             setSelectedIds(prev => prev.filter(id => !ids.includes(id)))
         }
     }
+
+    const detailContent = selectedItem && (
+        <FileDetailSidebar
+            file={selectedItem}
+            onClose={handleCloseDetail}
+        />
+    )
 
     return (
         <Box sx={{ display: 'flex', height: '100%', overflow: 'hidden' }}>
@@ -58,7 +82,7 @@ export const FileExplorerComponent = () => {
                     display: 'flex',
                     flexDirection: 'column',
                     overflow: 'hidden',
-                    p: 3
+                    p: { xs: 2, md: 3 }
                 }}
             >
                 <ExplorerToolbar
@@ -68,7 +92,7 @@ export const FileExplorerComponent = () => {
 
                 <Box sx={{ flex: 1, overflow: 'hidden', display: 'flex', flexDirection: 'column' }}>
                     {viewMode === 'grid' ? (
-                        <Box sx={{ flex: 1, overflowY: 'auto' }}>
+                        <Box sx={{ flex: 1, overflowY: 'auto', ...scrollbarStyle, pr: 1 }}>
                             <FileGrid
                                 files={MOCK_FILES}
                                 selectedItem={selectedItem}
@@ -92,11 +116,19 @@ export const FileExplorerComponent = () => {
                 </Box>
             </Box>
 
-            {selectedItem && (
-                <FileDetailSidebar
-                    file={selectedItem}
+            {isMobile ? (
+                <Drawer
+                    anchor="bottom"
+                    open={Boolean(selectedItem)}
                     onClose={handleCloseDetail}
-                />
+                    PaperProps={{
+                        sx: { height: '85vh', borderTopLeftRadius: 16, borderTopRightRadius: 16 }
+                    }}
+                >
+                    {detailContent}
+                </Drawer>
+            ) : (
+                selectedItem && detailContent
             )}
         </Box>
     )

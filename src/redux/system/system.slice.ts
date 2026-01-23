@@ -10,7 +10,7 @@ const initialState: SystemState = {
         message: '',
         severity: 'info',
     },
-    sidebarOpen: true,
+    sidebarOpen: false,
 }
 
 export const systemSlice = createSlice({
