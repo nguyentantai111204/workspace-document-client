@@ -20,10 +20,7 @@ export const getIconSx = (
     radius: number | string
 ) => ({
     borderRadius: radius,
-    border:
-        variant === 'outlined'
-            ? `1.5px solid ${theme.palette.divider}`
-            : 'none',
+    border: `1.5px solid ${theme.palette.mode === 'dark' ? theme.palette.grey[300] : theme.palette.divider}`,
     backgroundColor:
         variant === 'filled'
             ? theme.palette.background.paper

@@ -143,7 +143,7 @@ const DesktopSidebar = () => {
     const { mode } = useThemeMode()
 
     const sidebarBgColor = mode === 'dark'
-        ? alpha(theme.palette.background.paper, 0.9)
+        ? theme.palette.background.paper
         : alpha(theme.palette.background.default, 0.8)
 
     return (
@@ -175,7 +175,7 @@ const MobileSidebar = () => {
     const open = useAppSelector((state) => state.system.sidebarOpen)
 
     const sidebarBgColor = mode === 'dark'
-        ? alpha(theme.palette.background.paper, 0.9)
+        ? theme.palette.background.paper
         : alpha(theme.palette.background.default, 0.8)
 
     return (

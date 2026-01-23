@@ -38,7 +38,7 @@ export const HeaderLayout = ({
     const { mode, toggleMode } = useThemeMode()
 
     const headerBgColor = mode === 'dark'
-        ? alpha(theme.palette.background.paper, 0.9)
+        ? theme.palette.background.paper
         : alpha(theme.palette.background.default, 0.8)
 
     return (

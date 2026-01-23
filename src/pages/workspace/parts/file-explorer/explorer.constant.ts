@@ -1,0 +1,104 @@
+import { FileResponse } from "../../../../apis/file/file.interface"
+
+export const MOCK_FILES: FileResponse[] = [
+    {
+        id: '1',
+        name: 'Tài liệu dự án A',
+        originalName: 'project-a-docs',
+        mimeType: 'folder',
+        size: 0,
+        path: '/folder',
+        workspaceId: 'ws-1',
+        ownerId: 'user-1',
+        createdAt: '2023-10-20T10:00:00Z',
+        updatedAt: '2023-10-20T10:00:00Z',
+    },
+    {
+        id: '2',
+        name: 'Marketing Assets',
+        originalName: 'marketing-assets',
+        mimeType: 'folder',
+        size: 0,
+        path: '/folder',
+        workspaceId: 'ws-1',
+        ownerId: 'user-1',
+        createdAt: '2023-10-18T14:30:00Z',
+        updatedAt: '2023-10-18T14:30:00Z',
+    },
+    {
+        id: '3',
+        name: 'banner-website-v2.png',
+        originalName: 'banner-website-v2.png',
+        mimeType: 'image/png',
+        size: 2400000,
+        path: '/images',
+        workspaceId: 'ws-1',
+        ownerId: 'user-1',
+        createdAt: '2023-10-22T09:15:00Z',
+        updatedAt: '2023-10-22T09:15:00Z',
+    },
+    {
+        id: '4',
+        name: 'hop-dong-thue-nha.pdf',
+        originalName: 'hop-dong-thue-nha.pdf',
+        mimeType: 'application/pdf',
+        size: 1200000,
+        path: '/documents',
+        workspaceId: 'ws-1',
+        ownerId: 'user-1',
+        createdAt: '2023-10-21T16:45:00Z',
+        updatedAt: '2023-10-21T16:45:00Z',
+    },
+    {
+        id: '5',
+        name: 'avatar-profile.jpg',
+        originalName: 'avatar-profile.jpg',
+        mimeType: 'image/jpeg',
+        size: 850000,
+        path: '/images',
+        workspaceId: 'ws-1',
+        ownerId: 'user-1',
+        createdAt: '2023-10-15T11:20:00Z',
+        updatedAt: '2023-10-15T11:20:00Z',
+    },
+    {
+        id: '6',
+        name: 'bao-cao-tai-chinh-q3.xlsx',
+        originalName: 'bao-cao-tai-chinh-q3.xlsx',
+        mimeType: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+        size: 450000,
+        path: '/documents',
+        workspaceId: 'ws-1',
+        ownerId: 'user-1',
+        createdAt: '2023-10-10T08:00:00Z',
+        updatedAt: '2023-10-10T08:00:00Z',
+    },
+    {
+        id: '7',
+        name: 'landing-page-concept.png',
+        originalName: 'landing-page-concept.png',
+        mimeType: 'image/png',
+        size: 3100000,
+        path: '/images',
+        workspaceId: 'ws-1',
+        ownerId: 'user-1',
+        createdAt: '2023-10-05T13:40:00Z',
+        updatedAt: '2023-10-05T13:40:00Z',
+    },
+]
+
+export const formatFileSize = (bytes: number): string => {
+    if (bytes === 0) return '0 B'
+    const k = 1024
+    const sizes = ['B', 'KB', 'MB', 'GB', 'TB']
+    const i = Math.floor(Math.log(bytes) / Math.log(k))
+    return parseFloat((bytes / Math.pow(k, i)).toFixed(1)) + ' ' + sizes[i]
+}
+
+export const formatDate = (dateString: string): string => {
+    return new Date(dateString).toLocaleDateString('vi-VN', {
+        day: '2-digit',
+        month: '2-digit',
+        year: 'numeric'
+    })
+}

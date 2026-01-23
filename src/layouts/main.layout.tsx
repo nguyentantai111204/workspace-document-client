@@ -38,7 +38,7 @@ export const MainLayout = () => {
     }
 
     return (
-        <Box sx={{ display: 'flex', minHeight: '100vh', overflow: 'hidden' }}>
+        <Box sx={{ display: 'flex', minHeight: '100vh', overflow: 'hidden', bgcolor: 'background.default' }}>
             <HeaderLayout
                 breadcrumbs={breadcrumbs}
                 searchPlaceholder="Tìm kiếm tài liệu, người dùng..."
