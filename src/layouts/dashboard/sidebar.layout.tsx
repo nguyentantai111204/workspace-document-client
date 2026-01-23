@@ -61,7 +61,7 @@ const SidebarContent = ({ onItemClick }: { onItemClick?: () => void }) => {
                     py: 1.5,
                     mb: 3,
                     bgcolor: (theme) => alpha(theme.palette.grey[500], 0.08),
-                    borderRadius: 2,
+                    borderRadius: (theme) => Number(theme.shape.borderRadius) / 5,
                     display: 'flex',
                     alignItems: 'center',
                     gap: 2,
@@ -88,7 +88,7 @@ const SidebarContent = ({ onItemClick }: { onItemClick?: () => void }) => {
                         <ListItemButton
                             onClick={onItemClick}
                             sx={{
-                                borderRadius: 1.5,
+                                borderRadius: (theme) => Number(theme.shape.borderRadius) / 6.67,
                                 px: 1.5,
                                 py: 1,
                                 color: 'text.secondary',
@@ -122,7 +122,7 @@ const SidebarContent = ({ onItemClick }: { onItemClick?: () => void }) => {
                                         py: 0.2,
                                         bgcolor: 'error.main',
                                         color: 'error.contrastText',
-                                        borderRadius: 0.8,
+                                        borderRadius: (theme) => Number(theme.shape.borderRadius) / 12.5,
                                         typography: 'overline',
                                         fontWeight: 700,
                                     }}

@@ -47,7 +47,6 @@ export const LoginForm = () => {
                 showSuccess('Đăng nhập thành công!')
                 navigate('/')
             } else if (login.rejected.match(result)) {
-                // result.payload is the error message string we extract in account.action.ts
                 const errorMsg = typeof result.payload === 'string' ? result.payload : 'Đăng nhập thất bại'
                 showError(errorMsg)
             }

@@ -59,7 +59,7 @@ export const CheckboxComponent = ({
     ...props
 }: CheckboxComponentProps) => {
     const theme = useTheme()
-    const radius = getBorderRadius(shape)
+    const radius = getBorderRadius(shape, theme)
     const size = CHECKBOX_SIZE[sizeUI]
 
     const baseIcon = (

@@ -2,7 +2,7 @@ import { createTheme } from '@mui/material/styles'
 
 import { typography } from './typography.config'
 import { shape } from './shape.config'
-import { shadows } from './shadow.config'
+import { createShadows } from './shadow.config'
 import { components } from './components'
 import { basePalette, darkPalette, lightPalette } from './palete.config'
 import { breakpoints } from './breakpoints.config'
@@ -15,7 +15,7 @@ export const createAppTheme = (mode: 'light' | 'dark') =>
         },
         typography,
         shape,
-        shadows,
+        shadows: createShadows(mode),
         components,
         breakpoints,
     })

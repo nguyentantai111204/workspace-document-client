@@ -19,9 +19,25 @@ const MainStyle = styled('main')(({ theme }) => ({
 }))
 
 export const MainLayout = () => {
+    // Example: Customize breadcrumbs cho từng page
+    const breadcrumbs = [
+        { label: 'Home', href: '/' },
+        { label: 'Dashboard' },
+    ]
+
+    // Example: Handle search
+    const handleSearch = (value: string) => {
+        console.log('Searching:', value)
+    }
+
     return (
         <Box sx={{ display: 'flex', minHeight: '100vh', overflow: 'hidden' }}>
-            <HeaderLayout />
+            <HeaderLayout
+                breadcrumbs={breadcrumbs}
+                searchPlaceholder="Tìm kiếm tài liệu, người dùng..."
+                onSearch={handleSearch}
+                showSearch={true}
+            />
             <SidebarLayout />
             <MainStyle>
                 <Outlet />

@@ -1,6 +1,11 @@
-import { Avatar, IconButton, Button, Stack, Typography } from '@mui/material'
+import { Avatar, IconButton, Button, ListItemButton, List, ListItemIcon, ListItemText } from '@mui/material'
 import React, { useState } from 'react'
 import { BasePopoverComponent } from '../popover/base-popover.component'
+import PersonIcon from '@mui/icons-material/Person'
+import SettingsIcon from '@mui/icons-material/Settings'
+import LogoutIcon from '@mui/icons-material/Logout'
+
+
 
 export const AvatarUserComponent = () => {
     const [anchorEl, setAnchorEl] = useState<HTMLElement | null>(null)
@@ -20,15 +25,44 @@ export const AvatarUserComponent = () => {
                 title="Account"
                 subTitle="admin@email.com"
                 footer={
-                    <Button color="error" fullWidth>
+                    <Button
+                        color="error"
+                        fullWidth
+                        startIcon={<LogoutIcon />}
+                        onClick={() => {
+                            // dispatch(logout())
+                            // navigate('/login')
+                        }}
+                    >
                         Logout
                     </Button>
                 }
             >
-                <Stack spacing={1.5} p={2}>
-                    <Typography variant="body2">Profile</Typography>
-                    <Typography variant="body2">Settings</Typography>
-                </Stack>
+                <List disablePadding>
+                    <ListItemButton
+                        onClick={() => {
+                            setAnchorEl(null)
+                            // navigate('/profile')
+                        }}
+                    >
+                        <ListItemIcon>
+                            <PersonIcon fontSize="small" />
+                        </ListItemIcon>
+                        <ListItemText primary="Profile" />
+                    </ListItemButton>
+
+                    <ListItemButton
+                        onClick={() => {
+                            setAnchorEl(null)
+                            // navigate('/settings')
+                        }}
+                    >
+                        <ListItemIcon>
+                            <SettingsIcon fontSize="small" />
+                        </ListItemIcon>
+                        <ListItemText primary="Settings" />
+                    </ListItemButton>
+                </List>
             </BasePopoverComponent>
         </React.Fragment>
     )

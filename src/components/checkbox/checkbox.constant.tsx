@@ -10,8 +10,9 @@ export const CHECKBOX_SIZE = {
 }
 
 export const getBorderRadius = (
-    shape: CheckboxShape
-) => (shape === 'circle' ? '50%' : '6px')
+    shape: CheckboxShape,
+    theme: Theme
+) => (shape === 'circle' ? '50%' : `${Number(theme.shape.borderRadius) * 0.6}px`)
 
 export const getIconSx = (
     theme: Theme,

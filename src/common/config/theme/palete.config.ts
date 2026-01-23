@@ -2,17 +2,17 @@ import { alpha, type PaletteOptions } from '@mui/material/styles'
 
 export const basePalette: PaletteOptions = {
     primary: {
-        light: '#E3F2FD', // Blue-50
-        main: '#2196F3', // Blue-500
-        dark: '#1E88E5', // Blue-600
-        800: '#1565C0', // Blue-800
+        light: '#E3F2FD',
+        main: '#2196F3',
+        dark: '#1E88E5',
+        800: '#1565C0',
     },
 
     secondary: {
-        light: '#EDE7F6', // DeepPurple-50
-        main: '#673AB7', // DeepPurple-500
-        dark: '#5E35B1', // DeepPurple-600
-        800: '#4527A0', // DeepPurple-800
+        light: '#EDE7F6',
+        main: '#673AB7', 
+        dark: '#5E35B1',
+        800: '#4527A0',
     },
 
     success: {
@@ -21,11 +21,20 @@ export const basePalette: PaletteOptions = {
         dark: '#00C853',
     },
     warning: {
-        light: '#FBE9E7', // Orange light
-        main: '#FFAB91', // Orange main
-        dark: '#D84315', // Orange dark
+        light: '#FBE9E7',
+        main: '#FFAB91',
+        dark: '#D84315',
     },
-    error: { main: '#DC2626' },
+    error: {
+        light: '#FCA5A5',
+        main: '#DC2626',
+        dark: '#B91C1C',
+    },
+    info: {
+        light: '#E0F2FE',
+        main: '#0EA5E9',
+        dark: '#0369A1',
+    },
 
     grey: {
         50: '#F9FAFB',
@@ -60,11 +69,25 @@ export const lightPalette: PaletteOptions = {
 export const darkPalette: PaletteOptions = {
     mode: 'dark',
     background: {
-        default: '#0F172A',
-        paper: '#020617',
+        default: '#0A0E27', // Deep navy - not pure black for reduced eye strain
+        paper: '#141B2D',   // Lighter for cards/papers to create depth
     },
     text: {
-        primary: '#F9FAFB',
-        secondary: '#CBD5E1',
+        primary: '#F1F5F9',   // Slate-100 - almost white for main text
+        secondary: '#94A3B8', // Slate-400 - medium contrast for secondary text
+        disabled: '#64748B',  // Slate-500 - for disabled states
+    },
+    divider: alpha('#E2E8F0', 0.12), // Light divider on dark background
+
+    // Lighter shades for better visibility on dark backgrounds
+    primary: {
+        main: '#60A5FA',   // Blue-400 - lighter blue for dark mode
+        light: '#93C5FD',  // Blue-300
+        dark: '#3B82F6',   // Blue-500
+    },
+    secondary: {
+        main: '#A78BFA',   // Violet-400 - lighter purple for dark mode
+        light: '#C4B5FD',  // Violet-300
+        dark: '#8B5CF6',   // Violet-500
     },
 }

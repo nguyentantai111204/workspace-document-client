@@ -6,7 +6,6 @@ import {
     useTheme,
 } from '@mui/material'
 import { ReactNode } from 'react'
-import { shadows } from '../../common/config/theme/shadow.config'
 
 interface BasePopoverProps {
     anchorEl: HTMLElement | null
@@ -40,8 +39,8 @@ export const BasePopoverComponent = ({
                 paper: {
                     sx: {
                         width,
-                        borderRadius: 2,
-                        boxShadow: `${theme.shadows[3]}`
+                        borderRadius: Number(theme.shape.borderRadius) / 5,
+                        boxShadow: theme.shadows[3],
                     },
                 },
             }}

@@ -62,7 +62,7 @@ const MuiCardHeader: Components<Theme>['MuiCardHeader'] = {
 const MuiOutlinedInput: Components<Theme>['MuiOutlinedInput'] = {
     styleOverrides: {
         notchedOutline: ({ theme }) => ({
-            borderColor: alpha(theme.palette.grey[500], 0.2),
+            borderColor: theme.palette.divider,
         }),
     },
 }
@@ -77,7 +77,7 @@ const MuiPaper: Components<Theme>['MuiPaper'] = {
             backgroundImage: 'none',
         },
         outlined: ({ theme }) => ({
-            borderColor: alpha(theme.palette.grey[500], 0.16),
+            borderColor: theme.palette.divider,
         }),
     },
 }
@@ -89,7 +89,9 @@ const MuiTableCell: Components<Theme>['MuiTableCell'] = {
             fontSize: theme.typography.pxToRem(14),
             fontWeight: 600,
             color: theme.palette.text.secondary,
-            backgroundColor: theme.palette.grey[100],
+            backgroundColor: theme.palette.mode === 'dark'
+                ? alpha(theme.palette.background.paper, 0.8)
+                : theme.palette.grey[100],
         }),
     },
 }
