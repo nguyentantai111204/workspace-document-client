@@ -12,6 +12,7 @@ import {
     Stack,
     useTheme,
 } from '@mui/material'
+import React from 'react'
 import DashboardIcon from '@mui/icons-material/Dashboard'
 import PersonIcon from '@mui/icons-material/Person'
 import ShoppingCartIcon from '@mui/icons-material/ShoppingCart'
@@ -20,8 +21,9 @@ import LoginIcon from '@mui/icons-material/Login'
 import WarningIcon from '@mui/icons-material/Warning'
 import { useAppDispatch, useAppSelector } from '../../redux/store.redux'
 import { setSidebarOpen } from '../../redux/system/system.slice'
+import { WorkspaceSwitcherComponent, Workspace } from '../../components/workspace/workspace-switcher.component'
+import { SIDEBAR_WIDTH } from '../../common/constant/style.constant'
 
-const SIDEBAR_WIDTH = 300
 
 const MENU_ITEMS = [
     { text: 'Dashboard', icon: <DashboardIcon />, path: '/' },
@@ -34,6 +36,30 @@ const MENU_ITEMS = [
 
 const SidebarContent = ({ onItemClick }: { onItemClick?: () => void }) => {
     const theme = useTheme()
+
+    const workspaces = [
+        {
+            id: '1',
+            name: 'Team 1',
+            avatar: '/assets/images/avatar/avatar-1.webp',
+            plan: 'Free' as const,
+        },
+        {
+            id: '2',
+            name: 'Team 2',
+            avatar: '/assets/images/avatar/avatar-2.webp',
+            plan: 'Pro' as const,
+        },
+        {
+            id: '3',
+            name: 'Team 3',
+            avatar: '/assets/images/avatar/avatar-3.webp',
+            plan: 'Pro' as const,
+        },
+    ]
+
+
+    const [currentWorkspace, setCurrentWorkspace] = React.useState<Workspace>(workspaces[0])
 
     return (
         <Box sx={{ p: 2, height: '100%', display: 'flex', flexDirection: 'column' }}>
@@ -55,32 +81,14 @@ const SidebarContent = ({ onItemClick }: { onItemClick?: () => void }) => {
                 </Typography>
             </Stack>
 
-            <Box
-                sx={{
-                    px: 2,
-                    py: 1.5,
-                    mb: 3,
-                    bgcolor: (theme) => alpha(theme.palette.grey[500], 0.08),
-                    borderRadius: (theme) => Number(theme.shape.borderRadius) / 5,
-                    display: 'flex',
-                    alignItems: 'center',
-                    gap: 2,
+            <WorkspaceSwitcherComponent
+                currentWorkspace={currentWorkspace}
+                workspaces={workspaces}
+                onWorkspaceChange={(workspace) => {
+                    setCurrentWorkspace(workspace)
+                    console.log('Switched to:', workspace.name)
                 }}
-            >
-                <Box
-                    component="img"
-                    src="https://api-dev-minimal-v6.vercel.app/assets/images/avatar/avatar-25.webp"
-                    sx={{ width: 40, height: 40, borderRadius: '50%' }}
-                />
-                <Box overflow="hidden">
-                    <Typography variant="subtitle2" noWrap>
-                        Team 1
-                    </Typography>
-                    <Typography variant="body2" color="text.secondary" noWrap>
-                        Free
-                    </Typography>
-                </Box>
-            </Box>
+            />
 
             <List disablePadding>
                 {MENU_ITEMS.map((item) => (
