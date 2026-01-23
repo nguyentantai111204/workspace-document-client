@@ -9,9 +9,10 @@ interface FileRowProps {
     file: FileResponse
     selected?: boolean
     onSelect?: (file: FileResponse) => void
+    onToggleCheck?: () => void
 }
 
-export const FileRow = ({ file, selected, onSelect }: FileRowProps) => {
+export const FileRow = ({ file, selected, onSelect, onToggleCheck }: FileRowProps) => {
     const theme = useTheme()
 
     return (
@@ -38,7 +39,7 @@ export const FileRow = ({ file, selected, onSelect }: FileRowProps) => {
                 >
                     <CheckboxComponent
                         checked={selected}
-                        onChange={() => onSelect?.(file)}
+                        onChange={onToggleCheck}
                         sizeUI="sm"
                     />
                 </Box>

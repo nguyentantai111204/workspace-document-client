@@ -9,7 +9,8 @@ import { FileDetailSidebar } from './file-detail.part'
 
 export const FileExplorerComponent = () => {
     const theme = useTheme()
-    const isMobile = useMediaQuery('(max-width: 600px)')
+    const isMobile = useMediaQuery('(max-width: 500px)')
+    const isTablet = useMediaQuery('(min-width: 501px) and (max-width: 899px)') // 500 < width < 900
     const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid')
     const [selectedItem, setSelectedItem] = useState<FileResponse | null>(null)
     const [selectedIds, setSelectedIds] = useState<string[]>([])
@@ -102,7 +103,6 @@ export const FileExplorerComponent = () => {
                     ) : (
                         <FileList
                             files={MOCK_FILES}
-                            selectedItem={selectedItem}
                             onSelect={handleSelect}
                             selectedIds={selectedIds}
                             onToggleCheck={handleToggleCheck}
@@ -116,20 +116,34 @@ export const FileExplorerComponent = () => {
                 </Box>
             </Box>
 
-            {isMobile ? (
-                <Drawer
-                    anchor="bottom"
-                    open={Boolean(selectedItem)}
-                    onClose={handleCloseDetail}
-                    PaperProps={{
-                        sx: { height: '85vh', borderTopLeftRadius: 16, borderTopRightRadius: 16 }
-                    }}
-                >
-                    {detailContent}
-                </Drawer>
-            ) : (
-                selectedItem && detailContent
-            )}
+            {/* Mobile Bottom Drawer */}
+            <Drawer
+                anchor="bottom"
+                open={isMobile && Boolean(selectedItem)}
+                onClose={handleCloseDetail}
+                ModalProps={{ keepMounted: true }}
+                PaperProps={{
+                    sx: { height: '85vh', borderTopLeftRadius: 16, borderTopRightRadius: 16 }
+                }}
+            >
+                {detailContent}
+            </Drawer>
+
+            {/* Tablet Right Drawer */}
+            <Drawer
+                anchor="right"
+                open={isTablet && Boolean(selectedItem)}
+                onClose={handleCloseDetail}
+                ModalProps={{ keepMounted: true }}
+                PaperProps={{
+                    sx: { width: 350, borderTopLeftRadius: 16, borderBottomLeftRadius: 16 }
+                }}
+            >
+                {detailContent}
+            </Drawer>
+
+            {/* Desktop Persistent Sidebar */}
+            {!isMobile && !isTablet && selectedItem && detailContent}
         </Box>
     )
 }

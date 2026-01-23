@@ -5,8 +5,7 @@ import { CheckboxComponent } from '../../../../components/checkbox/checkbox.comp
 
 interface FileListProps {
     files: FileResponse[]
-    selectedItem: FileResponse | null
-    onSelect: (file: FileResponse) => void
+    onSelect: (file: FileResponse) => void // Detail open
     selectedIds: string[]
     onToggleCheck: (id: string) => void
     onCheckAll: (checked: boolean, ids: string[]) => void
@@ -18,7 +17,6 @@ interface FileListProps {
 
 export const FileList = ({
     files,
-    selectedItem,
     onSelect,
     selectedIds,
     onToggleCheck,
@@ -80,8 +78,9 @@ export const FileList = ({
                             <FileRow
                                 key={file.id}
                                 file={file}
-                                selected={selectedItem?.id === file.id || selectedIds.includes(file.id)}
-                                onSelect={() => onToggleCheck(file.id)} // Checkbox click behavior
+                                selected={selectedIds.includes(file.id)}
+                                onSelect={() => onSelect(file)}
+                                onToggleCheck={() => onToggleCheck(file.id)}
                             />
                         ))}
                     </TableBody>
