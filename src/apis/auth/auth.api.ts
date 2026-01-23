@@ -11,12 +11,12 @@ export const logoutApi = async (refreshToken: string): Promise<void> => {
 }
 
 export const refreshTokenApi = async (data: RefreshTokenRequest): Promise<RefreshTokenResponse> => {
-    const response = await axiosInstance.post<RefreshTokenResponse>('/auth/refresh-token', data)
+    const response = await axiosInstance.post<RefreshTokenResponse>('/auth/refresh', data)
     return response.data
 }
 
 export const getProfileApi = async (): Promise<UserProfile> => {
-    const response = await axiosInstance.get<UserProfile>('/auth/profile')
+    const response = await axiosInstance.get<UserProfile>('/users/me')
     return response.data
 }
 
