@@ -9,7 +9,7 @@ export const AuthCard: React.FC<React.PropsWithChildren> = ({ children }) => {
             sx={{
                 width: '100%',
                 p: { xs: 3, sm: 4, md: 5 },
-                borderRadius: Number(theme.shape.borderRadius) * 3,
+                borderRadius: theme.shape,
                 bgcolor: 'background.paper',
                 color: 'text.primary',
                 boxShadow: theme.shadows[4],

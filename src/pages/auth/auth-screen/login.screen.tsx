@@ -1,5 +1,5 @@
-import { SignUpForm } from "../parts/auth-signup/signup.part"
+import { LoginForm } from "../parts/auth-login/login.part"
 
 export const LoginScreen = () => {
-    return <SignUpForm />
+    return <LoginForm />
 }

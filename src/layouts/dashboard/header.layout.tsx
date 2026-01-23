@@ -28,7 +28,7 @@ interface HeaderLayoutProps {
 }
 
 export const HeaderLayout = ({
-    breadcrumbs = [{ label: 'Dashboard' }],
+    breadcrumbs = [{ label: 'Trang chủ' }],
     searchPlaceholder = 'Tìm kiếm...',
     onSearch,
     showSearch = true,

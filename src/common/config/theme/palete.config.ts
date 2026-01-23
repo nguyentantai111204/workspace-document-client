@@ -69,25 +69,24 @@ export const lightPalette: PaletteOptions = {
 export const darkPalette: PaletteOptions = {
     mode: 'dark',
     background: {
-        default: '#0A0E27', // Deep navy - not pure black for reduced eye strain
-        paper: '#141B2D',   // Lighter for cards/papers to create depth
+        default: '#0A0E27', 
+        paper: '#141B2D',   
     },
     text: {
-        primary: '#F1F5F9',   // Slate-100 - almost white for main text
-        secondary: '#94A3B8', // Slate-400 - medium contrast for secondary text
-        disabled: '#64748B',  // Slate-500 - for disabled states
+        primary: '#F1F5F9',   
+        secondary: '#94A3B8', 
+        disabled: '#64748B',  
     },
-    divider: alpha('#E2E8F0', 0.12), // Light divider on dark background
+    divider: alpha('#E2E8F0', 0.12), 
 
-    // Lighter shades for better visibility on dark backgrounds
     primary: {
-        main: '#60A5FA',   // Blue-400 - lighter blue for dark mode
-        light: '#93C5FD',  // Blue-300
-        dark: '#3B82F6',   // Blue-500
+        main: '#60A5FA',   
+        light: '#93C5FD',  
+        dark: '#3B82F6',   
     },
     secondary: {
-        main: '#A78BFA',   // Violet-400 - lighter purple for dark mode
-        light: '#C4B5FD',  // Violet-300
-        dark: '#8B5CF6',   // Violet-500
+        main: '#A78BFA', 
+        light: '#C4B5FD', 
+        dark: '#8B5CF6',  
     },
 }

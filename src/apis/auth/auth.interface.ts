@@ -24,3 +24,13 @@ export interface RefreshTokenResponse {
     accessToken: string
     refreshToken: string
 }
+
+export interface RegisterRequest {
+    email: string
+    password: string
+    fullName: string
+}
+
+export interface LogoutRequest {
+    refreshToken: string
+}

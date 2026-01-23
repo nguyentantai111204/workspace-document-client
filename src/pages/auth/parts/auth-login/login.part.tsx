@@ -45,7 +45,7 @@ export const LoginForm = () => {
             const result = await dispatch(login(values))
             if (login.fulfilled.match(result)) {
                 showSuccess('Đăng nhập thành công!')
-                navigate('/')
+                navigate('/workspace')
             } else if (login.rejected.match(result)) {
                 const errorMsg = typeof result.payload === 'string' ? result.payload : 'Đăng nhập thất bại'
                 showError(errorMsg)
