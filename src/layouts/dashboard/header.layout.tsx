@@ -52,7 +52,8 @@ export const HeaderLayout = ({
                 color: 'text.primary',
                 borderBottom: `1px solid ${theme.palette.divider}`,
                 transition: theme.transitions.create(['height', 'background-color', 'border-color'], {
-                    duration: theme.transitions.duration.shorter,
+                    duration: TIME_ANIMATION,
+                    easing: theme.transitions.easing.easeInOut,
                 }),
                 [theme.breakpoints.up('lg')]: {
                     width: `calc(100% - ${SIDEBAR_WIDTH}px)`,
@@ -119,6 +120,7 @@ export const HeaderLayout = ({
                                         transform: mode === 'light' ? 'rotate(0deg) scale(1)' : 'rotate(180deg) scale(0)',
                                         transition: theme.transitions.create(['transform', 'opacity'], {
                                             duration: theme.transitions.duration.standard,
+                                            easing: theme.transitions.easing.easeInOut,
                                         }),
                                     }}
                                 />
@@ -130,6 +132,7 @@ export const HeaderLayout = ({
                                         transform: mode === 'dark' ? 'rotate(0deg) scale(1)' : 'rotate(-180deg) scale(0)',
                                         transition: theme.transitions.create(['transform', 'opacity'], {
                                             duration: theme.transitions.duration.standard,
+                                            easing: theme.transitions.easing.easeInOut,
                                         }),
                                     }}
                                 />

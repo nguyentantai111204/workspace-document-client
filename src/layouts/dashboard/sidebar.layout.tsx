@@ -13,29 +13,24 @@ import {
     useTheme,
 } from '@mui/material'
 import React from 'react'
-import DashboardIcon from '@mui/icons-material/Dashboard'
-import PersonIcon from '@mui/icons-material/Person'
-import ShoppingCartIcon from '@mui/icons-material/ShoppingCart'
-import BookIcon from '@mui/icons-material/Book'
-import LoginIcon from '@mui/icons-material/Login'
-import WarningIcon from '@mui/icons-material/Warning'
+import FolderIcon from '@mui/icons-material/Folder'
+import ErrorOutlineIcon from '@mui/icons-material/ErrorOutline'
+import { useNavigate, useLocation } from 'react-router-dom'
 import { useAppDispatch, useAppSelector } from '../../redux/store.redux'
 import { setSidebarOpen } from '../../redux/system/system.slice'
 import { WorkspaceSwitcherComponent, Workspace } from '../../components/workspace/workspace-switcher.component'
-import { SIDEBAR_WIDTH } from '../../common/constant/style.constant'
+import { SIDEBAR_WIDTH, TIME_ANIMATION } from '../../common/constant/style.constant'
+import { useThemeMode } from '../../contexts/theme-mode.context'
 
 
 const MENU_ITEMS = [
-    { text: 'Dashboard', icon: <DashboardIcon />, path: '/' },
-    { text: 'User', icon: <PersonIcon />, path: '/user' },
-    { text: 'Product', icon: <ShoppingCartIcon />, path: '/product', badge: '+3' },
-    { text: 'Blog', icon: <BookIcon />, path: '/blog' },
-    { text: 'Sign in', icon: <LoginIcon />, path: '/login' },
-    { text: 'Not found', icon: <WarningIcon />, path: '/404' },
-]
+    { text: 'Workspace', icon: <FolderIcon />, path: '/workspace' },
+] as const
 
 const SidebarContent = ({ onItemClick }: { onItemClick?: () => void }) => {
     const theme = useTheme()
+    const navigate = useNavigate()
+    const location = useLocation()
 
     const workspaces = [
         {
@@ -60,6 +55,11 @@ const SidebarContent = ({ onItemClick }: { onItemClick?: () => void }) => {
 
 
     const [currentWorkspace, setCurrentWorkspace] = React.useState<Workspace>(workspaces[0])
+
+    const handleNavigate = (path: string) => {
+        navigate(path)
+        onItemClick?.()
+    }
 
     return (
         <Box sx={{ p: 2, height: '100%', display: 'flex', flexDirection: 'column' }}>
@@ -91,62 +91,61 @@ const SidebarContent = ({ onItemClick }: { onItemClick?: () => void }) => {
             />
 
             <List disablePadding>
-                {MENU_ITEMS.map((item) => (
-                    <ListItem key={item.text} disablePadding sx={{ mb: 0.5 }}>
-                        <ListItemButton
-                            onClick={onItemClick}
-                            sx={{
-                                borderRadius: (theme) => Number(theme.shape.borderRadius) / 6.67,
-                                px: 1.5,
-                                py: 1,
-                                color: 'text.secondary',
-                                '&.Mui-selected': {
-                                    bgcolor: (theme) => alpha(theme.palette.primary.main, 0.08),
-                                    color: 'primary.main',
-                                    '& .MuiListItemIcon-root': { color: 'primary.main' },
-                                    fontWeight: 'fontWeightBold',
-                                },
-                                '&:hover': {
-                                    bgcolor: (theme) => alpha(theme.palette.primary.main, 0.04),
-                                },
-                            }}
-                        >
-                            <ListItemIcon sx={{ minWidth: 40, color: 'inherit' }}>
-                                {item.icon}
-                            </ListItemIcon>
+                {MENU_ITEMS.map((item) => {
+                    const isActive = location.pathname === item.path
 
-                            <ListItemText
-                                primary={item.text}
-                                primaryTypographyProps={{
-                                    variant: 'body2',
-                                    fontWeight: 'inherit',
+                    return (
+                        <ListItem key={item.text} disablePadding sx={{ mb: 0.5 }}>
+                            <ListItemButton
+                                selected={isActive}
+                                onClick={() => handleNavigate(item.path)}
+                                sx={{
+                                    borderRadius: (theme) => Number(theme.shape.borderRadius) / 6.67,
+                                    px: 1.5,
+                                    py: 1,
+                                    color: 'text.secondary',
+                                    '&.Mui-selected': {
+                                        bgcolor: (theme) => alpha(theme.palette.primary.main, 0.08),
+                                        color: 'primary.main',
+                                        '& .MuiListItemIcon-root': { color: 'primary.main' },
+                                        fontWeight: 'fontWeightBold',
+                                    },
+                                    '&.Mui-selected:hover': {
+                                        bgcolor: (theme) => alpha(theme.palette.primary.main, 0.12),
+                                    },
+                                    '&:hover': {
+                                        bgcolor: (theme) => alpha(theme.palette.primary.main, 0.04),
+                                    },
                                 }}
-                            />
+                            >
+                                <ListItemIcon sx={{ minWidth: 40, color: 'inherit' }}>
+                                    {item.icon}
+                                </ListItemIcon>
 
-                            {item.badge && (
-                                <Box
-                                    sx={{
-                                        px: 0.8,
-                                        py: 0.2,
-                                        bgcolor: 'error.main',
-                                        color: 'error.contrastText',
-                                        borderRadius: (theme) => Number(theme.shape.borderRadius) / 12.5,
-                                        typography: 'overline',
-                                        fontWeight: 700,
+                                <ListItemText
+                                    primary={item.text}
+                                    primaryTypographyProps={{
+                                        variant: 'body2',
+                                        fontWeight: 'inherit',
                                     }}
-                                >
-                                    {item.badge}
-                                </Box>
-                            )}
-                        </ListItemButton>
-                    </ListItem>
-                ))}
+                                />
+                            </ListItemButton>
+                        </ListItem>
+                    )
+                })}
             </List>
         </Box>
     )
 }
 
 const DesktopSidebar = () => {
+    const theme = useTheme()
+    const { mode } = useThemeMode()
+
+    const sidebarBgColor = mode === 'dark'
+        ? alpha(theme.palette.background.paper, 0.9)
+        : alpha(theme.palette.background.default, 0.8)
+
     return (
         <Drawer
             variant="permanent"
@@ -154,8 +153,13 @@ const DesktopSidebar = () => {
             PaperProps={{
                 sx: {
                     width: SIDEBAR_WIDTH,
-                    bgcolor: 'background.default',
-                    borderRight: (theme) => `dashed 1px ${theme.palette.divider}`,
+                    bgcolor: sidebarBgColor,
+                    backdropFilter: 'blur(6px)',
+                    borderRight: `1px solid ${theme.palette.divider}`,
+                    transition: theme.transitions.create(['background-color', 'border-color'], {
+                        duration: TIME_ANIMATION,
+                        easing: theme.transitions.easing.easeInOut,
+                    }),
                 },
             }}
         >
@@ -165,8 +169,14 @@ const DesktopSidebar = () => {
 }
 
 const MobileSidebar = () => {
+    const theme = useTheme()
+    const { mode } = useThemeMode()
     const dispatch = useAppDispatch()
     const open = useAppSelector((state) => state.system.sidebarOpen)
+
+    const sidebarBgColor = mode === 'dark'
+        ? alpha(theme.palette.background.paper, 0.9)
+        : alpha(theme.palette.background.default, 0.8)
 
     return (
         <Drawer
@@ -177,7 +187,13 @@ const MobileSidebar = () => {
             PaperProps={{
                 sx: {
                     width: SIDEBAR_WIDTH,
-                    borderRight: (theme) => `dashed 1px ${theme.palette.divider}`,
+                    bgcolor: sidebarBgColor,
+                    backdropFilter: 'blur(6px)',
+                    borderRight: `1px solid ${theme.palette.divider}`,
+                    transition: theme.transitions.create(['background-color', 'border-color'], {
+                        duration: TIME_ANIMATION,
+                        easing: theme.transitions.easing.easeInOut,
+                    }),
                 },
             }}
         >

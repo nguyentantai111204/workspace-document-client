@@ -1,5 +1,7 @@
-import { Box, Typography, alpha, useTheme, Menu, MenuItem, Chip } from '@mui/material'
+import { Box, Typography, alpha, useTheme, Menu, MenuItem, Chip, Button } from '@mui/material'
 import UnfoldMoreIcon from '@mui/icons-material/UnfoldMore'
+import AddIcon from '@mui/icons-material/Add'
+import WorkspacesIcon from '@mui/icons-material/Workspaces'
 import React, { useState } from 'react'
 
 export interface Workspace {
@@ -10,22 +12,26 @@ export interface Workspace {
 }
 
 interface WorkspaceSwitcherProps {
-    currentWorkspace: Workspace
+    currentWorkspace?: Workspace
     workspaces: Workspace[]
     onWorkspaceChange?: (workspace: Workspace) => void
+    onCreateWorkspace?: () => void
 }
 
 export const WorkspaceSwitcherComponent = ({
     currentWorkspace,
     workspaces,
     onWorkspaceChange,
+    onCreateWorkspace,
 }: WorkspaceSwitcherProps) => {
     const theme = useTheme()
     const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null)
     const open = Boolean(anchorEl)
 
     const handleClick = (event: React.MouseEvent<HTMLElement>) => {
-        setAnchorEl(event.currentTarget)
+        if (workspaces.length > 0) {
+            setAnchorEl(event.currentTarget)
+        }
     }
 
     const handleClose = () => {
@@ -37,6 +43,11 @@ export const WorkspaceSwitcherComponent = ({
         handleClose()
     }
 
+    const handleCreateWorkspace = () => {
+        onCreateWorkspace?.()
+        console.log('Create workspace clicked')
+    }
+
     const getPlanColor = (plan: Workspace['plan']) => {
         switch (plan) {
             case 'Pro':
@@ -46,6 +57,46 @@ export const WorkspaceSwitcherComponent = ({
             default:
                 return 'default'
         }
+    }
+
+    // Empty state when no workspaces exist
+    if (workspaces.length === 0 || !currentWorkspace) {
+        return (
+            <Box
+                sx={{
+                    px: 2,
+                    py: 3,
+                    mb: 3,
+                    bgcolor: (theme) => alpha(theme.palette.grey[500], 0.08),
+                    borderRadius: (theme) => Number(theme.shape.borderRadius) / 5,
+                    textAlign: 'center',
+                }}
+            >
+                <WorkspacesIcon
+                    sx={{
+                        fontSize: 48,
+                        color: 'text.disabled',
+                        mb: 1,
+                    }}
+                />
+                <Typography variant="body2" color="text.secondary" gutterBottom>
+                    Bạn chưa có workspace nào
+                </Typography>
+                <Button
+                    variant="outlined"
+                    size="small"
+                    startIcon={<AddIcon />}
+                    onClick={handleCreateWorkspace}
+                    sx={{
+                        mt: 1.5,
+                        textTransform: 'none',
+                        borderRadius: 2,
+                    }}
+                >
+                    Tạo workspace mới
+                </Button>
+            </Box>
+        )
     }
 
     return (

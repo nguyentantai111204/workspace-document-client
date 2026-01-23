@@ -1,13 +1,7 @@
 import type { RouteObject } from 'react-router-dom'
 import { MainLayout } from '../layouts/main.layout'
 import { ProtectedRoute } from './protected.route'
-import { useAppSelector } from '../redux'
-
-const DashboardPage = () => {
-    const user = useAppSelector((state) => state.account.user)
-    console.log("user: ", user)
-    return <div>Dashboard works 🎉 {user?.email}</div>
-}
+import { WorkspacePage } from '../pages/workspace/workspace.page'
 
 export const appRoutes: RouteObject = {
     path: '/',
@@ -17,8 +11,8 @@ export const appRoutes: RouteObject = {
             element: <MainLayout />,
             children: [
                 {
-                    index: true,
-                    element: <DashboardPage />,
+                    path: 'workspace',
+                    element: <WorkspacePage />,
                 },
             ],
         },

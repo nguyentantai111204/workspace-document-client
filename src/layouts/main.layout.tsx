@@ -1,10 +1,11 @@
-import { Outlet } from 'react-router-dom'
+import { Outlet, useLocation } from 'react-router-dom'
 import { Box, styled } from '@mui/material'
 import { HeaderLayout } from './dashboard/header.layout'
 import { SidebarLayout } from './dashboard/sidebar.layout'
+import type { BreadcrumbItem } from '../components/breadcrumb/breadcrumb.component'
+import { useMemo } from 'react'
+import { APP_BAR_DESKTOP, APP_BAR_MOBILE } from '../common/constant/style.constant'
 
-const APP_BAR_MOBILE = 64
-const APP_BAR_DESKTOP = 72
 
 const MainStyle = styled('main')(({ theme }) => ({
     flexGrow: 1,
@@ -18,11 +19,16 @@ const MainStyle = styled('main')(({ theme }) => ({
     },
 }))
 
+const BREADCRUMB_MAP: Record<string, BreadcrumbItem[]> = {
+    '/workspace': [{ label: 'Workspace' }],
+}
+
 export const MainLayout = () => {
-    const breadcrumbs = [
-        { label: 'Home', href: '/' },
-        { label: 'Dashboard' },
-    ]
+    const location = useLocation()
+
+    const breadcrumbs = useMemo(() => {
+        return BREADCRUMB_MAP[location.pathname] || [{ label: 'Workspace' }]
+    }, [location.pathname])
 
     const handleSearch = (value: string) => {
         console.log('Searching:', value)
