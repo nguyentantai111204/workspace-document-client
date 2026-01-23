@@ -19,13 +19,11 @@ const MainStyle = styled('main')(({ theme }) => ({
 }))
 
 export const MainLayout = () => {
-    // Example: Customize breadcrumbs cho từng page
     const breadcrumbs = [
         { label: 'Home', href: '/' },
         { label: 'Dashboard' },
     ]
 
-    // Example: Handle search
     const handleSearch = (value: string) => {
         console.log('Searching:', value)
     }

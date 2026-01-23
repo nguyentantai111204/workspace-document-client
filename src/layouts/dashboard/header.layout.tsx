@@ -7,10 +7,8 @@ import {
     alpha,
     useTheme,
     Fade,
-    InputBase,
 } from '@mui/material'
 import MenuIcon from '@mui/icons-material/Menu'
-import SearchIcon from '@mui/icons-material/Search'
 import LightModeIcon from '@mui/icons-material/LightMode'
 import DarkModeOutlinedIcon from '@mui/icons-material/DarkModeOutlined'
 import { useAppDispatch } from '../../redux/store.redux'
@@ -20,6 +18,7 @@ import { NotificationBellComponent } from '../../components/bell/notification-be
 import { AvatarUserComponent } from '../../components/avatar/avatar-user.component'
 import { useThemeMode } from '../../contexts/theme-mode.context'
 import { BreadcrumbComponent, type BreadcrumbItem } from '../../components/breadcrumb/breadcrumb.component'
+import { TextFieldSearchComponent } from '../../components/textfield/text-field-search.component'
 
 interface HeaderLayoutProps {
     breadcrumbs?: BreadcrumbItem[]
@@ -41,10 +40,6 @@ export const HeaderLayout = ({
     const headerBgColor = mode === 'dark'
         ? alpha(theme.palette.background.paper, 0.9)
         : alpha(theme.palette.background.default, 0.8)
-
-    const handleSearchChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-        onSearch?.(event.target.value)
-    }
 
     return (
         <AppBar
@@ -90,57 +85,10 @@ export const HeaderLayout = ({
                 </Box>
 
                 {showSearch && (
-                    <Box
-                        sx={{
-                            flexGrow: 1,
-                            display: 'flex',
-                            justifyContent: 'center',
-                            maxWidth: { xs: '100%', md: 500 },
-                            mx: { md: 2 },
-                        }}
-                    >
-                        <Box
-                            sx={{
-                                position: 'relative',
-                                borderRadius: Number(theme.shape.borderRadius) / 5,
-                                bgcolor: alpha(theme.palette.grey[500], mode === 'dark' ? 0.1 : 0.08),
-                                '&:hover': {
-                                    bgcolor: alpha(theme.palette.grey[500], mode === 'dark' ? 0.15 : 0.12),
-                                },
-                                width: '100%',
-                                transition: theme.transitions.create(['background-color']),
-                            }}
-                        >
-                            <Box
-                                sx={{
-                                    padding: theme.spacing(0, 2),
-                                    height: '100%',
-                                    position: 'absolute',
-                                    pointerEvents: 'none',
-                                    display: 'flex',
-                                    alignItems: 'center',
-                                    justifyContent: 'center',
-                                }}
-                            >
-                                <SearchIcon sx={{ color: 'text.secondary' }} />
-                            </Box>
-                            <InputBase
-                                placeholder={searchPlaceholder}
-                                onChange={handleSearchChange}
-                                sx={{
-                                    color: 'inherit',
-                                    width: '100%',
-                                    '& .MuiInputBase-input': {
-                                        padding: theme.spacing(1, 1, 1, 0),
-                                        paddingLeft: `calc(1em + ${theme.spacing(4)})`,
-                                        transition: theme.transitions.create('width'),
-                                        width: '100%',
-                                        fontSize: '0.875rem',
-                                    },
-                                }}
-                            />
-                        </Box>
-                    </Box>
+                    <TextFieldSearchComponent
+                        placeholder={searchPlaceholder}
+                        onChange={onSearch}
+                    />
                 )}
 
                 <Stack direction="row" alignItems="center" spacing={{ xs: 0.5, sm: 1 }}>
