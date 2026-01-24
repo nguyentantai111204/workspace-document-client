@@ -1,3 +1,4 @@
+import { BaseEntity, PaginationParams } from '../common/common.interface'
 
 export const WorkspaceRole = {
     OWNER: 'OWNER',
@@ -12,18 +13,12 @@ export interface CreateWorkspaceRequest {
     name: string
 }
 
-export interface WorkspaceResponse {
-    id: string
+export interface WorkspaceResponse extends BaseEntity {
     name: string
     ownerId: string
-    createdAt: string
-    updatedAt: string
 }
 
-export interface WorkspaceQuery {
-    page?: number
-    limit?: number
-    search?: string
+export interface WorkspaceQuery extends PaginationParams {
 }
 
 export interface InviteMemberRequest {
@@ -35,14 +30,12 @@ export interface AcceptInviteRequest {
     token: string
 }
 
-export interface InviteResponse {
-    id: string
+export interface InviteResponse extends Omit<BaseEntity, 'updatedAt'> {
     email: string
     role: WorkspaceRole
     status: string
     inviterId: string
     workspaceId: string
-    createdAt: string
 }
 
 export interface MemberResponse {
@@ -59,9 +52,7 @@ export interface MemberResponse {
     }
 }
 
-export interface MemberQuery {
-    page?: number
-    limit?: number
+export interface MemberQuery extends PaginationParams {
 }
 
 export interface UpdateRoleRequest {

@@ -2,7 +2,8 @@ import type { RouteObject } from 'react-router-dom'
 import { Navigate } from 'react-router-dom'
 import { MainLayout } from '../layouts/main.layout'
 import { ProtectedRoute } from './protected.route'
-import { WorkspacePage } from '../pages/workspace/workspace.page'
+import { WorkspacePage } from '../pages/workspace/workspace.screen'
+import { ProfilePage } from '../pages/user/user-profile.screen'
 
 export const appRoutes: RouteObject = {
     path: '/',
@@ -18,6 +19,10 @@ export const appRoutes: RouteObject = {
                 {
                     path: 'workspace',
                     element: <WorkspacePage />,
+                },
+                {
+                    path: 'profile',
+                    element: <ProfilePage />,
                 },
             ],
         },

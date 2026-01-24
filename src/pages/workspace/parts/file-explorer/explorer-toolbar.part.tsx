@@ -7,11 +7,12 @@ import { ButtonComponent } from '../../../../components/button/button.component'
 import { ExplorerFilter } from './explorer-filter.part'
 
 interface ExplorerToolbarProps {
+    isDisableListView?: boolean
     viewMode: 'grid' | 'list'
     onViewChange: (mode: 'grid' | 'list') => void
 }
 
-export const ExplorerToolbar = ({ viewMode, onViewChange }: ExplorerToolbarProps) => {
+export const ExplorerToolbar = ({ viewMode, onViewChange, isDisableListView = false }: ExplorerToolbarProps) => {
     const theme = useTheme()
     const isMobile = useMediaQuery(theme.breakpoints.down('sm'))
     const [filterAnchor, setFilterAnchor] = useState<HTMLElement | null>(null)
@@ -33,7 +34,6 @@ export const ExplorerToolbar = ({ viewMode, onViewChange }: ExplorerToolbarProps
         setFilterAnchor(null)
     }
 
-    // Filter Content Logic
     const filterContent = (
         <ExplorerFilter
             onApply={(filters) => {
@@ -59,21 +59,23 @@ export const ExplorerToolbar = ({ viewMode, onViewChange }: ExplorerToolbarProps
                 </Typography>
 
                 <Stack direction="row" spacing={2}>
-                    <ToggleButtonGroup
-                        value={viewMode}
-                        exclusive
-                        onChange={handleViewChange}
-                        aria-label="view mode"
-                        size="small"
-                        color="primary"
-                    >
-                        <ToggleButton value="grid" aria-label="grid view">
-                            <GridViewIcon fontSize="small" />
-                        </ToggleButton>
-                        <ToggleButton value="list" aria-label="list view">
-                            <ViewListIcon fontSize="small" />
-                        </ToggleButton>
-                    </ToggleButtonGroup>
+                    {!isDisableListView && (
+                        <ToggleButtonGroup
+                            value={viewMode}
+                            exclusive
+                            onChange={handleViewChange}
+                            aria-label="view mode"
+                            size="small"
+                            color="primary"
+                        >
+                            <ToggleButton value="grid" aria-label="grid view">
+                                <GridViewIcon fontSize="small" />
+                            </ToggleButton>
+                            <ToggleButton value="list" aria-label="list view">
+                                <ViewListIcon fontSize="small" />
+                            </ToggleButton>
+                        </ToggleButtonGroup>
+                    )}
 
                     <ButtonComponent
                         variant="secondary"
@@ -86,7 +88,7 @@ export const ExplorerToolbar = ({ viewMode, onViewChange }: ExplorerToolbarProps
                 </Stack>
             </Stack>
 
-            {/* Responsive Filter Container */}
+
             {isMobile ? (
                 <Drawer
                     anchor="bottom"

@@ -24,6 +24,10 @@ const BREADCRUMB_MAP: Record<string, BreadcrumbItem[]> = {
         { label: 'Trang chủ', href: '/' },
         { label: 'Không gian làm việc' }
     ],
+    '/profile': [
+        { label: 'Trang chủ', href: '/' },
+        { label: 'Thông tin cá nhân' }
+    ],
 }
 
 export const MainLayout = () => {
@@ -44,7 +48,7 @@ export const MainLayout = () => {
             overflow: 'hidden',
             bgcolor: 'background.default',
             transition: (theme) => theme.transitions.create('background-color', {
-                duration: theme.transitions.duration.standard, // Or custom duration if defined, but standard works well
+                duration: theme.transitions.duration.standard,
             })
         }}>
             <HeaderLayout

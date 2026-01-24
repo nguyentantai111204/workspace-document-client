@@ -6,16 +6,17 @@ import { ExplorerToolbar } from './explorer-toolbar.part'
 import { FileGrid } from './file-grid.part'
 import { FileList } from './file-list.part'
 import { FileDetailSidebar } from './file-detail.part'
+import { PAGE_TAKE_DEFAULT } from '../../../../common/constant/page-take.constant'
 
 export const FileExplorerComponent = () => {
     const theme = useTheme()
     const isMobile = useMediaQuery('(max-width: 500px)')
-    const isTablet = useMediaQuery('(min-width: 501px) and (max-width: 899px)') // 500 < width < 900
+    const isTablet = useMediaQuery('(min-width: 501px) and (max-width: 899px)')
     const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid')
     const [selectedItem, setSelectedItem] = useState<FileResponse | null>(null)
     const [selectedIds, setSelectedIds] = useState<string[]>([])
     const [page, setPage] = useState(0)
-    const [rowsPerPage, setRowsPerPage] = useState(10)
+    const [rowsPerPage, setRowsPerPage] = useState(PAGE_TAKE_DEFAULT.take)
 
     const scrollbarStyle = {
         '&::-webkit-scrollbar': {
@@ -87,6 +88,7 @@ export const FileExplorerComponent = () => {
                 }}
             >
                 <ExplorerToolbar
+                    isDisableListView={isMobile}
                     viewMode={viewMode}
                     onViewChange={setViewMode}
                 />
@@ -116,7 +118,7 @@ export const FileExplorerComponent = () => {
                 </Box>
             </Box>
 
-            {/* Mobile Bottom Drawer */}
+            {/* Mobile*/}
             <Drawer
                 anchor="bottom"
                 open={isMobile && Boolean(selectedItem)}
@@ -129,7 +131,7 @@ export const FileExplorerComponent = () => {
                 {detailContent}
             </Drawer>
 
-            {/* Tablet Right Drawer */}
+            {/* Tablet */}
             <Drawer
                 anchor="right"
                 open={isTablet && Boolean(selectedItem)}
@@ -142,7 +144,7 @@ export const FileExplorerComponent = () => {
                 {detailContent}
             </Drawer>
 
-            {/* Desktop Persistent Sidebar */}
+            {/* Desktop Sidebar */}
             {!isMobile && !isTablet && selectedItem && detailContent}
         </Box>
     )

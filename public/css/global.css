@@ -23,6 +23,10 @@ body {
     background-color: transparent;
 }
 
+* {
+    box-sizing: border-box;
+}
+
 a {
     color: inherit;
     text-decoration: none;

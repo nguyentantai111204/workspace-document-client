@@ -51,7 +51,7 @@ export const AvatarUserComponent = () => {
                     <ListItemButton
                         onClick={() => {
                             setAnchorEl(null)
-                            // navigate('/profile')
+                            navigate('/profile')
                         }}
                     >
                         <ListItemIcon>

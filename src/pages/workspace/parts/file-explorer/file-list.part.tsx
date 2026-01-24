@@ -2,6 +2,7 @@ import { Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper
 import { FileResponse } from '../../../../apis/file/file.interface'
 import { FileRow } from './file-row.item'
 import { CheckboxComponent } from '../../../../components/checkbox/checkbox.component'
+import { PAGE_TAKE_DEFAULT } from '../../../../common/constant/page-take.constant'
 
 interface FileListProps {
     files: FileResponse[]
@@ -87,7 +88,7 @@ export const FileList = ({
                 </Table>
             </TableContainer>
             <TablePagination
-                rowsPerPageOptions={[5, 10, 25]}
+                rowsPerPageOptions={[PAGE_TAKE_DEFAULT.take, 5, 10, 25]}
                 component="div"
                 count={files.length}
                 rowsPerPage={rowsPerPage}

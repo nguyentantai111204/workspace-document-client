@@ -1,6 +1,6 @@
+import { BaseEntity, PaginationParams } from '../common/common.interface'
 
-export interface FileResponse {
-    id: string
+export interface FileResponse extends BaseEntity {
     name: string
     originalName: string
     mimeType: string
@@ -8,13 +8,8 @@ export interface FileResponse {
     path: string
     workspaceId: string
     ownerId: string
-    createdAt: string
-    updatedAt: string
     itemCount?: number
 }
 
-export interface FileQuery {
-    page?: number
-    limit?: number
-    search?: string
+export interface FileQuery extends PaginationParams {
 }

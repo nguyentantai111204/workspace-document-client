@@ -86,10 +86,21 @@ export const HeaderLayout = ({
                 </Box>
 
                 {showSearch && (
-                    <TextFieldSearchComponent
-                        placeholder={searchPlaceholder}
-                        onChange={onSearch}
-                    />
+                    <Box
+                        sx={{
+                            flexGrow: 1,
+                            display: 'none',
+                            '@media (min-width: 500px)': {
+                                display: 'flex',
+                                justifyContent: 'center',
+                            },
+                        }}
+                    >
+                        <TextFieldSearchComponent
+                            placeholder={searchPlaceholder}
+                            onChange={onSearch}
+                        />
+                    </Box>
                 )}
 
                 <Stack direction="row" alignItems="center" spacing={{ xs: 0.5, sm: 1 }}>
