@@ -76,6 +76,8 @@ export const FileExplorerComponent = () => {
         />
     )
 
+    const responsiveViewMode = isMobile ? 'grid' : viewMode
+
     return (
         <Box sx={{ display: 'flex', height: '100%', overflow: 'hidden' }}>
             <Box
@@ -94,7 +96,7 @@ export const FileExplorerComponent = () => {
                 />
 
                 <Box sx={{ flex: 1, overflow: 'hidden', display: 'flex', flexDirection: 'column' }}>
-                    {viewMode === 'grid' ? (
+                    {responsiveViewMode === 'grid' ? (
                         <Box sx={{ flex: 1, overflowY: 'auto', ...scrollbarStyle, pr: 1 }}>
                             <FileGrid
                                 files={MOCK_FILES}

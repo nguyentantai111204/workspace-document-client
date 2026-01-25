@@ -1,12 +1,17 @@
-import { Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, useTheme, TablePagination, Box } from '@mui/material'
+import { Box, Typography, IconButton } from '@mui/material'
+import MoreVertIcon from '@mui/icons-material/MoreVert'
 import { FileResponse } from '../../../../apis/file/file.interface'
-import { FileRow } from './file-row.item'
-import { CheckboxComponent } from '../../../../components/checkbox/checkbox.component'
 import { PAGE_TAKE_DEFAULT } from '../../../../common/constant/page-take.constant'
+import { TableComponent } from '../../../../components/table/table.component'
+import { TableColumn } from '../../../../components/table/table.types'
+import { getFileIcon } from './file-icon.util'
+import { formatDate, formatFileSize } from './explorer.constant'
+import { FileActionMenu } from './file-action-menu.part'
+import React, { useState } from 'react'
 
 interface FileListProps {
     files: FileResponse[]
-    onSelect: (file: FileResponse) => void // Detail open
+    onSelect: (file: FileResponse) => void
     selectedIds: string[]
     onToggleCheck: (id: string) => void
     onCheckAll: (checked: boolean, ids: string[]) => void
@@ -14,6 +19,35 @@ interface FileListProps {
     rowsPerPage: number
     onPageChange: (event: unknown, newPage: number) => void
     onRowsPerPageChange: (event: React.ChangeEvent<HTMLInputElement>) => void
+}
+
+const FileActionCell = ({ file }: { file: FileResponse }) => {
+    const [menuAnchorEl, setMenuAnchorEl] = useState<HTMLElement | null>(null)
+
+    const handleOpenMenu = (event: React.MouseEvent<HTMLElement>) => {
+        event.stopPropagation()
+        setMenuAnchorEl(event.currentTarget)
+    }
+
+    const handleCloseMenu = () => {
+        setMenuAnchorEl(null)
+    }
+
+    return (
+        <React.Fragment>
+            <IconButton size="small" onClick={handleOpenMenu}>
+                <MoreVertIcon fontSize="small" />
+            </IconButton>
+            <FileActionMenu
+                anchorEl={menuAnchorEl}
+                onClose={handleCloseMenu}
+                onEdit={() => console.log('Edit', file.name)}
+                onDelete={() => console.log('Delete', file.name)}
+                onPin={() => console.log('Pin', file.name)}
+                onShare={() => console.log('Share', file.name)}
+            />
+        </React.Fragment>
+    )
 }
 
 export const FileList = ({
@@ -27,78 +61,68 @@ export const FileList = ({
     onPageChange,
     onRowsPerPageChange
 }: FileListProps) => {
-    const theme = useTheme()
 
-    const paginatedFiles = files.slice(
-        page * rowsPerPage,
-        page * rowsPerPage + rowsPerPage,
-    )
-
-    const pageIds = paginatedFiles.map(f => f.id)
-    const isAllSelected = pageIds.length > 0 && pageIds.every(id => selectedIds.includes(id))
-    const isIndeterminate = pageIds.some(id => selectedIds.includes(id)) && !isAllSelected
+    const columns: TableColumn<FileResponse>[] = [
+        {
+            id: 'name',
+            label: 'TÊN FILE',
+            render: (file) => (
+                <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
+                    {getFileIcon(file.mimeType, { sx: { fontSize: 24 } })}
+                    <Typography variant="body2" fontWeight={500}>
+                        {file.name}
+                    </Typography>
+                </Box>
+            )
+        },
+        {
+            id: 'size',
+            label: 'KÍCH THƯỚC',
+            render: (file) => (
+                <Typography variant="body2" color="text.secondary">
+                    {file.mimeType === 'folder'
+                        ? `${file.itemCount || 0} mục`
+                        : formatFileSize(file.size)
+                    }
+                </Typography>
+            )
+        },
+        {
+            id: 'createdAt',
+            label: 'NGÀY TẠO',
+            render: (file) => (
+                <Typography variant="body2" color="text.secondary">
+                    {formatDate(file.createdAt)}
+                </Typography>
+            )
+        },
+        {
+            id: 'actions',
+            label: '',
+            align: 'right',
+            render: (file) => <FileActionCell file={file} />
+        }
+    ]
 
     return (
-        <Paper
-            elevation={0}
-            sx={{
-                height: '100%',
-                display: 'flex',
-                flexDirection: 'column',
-                border: `1px solid ${theme.palette.divider}`,
-                borderRadius: 2,
-                overflow: 'hidden',
-                bgcolor: theme.palette.background.paper,
-                backgroundImage: 'none',
-                transition: theme.transitions.create(['background-color', 'border-color']),
+        <TableComponent
+            data={files}
+            columns={columns}
+            selection={{
+                selectedIds,
+                onSelect: onToggleCheck,
+                onSelectAll: onCheckAll,
+                onRowClick: onSelect
             }}
-        >
-            <TableContainer sx={{ flex: 1 }}>
-                <Table stickyHeader>
-                    <TableHead>
-                        <TableRow>
-                            <TableCell padding="checkbox" sx={{ bgcolor: 'background.paper', transition: theme.transitions.create('background-color') }}>
-                                <Box display="flex" justifyContent="center">
-                                    <CheckboxComponent
-                                        checked={isAllSelected}
-                                        indeterminate={isIndeterminate}
-                                        onChange={(e) => onCheckAll(e.target.checked, pageIds)}
-                                        sizeUI="sm"
-                                        shape="square"
-                                    />
-                                </Box>
-                            </TableCell>
-                            <TableCell sx={{ fontWeight: 600, color: 'text.secondary', fontSize: 13, bgcolor: 'background.paper' }}>TÊN FILE</TableCell>
-                            <TableCell sx={{ fontWeight: 600, color: 'text.secondary', fontSize: 13, bgcolor: 'background.paper' }}>KÍCH THƯỚC</TableCell>
-                            <TableCell sx={{ fontWeight: 600, color: 'text.secondary', fontSize: 13, bgcolor: 'background.paper' }}>NGÀY TẠO</TableCell>
-                            <TableCell sx={{ bgcolor: 'background.paper' }} />
-                        </TableRow>
-                    </TableHead>
-                    <TableBody>
-                        {paginatedFiles.map((file) => (
-                            <FileRow
-                                key={file.id}
-                                file={file}
-                                selected={selectedIds.includes(file.id)}
-                                onSelect={() => onSelect(file)}
-                                onToggleCheck={() => onToggleCheck(file.id)}
-                            />
-                        ))}
-                    </TableBody>
-                </Table>
-            </TableContainer>
-            <TablePagination
-                rowsPerPageOptions={[PAGE_TAKE_DEFAULT.take, 5, 10, 25]}
-                component="div"
-                count={files.length}
-                rowsPerPage={rowsPerPage}
-                page={page}
-                onPageChange={onPageChange}
-                onRowsPerPageChange={onRowsPerPageChange}
-                sx={{
-                    borderTop: `1px solid ${theme.palette.divider}`,
-                }}
-            />
-        </Paper>
+            pagination={{
+                count: files.length,
+                page,
+                rowsPerPage,
+                onPageChange,
+                onRowsPerPageChange,
+                rowsPerPageOptions: [PAGE_TAKE_DEFAULT.take, 5, 10, 25]
+            }}
+        />
     )
 }
+

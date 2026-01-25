@@ -13,17 +13,17 @@ import { AppThemeProvider } from './providers/theme.provider.tsx'
 import { TimeProvider } from './providers/time-ago.provider.tsx'
 
 createRoot(document.getElementById('root')!).render(
-  <StrictMode>
-    <Provider store={store}>
-      <PersistGate loading={null} persistor={persistor}>
-        <ThemeModeProvider>
-          <AppThemeProvider>
-            <TimeProvider>
-              <App />
-            </TimeProvider>
-          </AppThemeProvider>
-        </ThemeModeProvider>
-      </PersistGate>
-    </Provider>
-  </StrictMode>,
+  // <StrictMode>
+  <Provider store={store}>
+    <PersistGate loading={null} persistor={persistor}>
+      <ThemeModeProvider>
+        <AppThemeProvider>
+          <TimeProvider>
+            <App />
+          </TimeProvider>
+        </AppThemeProvider>
+      </ThemeModeProvider>
+    </PersistGate>
+  </Provider>
+  // </StrictMode>,
 )

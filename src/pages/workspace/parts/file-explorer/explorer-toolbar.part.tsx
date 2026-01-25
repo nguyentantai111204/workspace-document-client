@@ -46,7 +46,7 @@ export const ExplorerToolbar = ({ viewMode, onViewChange, isDisableListView = fa
     )
 
     return (
-        <>
+        <React.Fragment>
             <Stack
                 direction={{ xs: 'column', sm: 'row' }}
                 alignItems={{ xs: 'stretch', sm: 'center' }}
@@ -85,6 +85,8 @@ export const ExplorerToolbar = ({ viewMode, onViewChange, isDisableListView = fa
                     >
                         Lọc
                     </ButtonComponent>
+
+
                 </Stack>
             </Stack>
 
@@ -127,6 +129,6 @@ export const ExplorerToolbar = ({ viewMode, onViewChange, isDisableListView = fa
                     {filterContent}
                 </Popover>
             )}
-        </>
+        </React.Fragment>
     )
 }

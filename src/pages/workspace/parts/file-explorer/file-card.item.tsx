@@ -1,7 +1,10 @@
-import { Box, Typography, Paper, useTheme } from '@mui/material'
+import { Box, Typography, Paper, useTheme, IconButton } from '@mui/material'
 import { FileResponse } from '../../../../apis/file/file.interface'
 import { getFileIcon } from './file-icon.util'
 import { formatDate } from './explorer.constant'
+import MoreVertIcon from '@mui/icons-material/MoreVert'
+import { useState } from 'react'
+import { FileActionMenu } from './file-action-menu.part'
 
 interface FileCardProps {
     file: FileResponse
@@ -11,6 +14,16 @@ interface FileCardProps {
 
 export const FileCard = ({ file, selected, onSelect }: FileCardProps) => {
     const theme = useTheme()
+    const [menuAnchorEl, setMenuAnchorEl] = useState<HTMLElement | null>(null)
+
+    const handleOpenMenu = (event: React.MouseEvent<HTMLElement>) => {
+        event.stopPropagation()
+        setMenuAnchorEl(event.currentTarget)
+    }
+
+    const handleCloseMenu = () => {
+        setMenuAnchorEl(null)
+    }
 
     return (
         <Paper
@@ -26,12 +39,35 @@ export const FileCard = ({ file, selected, onSelect }: FileCardProps) => {
                 bgcolor: theme.palette.background.paper,
                 backgroundImage: 'none',
                 transition: theme.transitions.create(['border-color', 'box-shadow']),
+                position: 'relative',
                 '&:hover': {
                     borderColor: 'primary.main',
                     boxShadow: theme.shadows[2],
+                    '& .more-btn': {
+                        opacity: 1,
+                    }
                 }
             }}
         >
+            <IconButton
+                className="more-btn"
+                size="small"
+                onClick={handleOpenMenu}
+                sx={{
+                    position: 'absolute',
+                    top: 8,
+                    right: 8,
+                    opacity: menuAnchorEl ? 1 : 0,
+                    transition: 'opacity 0.2s',
+                    bgcolor: 'background.paper',
+                    '&:hover': {
+                        bgcolor: 'action.hover',
+                    }
+                }}
+            >
+                <MoreVertIcon fontSize="small" />
+            </IconButton>
+
             <Box
                 sx={{
                     display: 'flex',
@@ -63,6 +99,15 @@ export const FileCard = ({ file, selected, onSelect }: FileCardProps) => {
             >
                 {formatDate(file.createdAt)}
             </Typography>
+
+            <FileActionMenu
+                anchorEl={menuAnchorEl}
+                onClose={handleCloseMenu}
+                onEdit={() => console.log('Edit', file.name)}
+                onDelete={() => console.log('Delete', file.name)}
+                onPin={() => console.log('Pin', file.name)}
+                onShare={() => console.log('Share', file.name)}
+            />
         </Paper>
     )
 }
