@@ -6,20 +6,20 @@ export interface BaseEntity {
 
 export interface PaginationParams {
     page?: number
-    take?: number
+    limit?: number
     search?: string
 }
 
 export interface PageMeta {
     page: number
-    take: number
-    itemCount: number
-    pageCount: number
-    hasPreviousPage: boolean
-    hasNextPage: boolean
+    limit: number
+    total: number
+    totalPages: number
 }
 
-export interface ListResponse<T> {
+export interface PaginatedResponse<T> {
+    success: boolean
     data: T[]
     meta: PageMeta
+    message: string
 }

@@ -1,18 +1,21 @@
-import { ToggleButton, ToggleButtonGroup, Stack, Typography, Popover, Drawer, useTheme, useMediaQuery } from '@mui/material'
+import { ToggleButton, ToggleButtonGroup, Stack, Typography, Popover, Drawer, useTheme, useMediaQuery, Box } from '@mui/material'
 import GridViewIcon from '@mui/icons-material/GridView'
 import ViewListIcon from '@mui/icons-material/ViewList'
 import FilterListIcon from '@mui/icons-material/FilterList'
 import React, { useState } from 'react'
 import { ButtonComponent } from '../../../../components/button/button.component'
 import { ExplorerFilter } from './explorer-filter.part'
+import { TextFieldSearchComponent } from '../../../../components/textfield/text-field-search.component'
 
 interface ExplorerToolbarProps {
     isDisableListView?: boolean
     viewMode: 'grid' | 'list'
     onViewChange: (mode: 'grid' | 'list') => void
+    onSearch?: (value: string) => void
+    onFilter?: (filters: any) => void
 }
 
-export const ExplorerToolbar = ({ viewMode, onViewChange, isDisableListView = false }: ExplorerToolbarProps) => {
+export const ExplorerToolbar = ({ viewMode, onViewChange, onSearch, onFilter, isDisableListView = false }: ExplorerToolbarProps) => {
     const theme = useTheme()
     const isMobile = useMediaQuery(theme.breakpoints.down('sm'))
     const [filterAnchor, setFilterAnchor] = useState<HTMLElement | null>(null)
@@ -37,7 +40,7 @@ export const ExplorerToolbar = ({ viewMode, onViewChange, isDisableListView = fa
     const filterContent = (
         <ExplorerFilter
             onApply={(filters) => {
-                console.log('Filters applied:', filters)
+                onFilter?.(filters)
                 handleFilterClose()
             }}
             onClose={handleFilterClose}
@@ -58,7 +61,14 @@ export const ExplorerToolbar = ({ viewMode, onViewChange, isDisableListView = fa
                     Design Assets
                 </Typography>
 
-                <Stack direction="row" spacing={2}>
+                <Stack direction="row" spacing={2} flex={1} justifyContent="flex-end">
+                    <Box sx={{ width: { xs: '100%', sm: 300 } }}>
+                        <TextFieldSearchComponent
+                            placeholder="Tìm kiếm tài liệu..."
+                            onChange={(val) => onSearch?.(val)}
+                        />
+                    </Box>
+
                     {!isDisableListView && (
                         <ToggleButtonGroup
                             value={viewMode}
@@ -85,8 +95,6 @@ export const ExplorerToolbar = ({ viewMode, onViewChange, isDisableListView = fa
                     >
                         Lọc
                     </ButtonComponent>
-
-
                 </Stack>
             </Stack>
 

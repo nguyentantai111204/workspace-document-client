@@ -1,4 +1,4 @@
-import { BaseEntity, PaginationParams } from '../common/common.interface'
+import { BaseEntity, PaginationParams, PaginatedResponse } from '../common/common.interface'
 
 export const WorkspaceRole = {
     OWNER: 'OWNER',
@@ -17,6 +17,8 @@ export interface WorkspaceResponse extends BaseEntity {
     name: string
     ownerId: string
 }
+
+export type WorkspaceListResponse = PaginatedResponse<WorkspaceResponse>
 
 export interface WorkspaceQuery extends PaginationParams {
 }

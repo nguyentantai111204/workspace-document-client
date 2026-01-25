@@ -2,6 +2,7 @@ import axiosInstance from '../../common/config/axios.config'
 import {
     CreateWorkspaceRequest,
     WorkspaceResponse,
+    WorkspaceListResponse,
     WorkspaceQuery,
     MemberResponse,
     MemberQuery,
@@ -17,8 +18,8 @@ export const createWorkspaceApi = async (data: CreateWorkspaceRequest): Promise<
     return response.data
 }
 
-export const listWorkspacesApi = async (query?: WorkspaceQuery): Promise<WorkspaceResponse[]> => {
-    const response = await axiosInstance.get<WorkspaceResponse[]>('/workspaces', { params: query })
+export const listWorkspacesApi = async (query?: WorkspaceQuery): Promise<WorkspaceListResponse> => {
+    const response = await axiosInstance.get<WorkspaceListResponse>('/workspaces', { params: query })
     return response.data
 }
 

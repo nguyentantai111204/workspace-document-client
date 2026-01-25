@@ -1,5 +1,5 @@
 import axiosInstance from '../../common/config/axios.config'
-import { FileResponse, FileQuery } from './file.interface'
+import { FileResponse, FileQuery, FileListResponse } from './file.interface'
 
 export const uploadFileApi = async (workspaceId: string, file: File): Promise<FileResponse> => {
     const formData = new FormData()
@@ -13,11 +13,15 @@ export const uploadFileApi = async (workspaceId: string, file: File): Promise<Fi
     return response.data
 }
 
-export const listFilesApi = async (workspaceId: string, query?: FileQuery): Promise<FileResponse[]> => {
-    const response = await axiosInstance.get<FileResponse[]>(`/workspaces/${workspaceId}/files`, { params: query })
+export const listFilesApi = async (workspaceId: string, query?: FileQuery): Promise<FileListResponse> => {
+    const response = await axiosInstance.get<FileListResponse>(`/workspaces/${workspaceId}/files`, { params: query })
     return response.data
 }
 
 export const deleteFileApi = async (workspaceId: string, fileId: string): Promise<void> => {
     await axiosInstance.delete(`/workspaces/${workspaceId}/files/${fileId}`)
+}
+
+export const updateFileApi = async (workspaceId: string, fileId: string, data: any): Promise<void> => {
+    await axiosInstance.patch(`/workspaces/${workspaceId}/files/${fileId}`, data)
 }

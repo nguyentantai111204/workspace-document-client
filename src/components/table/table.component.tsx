@@ -12,14 +12,13 @@ import {
     alpha
 } from '@mui/material'
 import { CheckboxComponent } from '../checkbox/checkbox.component'
-import { TableColumn, TableProps } from './table.types'
+import { TableColumn, TableProps } from './table.interface'
 
 export function TableComponent<T extends { id: string }>({
     data,
     columns,
     selection,
     pagination,
-    // loading // TODO: Implement loading state
 }: TableProps<T>) {
     const theme = useTheme()
 

@@ -1,22 +1,37 @@
-import { Box, Drawer, useTheme, useMediaQuery } from '@mui/material'
+import { Box, Drawer, useTheme, useMediaQuery, CircularProgress, Typography } from '@mui/material'
 import { useState } from 'react'
 import { FileResponse } from '../../../../apis/file/file.interface'
-import { MOCK_FILES } from './explorer.constant'
 import { ExplorerToolbar } from './explorer-toolbar.part'
 import { FileGrid } from './file-grid.part'
 import { FileList } from './file-list.part'
 import { FileDetailSidebar } from './file-detail.part'
 import { PAGE_TAKE_DEFAULT } from '../../../../common/constant/page-take.constant'
+import { useWorkspace } from '../../../../contexts/workspace.context'
+import { useFiles } from '../../../../hooks/useFiles'
+import { useDebounce } from '../../../../hooks/useDebounce'
+
 
 export const FileExplorerComponent = () => {
     const theme = useTheme()
     const isMobile = useMediaQuery('(max-width: 500px)')
     const isTablet = useMediaQuery('(min-width: 501px) and (max-width: 899px)')
+    const { currentWorkspace } = useWorkspace()
+
     const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid')
     const [selectedItem, setSelectedItem] = useState<FileResponse | null>(null)
     const [selectedIds, setSelectedIds] = useState<string[]>([])
     const [page, setPage] = useState(0)
     const [rowsPerPage, setRowsPerPage] = useState(PAGE_TAKE_DEFAULT.take)
+    const [searchQuery, setSearchQuery] = useState('')
+    const [filters, setFilters] = useState<any>({})
+    const debouncedSearch = useDebounce(searchQuery, 500)
+
+    const { files, meta, isLoading } = useFiles(currentWorkspace?.id, {
+        page: page + 1,
+        limit: rowsPerPage,
+        search: debouncedSearch || undefined,
+        sortOrder: filters.dateSort === 'oldest' ? 'ASC' : 'DESC',
+    })
 
     const scrollbarStyle = {
         '&::-webkit-scrollbar': {
@@ -43,7 +58,7 @@ export const FileExplorerComponent = () => {
         setSelectedItem(null)
     }
 
-    const handleChangePage = (event: unknown, newPage: number) => {
+    const handleChangePage = (_event: unknown, newPage: number) => {
         setPage(newPage)
     }
 
@@ -69,6 +84,11 @@ export const FileExplorerComponent = () => {
         }
     }
 
+    const handleSearch = (value: string) => {
+        setSearchQuery(value)
+        setPage(0)
+    }
+
     const detailContent = selectedItem && (
         <FileDetailSidebar
             file={selectedItem}
@@ -77,6 +97,52 @@ export const FileExplorerComponent = () => {
     )
 
     const responsiveViewMode = isMobile ? 'grid' : viewMode
+
+    const renderContent = () => {
+        if (isLoading) {
+            return (
+                <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100%' }}>
+                    <CircularProgress />
+                </Box>
+            )
+        }
+
+        if (files.length === 0) {
+            return (
+                <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100%', flexDirection: 'column' }}>
+                    <Typography color="text.secondary">Chưa có dữ liệu</Typography>
+                </Box>
+            )
+        }
+
+        if (responsiveViewMode === 'grid') {
+            return (
+                <Box sx={{ flex: 1, overflowY: 'auto', ...scrollbarStyle, pr: 1 }}>
+                    <FileGrid
+                        files={files}
+                        selectedItem={selectedItem}
+                        onSelect={handleSelect}
+                    />
+                </Box>
+            )
+        }
+
+        return (
+            <FileList
+                files={files}
+                onSelect={handleSelect}
+                selectedIds={selectedIds}
+                onToggleCheck={handleToggleCheck}
+                onCheckAll={handleCheckAll}
+                page={page}
+                rowsPerPage={rowsPerPage}
+                totalCount={meta?.total || 0}
+                onPageChange={handleChangePage}
+                onRowsPerPageChange={handleChangeRowsPerPage}
+            />
+        )
+    }
+
 
     return (
         <Box sx={{ display: 'flex', height: '100%', overflow: 'hidden' }}>
@@ -93,30 +159,15 @@ export const FileExplorerComponent = () => {
                     isDisableListView={isMobile}
                     viewMode={viewMode}
                     onViewChange={setViewMode}
+                    onSearch={handleSearch}
+                    onFilter={(newFilters) => {
+                        setFilters(newFilters)
+                        setPage(0)
+                    }}
                 />
 
                 <Box sx={{ flex: 1, overflow: 'hidden', display: 'flex', flexDirection: 'column' }}>
-                    {responsiveViewMode === 'grid' ? (
-                        <Box sx={{ flex: 1, overflowY: 'auto', ...scrollbarStyle, pr: 1 }}>
-                            <FileGrid
-                                files={MOCK_FILES}
-                                selectedItem={selectedItem}
-                                onSelect={handleSelect}
-                            />
-                        </Box>
-                    ) : (
-                        <FileList
-                            files={MOCK_FILES}
-                            onSelect={handleSelect}
-                            selectedIds={selectedIds}
-                            onToggleCheck={handleToggleCheck}
-                            onCheckAll={handleCheckAll}
-                            page={page}
-                            rowsPerPage={rowsPerPage}
-                            onPageChange={handleChangePage}
-                            onRowsPerPageChange={handleChangeRowsPerPage}
-                        />
-                    )}
+                    {renderContent()}
                 </Box>
             </Box>
 

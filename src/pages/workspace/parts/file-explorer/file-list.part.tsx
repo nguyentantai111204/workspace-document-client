@@ -3,7 +3,7 @@ import MoreVertIcon from '@mui/icons-material/MoreVert'
 import { FileResponse } from '../../../../apis/file/file.interface'
 import { PAGE_TAKE_DEFAULT } from '../../../../common/constant/page-take.constant'
 import { TableComponent } from '../../../../components/table/table.component'
-import { TableColumn } from '../../../../components/table/table.types'
+import { TableColumn } from '../../../../components/table/table.interface'
 import { getFileIcon } from './file-icon.util'
 import { formatDate, formatFileSize } from './explorer.constant'
 import { FileActionMenu } from './file-action-menu.part'
@@ -17,6 +17,7 @@ interface FileListProps {
     onCheckAll: (checked: boolean, ids: string[]) => void
     page: number
     rowsPerPage: number
+    totalCount: number
     onPageChange: (event: unknown, newPage: number) => void
     onRowsPerPageChange: (event: React.ChangeEvent<HTMLInputElement>) => void
 }
@@ -58,6 +59,7 @@ export const FileList = ({
     onCheckAll,
     page,
     rowsPerPage,
+    totalCount,
     onPageChange,
     onRowsPerPageChange
 }: FileListProps) => {
@@ -115,7 +117,7 @@ export const FileList = ({
                 onRowClick: onSelect
             }}
             pagination={{
-                count: files.length,
+                count: totalCount,
                 page,
                 rowsPerPage,
                 onPageChange,

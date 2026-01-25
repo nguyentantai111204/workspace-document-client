@@ -12,15 +12,14 @@ import {
     Stack,
     useTheme,
 } from '@mui/material'
-import React from 'react'
 import FolderIcon from '@mui/icons-material/Folder'
-import ErrorOutlineIcon from '@mui/icons-material/ErrorOutline'
 import { useNavigate, useLocation } from 'react-router-dom'
 import { useAppDispatch, useAppSelector } from '../../redux/store.redux'
 import { setSidebarOpen } from '../../redux/system/system.slice'
 import { WorkspaceSwitcherComponent, Workspace } from '../../components/workspace/workspace-switcher.component'
 import { SIDEBAR_WIDTH, TIME_ANIMATION } from '../../common/constant/style.constant'
 import { useThemeMode } from '../../contexts/theme-mode.context'
+import { useWorkspace } from '../../contexts/workspace.context'
 
 
 const MENU_ITEMS = [
@@ -31,34 +30,29 @@ const SidebarContent = ({ onItemClick }: { onItemClick?: () => void }) => {
     const theme = useTheme()
     const navigate = useNavigate()
     const location = useLocation()
+    const { workspaces, currentWorkspace, setCurrentWorkspace, isLoading } = useWorkspace()
 
-    const workspaces = [
-        {
-            id: '1',
-            name: 'Team 1',
-            avatar: '/assets/images/avatar/avatar-1.webp',
-            plan: 'Free' as const,
-        },
-        {
-            id: '2',
-            name: 'Team 2',
-            avatar: '/assets/images/avatar/avatar-2.webp',
-            plan: 'Pro' as const,
-        },
-        {
-            id: '3',
-            name: 'Team 3',
-            avatar: '/assets/images/avatar/avatar-3.webp',
-            plan: 'Pro' as const,
-        },
-    ]
+    const mappedWorkspaces: Workspace[] = workspaces.map(ws => ({
+        id: ws.id,
+        name: ws.name,
+        avatar: '/assets/images/avatar/avatar-default.webp', // Default avatar
+        plan: 'Free'
+    }))
 
-
-    const [currentWorkspace, setCurrentWorkspace] = React.useState<Workspace>(workspaces[0])
+    const mappedCurrentWorkspace: Workspace | undefined = currentWorkspace ? {
+        id: currentWorkspace.id,
+        name: currentWorkspace.name,
+        avatar: '/assets/images/avatar/avatar-default.webp',
+        plan: 'Free'
+    } : undefined
 
     const handleNavigate = (path: string) => {
         navigate(path)
         onItemClick?.()
+    }
+
+    if (isLoading) {
+        return <Box sx={{ p: 2 }}>Loading...</Box>
     }
 
     return (
@@ -81,14 +75,18 @@ const SidebarContent = ({ onItemClick }: { onItemClick?: () => void }) => {
                 </Typography>
             </Stack>
 
-            <WorkspaceSwitcherComponent
-                currentWorkspace={currentWorkspace}
-                workspaces={workspaces}
-                onWorkspaceChange={(workspace) => {
-                    setCurrentWorkspace(workspace)
-                    console.log('Switched to:', workspace.name)
-                }}
-            />
+            {mappedCurrentWorkspace && (
+                <WorkspaceSwitcherComponent
+                    currentWorkspace={mappedCurrentWorkspace}
+                    workspaces={mappedWorkspaces}
+                    onWorkspaceChange={(ws: Workspace) => {
+                        const selected = workspaces.find((w: { id: string }) => w.id === ws.id)
+                        if (selected) {
+                            setCurrentWorkspace(selected)
+                        }
+                    }}
+                />
+            )}
 
             <List disablePadding>
                 {MENU_ITEMS.map((item) => {

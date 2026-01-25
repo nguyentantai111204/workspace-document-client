@@ -59,7 +59,6 @@ export const WorkspaceSwitcherComponent = ({
         }
     }
 
-    // Empty state when no workspaces exist
     if (workspaces.length === 0 || !currentWorkspace) {
         return (
             <Box
@@ -121,8 +120,7 @@ export const WorkspaceSwitcherComponent = ({
             >
                 <Box
                     component="img"
-                    src={currentWorkspace.avatar}
-                    alt={currentWorkspace.name}
+                    src={currentWorkspace.avatar || 'test'}
                     sx={{
                         width: 40,
                         height: 40,
@@ -195,7 +193,7 @@ export const WorkspaceSwitcherComponent = ({
                         >
                             <Box
                                 component="img"
-                                src={workspace.avatar}
+                                src={workspace.avatar || '/assets/images/avatar/avatar-25.webp'}
                                 alt={workspace.name}
                                 sx={{
                                     width: 32,
