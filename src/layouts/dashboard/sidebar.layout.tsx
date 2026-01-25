@@ -35,14 +35,14 @@ const SidebarContent = ({ onItemClick }: { onItemClick?: () => void }) => {
     const mappedWorkspaces: Workspace[] = workspaces.map(ws => ({
         id: ws.id,
         name: ws.name,
-        avatar: '/assets/images/avatar/avatar-default.webp', // Default avatar
+        avatar: '/assets/images/avatar/avatar-1.webp',
         plan: 'Free'
     }))
 
     const mappedCurrentWorkspace: Workspace | undefined = currentWorkspace ? {
         id: currentWorkspace.id,
         name: currentWorkspace.name,
-        avatar: '/assets/images/avatar/avatar-default.webp',
+        avatar: '/assets/images/avatar/avatar-1.webp',
         plan: 'Free'
     } : undefined
 

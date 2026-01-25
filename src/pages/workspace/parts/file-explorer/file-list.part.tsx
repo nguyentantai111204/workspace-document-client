@@ -1,7 +1,6 @@
 import { Box, Typography, IconButton } from '@mui/material'
 import MoreVertIcon from '@mui/icons-material/MoreVert'
 import { FileResponse } from '../../../../apis/file/file.interface'
-import { PAGE_TAKE_DEFAULT } from '../../../../common/constant/page-take.constant'
 import { TableComponent } from '../../../../components/table/table.component'
 import { TableColumn } from '../../../../components/table/table.interface'
 import { getFileIcon } from './file-icon.util'
@@ -15,11 +14,6 @@ interface FileListProps {
     selectedIds: string[]
     onToggleCheck: (id: string) => void
     onCheckAll: (checked: boolean, ids: string[]) => void
-    page: number
-    rowsPerPage: number
-    totalCount: number
-    onPageChange: (event: unknown, newPage: number) => void
-    onRowsPerPageChange: (event: React.ChangeEvent<HTMLInputElement>) => void
 }
 
 const FileActionCell = ({ file }: { file: FileResponse }) => {
@@ -57,11 +51,6 @@ export const FileList = ({
     selectedIds,
     onToggleCheck,
     onCheckAll,
-    page,
-    rowsPerPage,
-    totalCount,
-    onPageChange,
-    onRowsPerPageChange
 }: FileListProps) => {
 
     const columns: TableColumn<FileResponse>[] = [
@@ -115,14 +104,6 @@ export const FileList = ({
                 onSelect: onToggleCheck,
                 onSelectAll: onCheckAll,
                 onRowClick: onSelect
-            }}
-            pagination={{
-                count: totalCount,
-                page,
-                rowsPerPage,
-                onPageChange,
-                onRowsPerPageChange,
-                rowsPerPageOptions: [PAGE_TAKE_DEFAULT.take, 5, 10, 25]
             }}
         />
     )

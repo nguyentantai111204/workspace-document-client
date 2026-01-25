@@ -18,20 +18,13 @@ import { NotificationBellComponent } from '../../components/bell/notification-be
 import { AvatarUserComponent } from '../../components/avatar/avatar-user.component'
 import { useThemeMode } from '../../contexts/theme-mode.context'
 import { BreadcrumbComponent, type BreadcrumbItem } from '../../components/breadcrumb/breadcrumb.component'
-import { TextFieldSearchComponent } from '../../components/textfield/text-field-search.component'
 
 interface HeaderLayoutProps {
     breadcrumbs?: BreadcrumbItem[]
-    searchPlaceholder?: string
-    onSearch?: (value: string) => void
-    showSearch?: boolean
 }
 
 export const HeaderLayout = ({
     breadcrumbs = [{ label: 'Trang chủ' }],
-    searchPlaceholder = 'Tìm kiếm...',
-    onSearch,
-    showSearch = true,
 }: HeaderLayoutProps) => {
     const theme = useTheme()
     const dispatch = useAppDispatch()
@@ -84,24 +77,6 @@ export const HeaderLayout = ({
                 <Box sx={{ display: { xs: 'none', md: 'block' }, minWidth: 0 }}>
                     <BreadcrumbComponent items={breadcrumbs} />
                 </Box>
-
-                {showSearch && (
-                    <Box
-                        sx={{
-                            flexGrow: 1,
-                            display: 'none',
-                            '@media (min-width: 500px)': {
-                                display: 'flex',
-                                justifyContent: 'center',
-                            },
-                        }}
-                    >
-                        <TextFieldSearchComponent
-                            placeholder={searchPlaceholder}
-                            onChange={onSearch}
-                        />
-                    </Box>
-                )}
 
                 <Stack direction="row" alignItems="center" spacing={{ xs: 0.5, sm: 1 }}>
                     <IconButton

@@ -1,14 +1,14 @@
-import { Box, Drawer, useTheme, useMediaQuery, CircularProgress, Typography } from '@mui/material'
+import { Box, Drawer, useTheme, useMediaQuery, CircularProgress, Typography, Pagination } from '@mui/material'
 import { useState } from 'react'
 import { FileResponse } from '../../../../apis/file/file.interface'
 import { ExplorerToolbar } from './explorer-toolbar.part'
 import { FileGrid } from './file-grid.part'
 import { FileList } from './file-list.part'
 import { FileDetailSidebar } from './file-detail.part'
-import { PAGE_TAKE_DEFAULT } from '../../../../common/constant/page-take.constant'
 import { useWorkspace } from '../../../../contexts/workspace.context'
 import { useFiles } from '../../../../hooks/useFiles'
 import { useDebounce } from '../../../../hooks/useDebounce'
+import { PAGE_LIMIT_DEFAULT } from '../../../../common/constant/page-take.constant'
 
 
 export const FileExplorerComponent = () => {
@@ -20,17 +20,17 @@ export const FileExplorerComponent = () => {
     const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid')
     const [selectedItem, setSelectedItem] = useState<FileResponse | null>(null)
     const [selectedIds, setSelectedIds] = useState<string[]>([])
-    const [page, setPage] = useState(0)
-    const [rowsPerPage, setRowsPerPage] = useState(PAGE_TAKE_DEFAULT.take)
+    const [page, setPage] = useState(1)
     const [searchQuery, setSearchQuery] = useState('')
     const [filters, setFilters] = useState<any>({})
     const debouncedSearch = useDebounce(searchQuery, 500)
 
     const { files, meta, isLoading } = useFiles(currentWorkspace?.id, {
-        page: page + 1,
-        limit: rowsPerPage,
+        page: page,
+        limit: PAGE_LIMIT_DEFAULT.limit,
         search: debouncedSearch || undefined,
         sortOrder: filters.dateSort === 'oldest' ? 'ASC' : 'DESC',
+        // sortBy: 'createdAt',
     })
 
     const scrollbarStyle = {
@@ -62,11 +62,6 @@ export const FileExplorerComponent = () => {
         setPage(newPage)
     }
 
-    const handleChangeRowsPerPage = (event: React.ChangeEvent<HTMLInputElement>) => {
-        setRowsPerPage(parseInt(event.target.value, 10))
-        setPage(0)
-    }
-
     const handleToggleCheck = (id: string) => {
         setSelectedIds(prev =>
             prev.includes(id)
@@ -86,7 +81,7 @@ export const FileExplorerComponent = () => {
 
     const handleSearch = (value: string) => {
         setSearchQuery(value)
-        setPage(0)
+        setPage(1)
     }
 
     const detailContent = selectedItem && (
@@ -134,11 +129,6 @@ export const FileExplorerComponent = () => {
                 selectedIds={selectedIds}
                 onToggleCheck={handleToggleCheck}
                 onCheckAll={handleCheckAll}
-                page={page}
-                rowsPerPage={rowsPerPage}
-                totalCount={meta?.total || 0}
-                onPageChange={handleChangePage}
-                onRowsPerPageChange={handleChangeRowsPerPage}
             />
         )
     }
@@ -162,13 +152,28 @@ export const FileExplorerComponent = () => {
                     onSearch={handleSearch}
                     onFilter={(newFilters) => {
                         setFilters(newFilters)
-                        setPage(0)
+                        setPage(1)
                     }}
                 />
 
                 <Box sx={{ flex: 1, overflow: 'hidden', display: 'flex', flexDirection: 'column' }}>
                     {renderContent()}
                 </Box>
+
+                {/* Shared Pagination */}
+                {meta && (
+                    <Box sx={{ pt: 2, display: 'flex', justifyContent: 'flex-end' }}>
+                        <Pagination
+                            count={meta.totalPages}
+                            page={page}
+                            onChange={handleChangePage}
+                            color="primary"
+                            shape="rounded"
+                            size={isMobile ? 'small' : 'medium'}
+                            siblingCount={isMobile ? 0 : 1}
+                        />
+                    </Box>
+                )}
             </Box>
 
             {/* Mobile*/}

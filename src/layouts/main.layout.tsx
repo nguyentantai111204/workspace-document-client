@@ -37,9 +37,6 @@ export const MainLayout = () => {
         return BREADCRUMB_MAP[location.pathname] || [{ label: 'Trang chủ' }]
     }, [location.pathname])
 
-    const handleSearch = (value: string) => {
-        console.log('Searching:', value)
-    }
 
     return (
         <Box sx={{
@@ -53,9 +50,6 @@ export const MainLayout = () => {
         }}>
             <HeaderLayout
                 breadcrumbs={breadcrumbs}
-                searchPlaceholder="Tìm kiếm tài liệu, người dùng..."
-                onSearch={handleSearch}
-                showSearch={true}
             />
             <SidebarLayout />
             <MainStyle>
