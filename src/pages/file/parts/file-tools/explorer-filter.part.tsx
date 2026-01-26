@@ -3,21 +3,33 @@ import { useState } from 'react'
 import { CheckboxComponent } from '../../../../components/checkbox/checkbox.component'
 import { ButtonComponent } from '../../../../components/button/button.component'
 
+export interface ExplorerFileTypes {
+    folder: boolean
+    image: boolean
+    document: boolean
+}
+
+export interface ExplorerFilters {
+    fileTypes: ExplorerFileTypes
+    dateSort: string
+}
+
 interface ExplorerFilterProps {
-    onApply: (filters: any) => void
+    initialFilters?: Partial<ExplorerFilters>
+    onApply: (filters: ExplorerFilters) => void
     onClose: () => void
     onReset: () => void
 }
 
-export const ExplorerFilter = ({ onApply, onClose, onReset }: ExplorerFilterProps) => {
-    const [fileTypes, setFileTypes] = useState({
+export const ExplorerFilter = ({ initialFilters, onApply, onClose, onReset }: ExplorerFilterProps) => {
+    const [fileTypes, setFileTypes] = useState<ExplorerFileTypes>(initialFilters?.fileTypes || {
         folder: true,
         image: true,
         document: true,
     })
-    const [dateSort, setDateSort] = useState('newest')
+    const [dateSort, setDateSort] = useState(initialFilters?.dateSort || 'newest')
 
-    const handleChangeType = (type: keyof typeof fileTypes) => {
+    const handleChangeType = (type: keyof ExplorerFileTypes) => {
         setFileTypes(prev => ({ ...prev, [type]: !prev[type] }))
     }
 

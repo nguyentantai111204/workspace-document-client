@@ -2,6 +2,7 @@ import { Box, Drawer, useTheme, useMediaQuery, CircularProgress, Typography, Pag
 import AddIcon from '@mui/icons-material/Add'
 import { useState } from 'react'
 import { ExplorerToolbar } from './file-tools/explorer-toolbar.part'
+import { ExplorerFilters } from './file-tools/explorer-filter.part'
 import { FileGrid } from './file-view/file-grid.part'
 import { FileList } from './file-view/file-list.part'
 import { FileDetailSidebar } from './file-view/file-detail.part'
@@ -24,16 +25,28 @@ export const FileExplorerComponent = () => {
     const [selectedIds, setSelectedIds] = useState<string[]>([])
     const [page, setPage] = useState(1)
     const [searchQuery, setSearchQuery] = useState('')
-    const [filters, setFilters] = useState<any>({})
+    const [filters, setFilters] = useState<Partial<ExplorerFilters>>({})
     const [openUploadModal, setOpenUploadModal] = useState(false)
     const debouncedSearch = useDebounce(searchQuery, 500)
 
-    const { files, meta, isLoading } = useFiles(currentWorkspace?.id, {
+    const getFileTypesParams = () => {
+        if (!filters.fileTypes) return undefined
+
+        const types = []
+        if (filters.fileTypes.folder) types.push('folder')
+        if (filters.fileTypes.image) types.push('image')
+        if (filters.fileTypes.document) types.push('document')
+
+        return types.length > 0 ? types.join(',') : undefined
+    }
+
+    const { files, meta, isLoading, mutate } = useFiles(currentWorkspace?.id, {
         page: page,
         limit: PAGE_LIMIT_DEFAULT.limit,
         search: debouncedSearch || undefined,
         sortOrder: filters.dateSort === 'oldest' ? 'ASC' : 'DESC',
-        // sortBy: 'createdAt',
+        sortBy: 'createdAt',
+        type: getFileTypesParams()
     })
 
     const scrollbarStyle = {
@@ -152,6 +165,7 @@ export const FileExplorerComponent = () => {
                     isDisableListView={isMobile}
                     viewMode={viewMode}
                     workspaceName={currentWorkspace?.name}
+                    currentFilters={filters}
                     onViewChange={setViewMode}
                     onSearch={handleSearch}
                     onFilter={(newFilters) => {
@@ -233,6 +247,10 @@ export const FileExplorerComponent = () => {
             <UploadFileModal
                 open={openUploadModal}
                 onClose={() => setOpenUploadModal(false)}
+                onSuccess={() => {
+                    mutate()
+                    setPage(1)
+                }}
             />
         </Box>
     )
