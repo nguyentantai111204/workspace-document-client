@@ -12,6 +12,7 @@ import { FileResponse } from '../../../apis/file/file.interface'
 import { useDebounce } from '../../../hooks/useDebounce'
 import { useFiles } from '../../../hooks/useFiles'
 import { PAGE_LIMIT_DEFAULT } from '../../../common/constant/page-take.constant'
+import { StackColumn, StackRow } from '../../../components/mui-custom/stack/stack.mui-custom'
 
 
 export const FileExplorerComponent = () => {
@@ -120,9 +121,9 @@ export const FileExplorerComponent = () => {
 
         if (files.length === 0) {
             return (
-                <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100%', flexDirection: 'column' }}>
+                <StackColumn sx={{ justifyContent: 'center', alignItems: 'center', height: '100%' }}>
                     <Typography color="text.secondary">Chưa có dữ liệu</Typography>
-                </Box>
+                </StackColumn>
             )
         }
 
@@ -151,12 +152,10 @@ export const FileExplorerComponent = () => {
 
 
     return (
-        <Box sx={{ display: 'flex', height: '100%', overflow: 'hidden' }}>
-            <Box
+        <StackRow sx={{ height: '100%', overflow: 'hidden' }}>
+            <StackColumn
                 sx={{
                     flex: 1,
-                    display: 'flex',
-                    flexDirection: 'column',
                     overflow: 'hidden',
                     p: { xs: 2, md: 3 }
                 }}
@@ -175,9 +174,9 @@ export const FileExplorerComponent = () => {
                     onUpload={() => setOpenUploadModal(true)}
                 />
 
-                <Box sx={{ flex: 1, overflow: 'hidden', display: 'flex', flexDirection: 'column' }}>
+                <StackColumn sx={{ flex: 1, overflow: 'hidden' }}>
                     {renderContent()}
-                </Box>
+                </StackColumn>
 
                 {meta && meta.totalPages > 0 && (
                     <Box sx={{ pt: 2, display: 'flex', justifyContent: 'flex-end' }}>
@@ -192,7 +191,7 @@ export const FileExplorerComponent = () => {
                         />
                     </Box>
                 )}
-            </Box>
+            </StackColumn>
 
             {/* Mobile*/}
             <Drawer
@@ -252,6 +251,6 @@ export const FileExplorerComponent = () => {
                     setPage(1)
                 }}
             />
-        </Box>
+        </StackRow>
     )
 }

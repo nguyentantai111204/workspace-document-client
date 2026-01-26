@@ -1,7 +1,8 @@
-import { Box, Typography, Stack, Divider, RadioGroup, FormControlLabel, Radio } from '@mui/material'
+import { Box, Typography, Divider, RadioGroup, FormControlLabel, Radio, Stack } from '@mui/material'
 import { useState } from 'react'
 import { CheckboxComponent } from '../../../../components/checkbox/checkbox.component'
 import { ButtonComponent } from '../../../../components/button/button.component'
+import { StackColumn } from '../../../../components/mui-custom/stack/stack.mui-custom'
 
 export interface ExplorerFileTypes {
     folder: boolean
@@ -49,7 +50,7 @@ export const ExplorerFilter = ({ initialFilters, onApply, onClose, onReset }: Ex
             <Typography variant="subtitle2" fontWeight={600} gutterBottom>
                 Loại tệp
             </Typography>
-            <Stack spacing={1.5} mb={3}>
+            <StackColumn spacing={1.5} mb={3}>
                 <CheckboxComponent
                     label="Thư mục"
                     checked={fileTypes.folder}
@@ -68,7 +69,7 @@ export const ExplorerFilter = ({ initialFilters, onApply, onClose, onReset }: Ex
                     onChange={() => handleChangeType('document')}
                     sizeUI="sm"
                 />
-            </Stack>
+            </StackColumn>
 
             <Typography variant="subtitle2" fontWeight={600} gutterBottom>
                 Thời gian

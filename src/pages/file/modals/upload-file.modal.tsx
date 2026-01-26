@@ -1,10 +1,9 @@
+
 import {
     Dialog,
     DialogTitle,
     DialogContent,
     DialogActions,
-    Button,
-    IconButton,
     Typography,
     Box,
     useTheme,
@@ -20,6 +19,8 @@ import { useState, useRef } from 'react'
 import { useWorkspace } from '../../../contexts/workspace.context'
 import { uploadFilesApi } from '../../../apis/file/file.api'
 import { formatFileSize } from '../../../common/utils/file.utils'
+import { ButtonComponent } from '../../../components/button/button.component'
+import { StackRowAlignCenterJustBetween, StackRow } from '../../../components/mui-custom/stack/stack.mui-custom'
 
 interface UploadFileModalProps {
     open: boolean
@@ -76,7 +77,7 @@ export const UploadFileModal = ({ open, onClose, onSuccess }: UploadFileModalPro
 
             if (failed.length > 0) {
                 const failedNames = failed.map(f => f.file.name).join(', ')
-                setError(`Không thể tải lên ${failed.length} tệp tin: ${failedNames}`)
+                setError(`Không thể tải lên ${failed.length} tệp tin: ${failedNames} `)
                 // Keep selected files that failed? Or just close?
                 // For now, if any succeed, we trigger success.
                 if (failed.length < selectedFiles.length) {
@@ -117,24 +118,27 @@ export const UploadFileModal = ({ open, onClose, onSuccess }: UploadFileModalPro
                 }
             }}
         >
-            <DialogTitle sx={{ m: 0, p: 2, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                <Box>
-                    <Typography variant="h6" fontWeight={700}>
-                        Tải tài liệu lên
-                    </Typography>
-                    <Typography variant="body2" color="text.secondary">
-                        Thêm tài liệu vào không gian làm việc của bạn
-                    </Typography>
-                </Box>
-                {!isLoading && (
-                    <IconButton
-                        aria-label="close"
-                        onClick={handleClose}
-                        sx={{ color: (theme) => theme.palette.grey[500] }}
-                    >
-                        <CloseIcon />
-                    </IconButton>
-                )}
+            <DialogTitle sx={{ m: 0, p: 2 }}>
+                <StackRowAlignCenterJustBetween>
+                    <Box>
+                        <Typography variant="h6" fontWeight={700}>
+                            Tải tài liệu lên
+                        </Typography>
+                        <Typography variant="body2" color="text.secondary">
+                            Thêm tài liệu vào không gian làm việc của bạn
+                        </Typography>
+                    </Box>
+                    {!isLoading && (
+                        <ButtonComponent
+                            variant="ghost"
+                            shape="circle"
+                            sizeUI="sm"
+                            icon={<CloseIcon />}
+                            onClick={handleClose}
+                            sx={{ color: theme.palette.grey[500] }}
+                        />
+                    )}
+                </StackRowAlignCenterJustBetween>
             </DialogTitle>
 
             <DialogContent dividers sx={{ borderTop: 'none', borderBottom: 'none', px: 3, py: 2 }}>
@@ -167,7 +171,7 @@ export const UploadFileModal = ({ open, onClose, onSuccess }: UploadFileModalPro
                                 key={index}
                                 sx={{
                                     p: 1.5,
-                                    border: `1px solid ${theme.palette.divider}`,
+                                    border: `1px solid ${theme.palette.divider} `,
                                     borderRadius: 2,
                                     display: 'flex',
                                     alignItems: 'center',
@@ -199,9 +203,14 @@ export const UploadFileModal = ({ open, onClose, onSuccess }: UploadFileModalPro
                                     </Typography>
                                 </Box>
                                 {!isLoading && (
-                                    <IconButton onClick={() => handleRemoveFile(index)} color="error" size="small">
-                                        <DeleteOutlineOutlinedIcon fontSize="small" />
-                                    </IconButton>
+                                    <ButtonComponent
+                                        variant="ghost"
+                                        shape="circle"
+                                        sizeUI="sm"
+                                        icon={<DeleteOutlineOutlinedIcon fontSize="small" />}
+                                        onClick={() => handleRemoveFile(index)}
+                                        sx={{ color: theme.palette.error.main }}
+                                    />
                                 )}
                             </Box>
                         ))}
@@ -225,28 +234,24 @@ export const UploadFileModal = ({ open, onClose, onSuccess }: UploadFileModalPro
             </DialogContent>
 
             <DialogActions sx={{ px: 3, pb: 3, pt: 1 }}>
-                <Button
-                    onClick={handleClose}
-                    color="inherit"
-                    disabled={isLoading}
-                    sx={{ mr: 1, textTransform: 'none', fontWeight: 600 }}
-                >
-                    Hủy
-                </Button>
-                <Button
-                    variant="contained"
-                    onClick={handleUpload}
-                    disabled={selectedFiles.length === 0 || isLoading}
-                    startIcon={!isLoading ? <CloudUploadOutlinedIcon /> : undefined}
-                    sx={{
-                        textTransform: 'none',
-                        fontWeight: 600,
-                        px: 3,
-                        borderRadius: 2
-                    }}
-                >
-                    {isLoading ? 'Đang xử lý...' : `Tải lên (${selectedFiles.length})`}
-                </Button>
+                <StackRow spacing={1} justifyContent="flex-end" width="100%">
+                    <ButtonComponent
+                        onClick={handleClose}
+                        variant="ghost"
+                        disabled={isLoading}
+                    >
+                        Hủy
+                    </ButtonComponent>
+                    <ButtonComponent
+                        variant="primary"
+                        onClick={handleUpload}
+                        disabled={selectedFiles.length === 0 || isLoading}
+                        icon={!isLoading ? <CloudUploadOutlinedIcon /> : undefined}
+                        loading={isLoading}
+                    >
+                        {isLoading ? 'Đang xử lý...' : `Tải lên(${selectedFiles.length})`}
+                    </ButtonComponent>
+                </StackRow>
             </DialogActions>
         </Dialog>
     )
