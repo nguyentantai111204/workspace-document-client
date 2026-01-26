@@ -1,1 +1,1 @@
-export const PAGE_LIMIT_DEFAULT = { page: 1, limit: 1 }
+export const PAGE_LIMIT_DEFAULT = { page: 1, limit: 10 }

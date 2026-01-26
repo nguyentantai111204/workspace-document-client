@@ -6,8 +6,8 @@ import DownloadIcon from '@mui/icons-material/Download'
 import InfoOutlinedIcon from '@mui/icons-material/InfoOutlined'
 import { FileResponse } from '../../../../apis/file/file.interface'
 import { getFileIcon } from './file-icon.util'
-import { formatDate, formatFileSize } from './explorer.constant'
-import { TIME_ANIMATION } from '../../../../common/constant/style.constant'
+import { SIDEBAR_WIDTH, TIME_ANIMATION } from '../../../../common/constant/style.constant'
+import { formatDateFile, formatFileSize } from '../../../../common/utils/file.utils'
 
 interface FileDetailSidebarProps {
     file: FileResponse
@@ -62,7 +62,7 @@ export const FileDetailSidebar = ({ file, onClose }: FileDetailSidebarProps) => 
                     <Typography variant="subtitle1" fontWeight={600} align="center" gutterBottom>
                         {file.name}
                     </Typography>
-                    <Typography variant="body2" color="text.secondary" align="center" sx={{ mb: 4, textTransform: 'uppercase', fontSize: 12, letterSpacing: 1 }}>
+                    <Typography noWrap variant="body2" color="text.secondary" align="center" sx={{ mb: 4, textTransform: 'uppercase', fontSize: 12, letterSpacing: 1, maxWidth: SIDEBAR_WIDTH }}>
                         {file.mimeType === 'folder' ? 'FOLDER' : file.mimeType.split('/')[1]?.toUpperCase() || 'FILE'}
                     </Typography>
 
@@ -86,7 +86,7 @@ export const FileDetailSidebar = ({ file, onClose }: FileDetailSidebarProps) => 
                         <Stack direction="row" justifyContent="space-between">
                             <Typography variant="body2" color="text.secondary">Ngày tạo</Typography>
                             <Typography variant="body2" fontWeight={500}>
-                                {formatDate(file.createdAt)}
+                                {formatDateFile(file.createdAt)}
                             </Typography>
                         </Stack>
                     </Stack>

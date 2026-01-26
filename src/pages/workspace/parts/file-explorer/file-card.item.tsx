@@ -1,10 +1,10 @@
 import { Box, Typography, Paper, useTheme, IconButton } from '@mui/material'
 import { FileResponse } from '../../../../apis/file/file.interface'
 import { getFileIcon } from './file-icon.util'
-import { formatDate } from './explorer.constant'
 import MoreVertIcon from '@mui/icons-material/MoreVert'
 import { useState } from 'react'
 import { FileActionMenu } from './file-action-menu.part'
+import { formatDateFile } from '../../../../common/utils/file.utils'
 
 interface FileCardProps {
     file: FileResponse
@@ -30,14 +30,13 @@ export const FileCard = ({ file, selected, onSelect }: FileCardProps) => {
             elevation={0}
             onClick={() => onSelect?.(file)}
             sx={{
-                p: 2,
+                p: { xs: 1.5, md: 2 },
                 height: '100%',
                 cursor: 'pointer',
                 borderRadius: 3,
                 border: selected ? '2px solid' : '1px solid',
                 borderColor: selected ? 'primary.main' : 'divider',
                 bgcolor: theme.palette.background.paper,
-                backgroundImage: 'none',
                 transition: theme.transitions.create(['border-color', 'box-shadow']),
                 position: 'relative',
                 '&:hover': {
@@ -46,7 +45,11 @@ export const FileCard = ({ file, selected, onSelect }: FileCardProps) => {
                     '& .more-btn': {
                         opacity: 1,
                     }
-                }
+                },
+                display: 'flex',
+                flexDirection: 'column',
+                justifyContent: 'center',
+                alignItems: 'center',
             }}
         >
             <IconButton
@@ -87,6 +90,7 @@ export const FileCard = ({ file, selected, onSelect }: FileCardProps) => {
                     mb: 0.5,
                     fontWeight: 600
                 }}
+                maxWidth={{ xs: '200px', lg: '100%', md: '100%', sm: '100%' }}
             >
                 {file.name}
             </Typography>
@@ -97,7 +101,7 @@ export const FileCard = ({ file, selected, onSelect }: FileCardProps) => {
                 align="center"
                 color="text.secondary"
             >
-                {formatDate(file.createdAt)}
+                {formatDateFile(file.createdAt)}
             </Typography>
 
             <FileActionMenu

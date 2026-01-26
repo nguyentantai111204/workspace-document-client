@@ -12,7 +12,7 @@ export const FileGrid = ({ files, selectedItem, onSelect }: FileGridProps) => {
     return (
         <Grid container spacing={3}>
             {files.map((file) => (
-                <Grid size={{ xs: 12, sm: 6, md: 4, lg: 3 }} key={file.id}>
+                <Grid size={{ xs: 12, sm: 4, md: 3, lg: 3 }} key={file.id}>
                     <FileCard
                         file={file}
                         selected={selectedItem?.id === file.id}

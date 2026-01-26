@@ -4,9 +4,9 @@ import { FileResponse } from '../../../../apis/file/file.interface'
 import { TableComponent } from '../../../../components/table/table.component'
 import { TableColumn } from '../../../../components/table/table.interface'
 import { getFileIcon } from './file-icon.util'
-import { formatDate, formatFileSize } from './explorer.constant'
 import { FileActionMenu } from './file-action-menu.part'
 import React, { useState } from 'react'
+import { formatDateFile, formatFileSize } from '../../../../common/utils/file.utils'
 
 interface FileListProps {
     files: FileResponse[]
@@ -58,9 +58,9 @@ export const FileList = ({
             id: 'name',
             label: 'TÊN FILE',
             render: (file) => (
-                <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
-                    {getFileIcon(file.mimeType, { sx: { fontSize: 24 } })}
-                    <Typography variant="body2" fontWeight={500}>
+                <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, minWidth: 0 }}>
+                    {getFileIcon(file.mimeType, { sx: { fontSize: 24, flexShrink: 0 } })}
+                    <Typography variant="body2" fontWeight={500} noWrap>
                         {file.name}
                     </Typography>
                 </Box>
@@ -83,7 +83,7 @@ export const FileList = ({
             label: 'NGÀY TẠO',
             render: (file) => (
                 <Typography variant="body2" color="text.secondary">
-                    {formatDate(file.createdAt)}
+                    {formatDateFile(file.createdAt)}
                 </Typography>
             )
         },

@@ -13,8 +13,8 @@ import { PAGE_LIMIT_DEFAULT } from '../../../../common/constant/page-take.consta
 
 export const FileExplorerComponent = () => {
     const theme = useTheme()
-    const isMobile = useMediaQuery('(max-width: 500px)')
-    const isTablet = useMediaQuery('(min-width: 501px) and (max-width: 899px)')
+    const isMobile = useMediaQuery(theme.breakpoints.down('sm'))
+    const isTablet = useMediaQuery(theme.breakpoints.between('sm', 'lg'))
     const { currentWorkspace } = useWorkspace()
 
     const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid')
@@ -146,8 +146,10 @@ export const FileExplorerComponent = () => {
                 }}
             >
                 <ExplorerToolbar
+                    isClickedDetail={Boolean(selectedItem)}
                     isDisableListView={isMobile}
                     viewMode={viewMode}
+                    workspaceName={currentWorkspace?.name}
                     onViewChange={setViewMode}
                     onSearch={handleSearch}
                     onFilter={(newFilters) => {
@@ -160,8 +162,7 @@ export const FileExplorerComponent = () => {
                     {renderContent()}
                 </Box>
 
-                {/* Shared Pagination */}
-                {meta && (
+                {meta && meta.totalPages > 0 && (
                     <Box sx={{ pt: 2, display: 'flex', justifyContent: 'flex-end' }}>
                         <Pagination
                             count={meta.totalPages}

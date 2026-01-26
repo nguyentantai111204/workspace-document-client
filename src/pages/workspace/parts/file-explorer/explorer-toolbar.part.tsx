@@ -8,6 +8,8 @@ import { ExplorerFilter } from './explorer-filter.part'
 import { TextFieldSearchComponent } from '../../../../components/textfield/text-field-search.component'
 
 interface ExplorerToolbarProps {
+    isClickedDetail?: boolean
+    workspaceName?: string
     isDisableListView?: boolean
     viewMode: 'grid' | 'list'
     onViewChange: (mode: 'grid' | 'list') => void
@@ -15,7 +17,7 @@ interface ExplorerToolbarProps {
     onFilter?: (filters: any) => void
 }
 
-export const ExplorerToolbar = ({ viewMode, onViewChange, onSearch, onFilter, isDisableListView = false }: ExplorerToolbarProps) => {
+export const ExplorerToolbar = ({ viewMode, onViewChange, onSearch, onFilter, isDisableListView = false, isClickedDetail = false, workspaceName }: ExplorerToolbarProps) => {
     const theme = useTheme()
     const isMobile = useMediaQuery(theme.breakpoints.down('sm'))
     const [filterAnchor, setFilterAnchor] = useState<HTMLElement | null>(null)
@@ -55,10 +57,10 @@ export const ExplorerToolbar = ({ viewMode, onViewChange, onSearch, onFilter, is
                 alignItems={{ xs: 'stretch', sm: 'center' }}
                 justifyContent="space-between"
                 mb={3}
-                spacing={{ xs: 2, sm: 0 }}
+                spacing={{ xs: 4, sm: 0 }}
             >
                 <Typography variant="h5" fontWeight={700}>
-                    Design Assets
+                    {workspaceName}
                 </Typography>
 
                 <Stack direction="row" spacing={2} flex={1} justifyContent="flex-end">
