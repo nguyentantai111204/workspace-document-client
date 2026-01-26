@@ -18,7 +18,7 @@ import DeleteOutlineOutlinedIcon from '@mui/icons-material/DeleteOutlineOutlined
 import { TextFieldUploadComponent } from '../../../components/field/text-field-upload.component'
 import { useState, useRef } from 'react'
 import { useWorkspace } from '../../../contexts/workspace.context'
-import { uploadFileApi } from '../../../apis/file/file.api'
+import { uploadFilesApi } from '../../../apis/file/file.api'
 import { formatFileSize } from '../../../common/utils/file.utils'
 
 interface UploadFileModalProps {
@@ -32,44 +32,60 @@ export const UploadFileModal = ({ open, onClose, onSuccess }: UploadFileModalPro
     const { currentWorkspace } = useWorkspace()
     const fileInputRef = useRef<HTMLInputElement>(null)
 
-    const [selectedFile, setSelectedFile] = useState<File | null>(null)
+    const [selectedFiles, setSelectedFiles] = useState<File[]>([])
     const [isLoading, setIsLoading] = useState(false)
     const [error, setError] = useState<string | null>(null)
 
-    const handleFileSelect = (file: File) => {
-        if (file.size > 25 * 1024 * 1024) { // 25MB limit
-            setError('Kích thước tệp tin không được vượt quá 25MB')
-            return
-        }
-        setSelectedFile(file)
-        setError(null)
+    const handleFileSelect = (files: File[]) => {
+        const validFiles: File[] = []
+        let hasError = false
+
+        files.forEach(file => {
+            if (file.size > 25 * 1024 * 1024) { // 25MB limit
+                setError(`File ${file.name} vượt quá giới hạn 25MB`)
+                hasError = true
+            } else {
+                validFiles.push(file)
+            }
+        })
+
+        if (!hasError) setError(null)
+
+        setSelectedFiles(prev => [...prev, ...validFiles])
     }
 
     const handleFileInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-        const file = event.target.files?.[0]
-        if (file) {
-            handleFileSelect(file)
+        if (event.target.files && event.target.files.length > 0) {
+            handleFileSelect(Array.from(event.target.files))
         }
     }
 
-    const handleRemoveFile = () => {
-        setSelectedFile(null)
+    const handleRemoveFile = (index: number) => {
+        setSelectedFiles(prev => prev.filter((_, i) => i !== index))
         setError(null)
-        if (fileInputRef.current) {
-            fileInputRef.current.value = ''
-        }
     }
 
     const handleUpload = async () => {
-        if (!selectedFile || !currentWorkspace) return
+        if (selectedFiles.length === 0 || !currentWorkspace) return
 
         setIsLoading(true)
         setError(null)
 
         try {
-            await uploadFileApi(currentWorkspace.id, selectedFile)
-            onSuccess?.()
-            handleClose()
+            const { failed } = await uploadFilesApi(currentWorkspace.id, selectedFiles)
+
+            if (failed.length > 0) {
+                const failedNames = failed.map(f => f.file.name).join(', ')
+                setError(`Không thể tải lên ${failed.length} tệp tin: ${failedNames}`)
+                // Keep selected files that failed? Or just close?
+                // For now, if any succeed, we trigger success.
+                if (failed.length < selectedFiles.length) {
+                    onSuccess?.()
+                }
+            } else {
+                onSuccess?.()
+                handleClose()
+            }
         } catch (err) {
             console.error('Upload failed:', err)
             setError('Có lỗi xảy ra khi tải lên tài liệu. Vui lòng thử lại.')
@@ -79,7 +95,7 @@ export const UploadFileModal = ({ open, onClose, onSuccess }: UploadFileModalPro
     }
 
     const handleClose = () => {
-        setSelectedFile(null)
+        setSelectedFiles([])
         setError(null)
         setIsLoading(false)
         if (fileInputRef.current) {
@@ -127,59 +143,68 @@ export const UploadFileModal = ({ open, onClose, onSuccess }: UploadFileModalPro
                     ref={fileInputRef}
                     style={{ display: 'none' }}
                     onChange={handleFileInputChange}
+                    multiple
                 // accept="image/*,application/pdf,application/vnd.ms-excel" // Optional: restrict types
                 />
 
-                {!selectedFile ? (
-                    <TextFieldUploadComponent
-                        icon={<CloudUploadOutlinedIcon sx={{ fontSize: 40 }} />}
-                        title="Chọn tệp hoặc kéo thả vào đây"
-                        subTitle="PDF, Excel, Images (Max 25MB)"
-                        onClick={() => fileInputRef.current?.click()}
-                        onDrop={(files) => {
-                            if (files.length > 0) handleFileSelect(files[0])
-                        }}
-                    />
-                ) : (
-                    <Box
-                        sx={{
-                            p: 2,
-                            border: `1px solid ${theme.palette.divider}`,
-                            borderRadius: 2,
-                            display: 'flex',
-                            alignItems: 'center',
-                            gap: 2,
-                            bgcolor: (theme) => theme.palette.background.default
-                        }}
-                    >
-                        <Box
-                            sx={{
-                                width: 48,
-                                height: 48,
-                                borderRadius: 1,
-                                bgcolor: (theme) => theme.palette.primary.light,
-                                display: 'flex',
-                                alignItems: 'center',
-                                justifyContent: 'center',
-                                color: 'primary.main',
-                                flexShrink: 0
-                            }}
-                        >
-                            <InsertDriveFileOutlinedIcon />
-                        </Box>
-                        <Box sx={{ flex: 1, minWidth: 0 }}>
-                            <Typography variant="subtitle2" noWrap fontWeight={600}>
-                                {selectedFile.name}
-                            </Typography>
-                            <Typography variant="caption" color="text.secondary">
-                                {formatFileSize(selectedFile.size)}
-                            </Typography>
-                        </Box>
-                        {!isLoading && (
-                            <IconButton onClick={handleRemoveFile} color="error" size="small">
-                                <DeleteOutlineOutlinedIcon />
-                            </IconButton>
-                        )}
+                <TextFieldUploadComponent
+                    icon={<CloudUploadOutlinedIcon sx={{ fontSize: 40 }} />}
+                    title="Chọn tệp hoặc kéo thả vào đây"
+                    subTitle="PDF, Excel, Images (Max 25MB)"
+                    onClick={() => fileInputRef.current?.click()}
+                    onDrop={(files) => {
+                        if (files.length > 0) handleFileSelect(files)
+                    }}
+                />
+
+                {selectedFiles.length > 0 && (
+                    <Box sx={{ mt: 2, display: 'flex', flexDirection: 'column', gap: 1 }}>
+                        <Typography variant="subtitle2" fontWeight={600}>
+                            File đã chọn ({selectedFiles.length})
+                        </Typography>
+                        {selectedFiles.map((file, index) => (
+                            <Box
+                                key={index}
+                                sx={{
+                                    p: 1.5,
+                                    border: `1px solid ${theme.palette.divider}`,
+                                    borderRadius: 2,
+                                    display: 'flex',
+                                    alignItems: 'center',
+                                    gap: 2,
+                                    bgcolor: (theme) => theme.palette.background.default
+                                }}
+                            >
+                                <Box
+                                    sx={{
+                                        width: 40,
+                                        height: 40,
+                                        borderRadius: 1,
+                                        bgcolor: (theme) => theme.palette.primary.light,
+                                        display: 'flex',
+                                        alignItems: 'center',
+                                        justifyContent: 'center',
+                                        color: 'primary.main',
+                                        flexShrink: 0
+                                    }}
+                                >
+                                    <InsertDriveFileOutlinedIcon fontSize="small" />
+                                </Box>
+                                <Box sx={{ flex: 1, minWidth: 0 }}>
+                                    <Typography variant="body2" noWrap fontWeight={500}>
+                                        {file.name}
+                                    </Typography>
+                                    <Typography variant="caption" color="text.secondary">
+                                        {formatFileSize(file.size)}
+                                    </Typography>
+                                </Box>
+                                {!isLoading && (
+                                    <IconButton onClick={() => handleRemoveFile(index)} color="error" size="small">
+                                        <DeleteOutlineOutlinedIcon fontSize="small" />
+                                    </IconButton>
+                                )}
+                            </Box>
+                        ))}
                     </Box>
                 )}
 
@@ -187,7 +212,7 @@ export const UploadFileModal = ({ open, onClose, onSuccess }: UploadFileModalPro
                     <Box sx={{ mt: 2 }}>
                         <LinearProgress sx={{ borderRadius: 1, height: 6 }} />
                         <Typography variant="caption" color="text.secondary" align="center" display="block" sx={{ mt: 1 }}>
-                            Đang tải lên...
+                            Đang tải lên {selectedFiles.length} file...
                         </Typography>
                     </Box>
                 )}
@@ -211,7 +236,7 @@ export const UploadFileModal = ({ open, onClose, onSuccess }: UploadFileModalPro
                 <Button
                     variant="contained"
                     onClick={handleUpload}
-                    disabled={!selectedFile || isLoading}
+                    disabled={selectedFiles.length === 0 || isLoading}
                     startIcon={!isLoading ? <CloudUploadOutlinedIcon /> : undefined}
                     sx={{
                         textTransform: 'none',
@@ -220,7 +245,7 @@ export const UploadFileModal = ({ open, onClose, onSuccess }: UploadFileModalPro
                         borderRadius: 2
                     }}
                 >
-                    {isLoading ? 'Đang xử lý...' : 'Bắt đầu tải lên'}
+                    {isLoading ? 'Đang xử lý...' : `Tải lên (${selectedFiles.length})`}
                 </Button>
             </DialogActions>
         </Dialog>

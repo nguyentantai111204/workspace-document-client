@@ -13,6 +13,32 @@ export const uploadFileApi = async (workspaceId: string, file: File): Promise<Fi
     return response.data
 }
 
+export const uploadFilesApi = async (workspaceId: string, files: File[]): Promise<{ successful: FileResponse[], failed: { file: File, error: any }[] }> => {
+    const uploadPromises = files.map(async (file) => {
+        try {
+            const result = await uploadFileApi(workspaceId, file)
+            return { status: 'fulfilled' as const, value: result, file }
+        } catch (error) {
+            return { status: 'rejected' as const, reason: error, file }
+        }
+    })
+
+    const results = await Promise.all(uploadPromises)
+
+    const successful: FileResponse[] = []
+    const failed: { file: File, error: any }[] = []
+
+    results.forEach((result) => {
+        if (result.status === 'fulfilled') {
+            successful.push(result.value)
+        } else {
+            failed.push({ file: result.file, error: result.reason })
+        }
+    })
+
+    return { successful, failed }
+}
+
 export const listFilesApi = async (workspaceId: string, query?: FileQuery): Promise<FileListResponse> => {
     const response = await axiosInstance.get<FileListResponse>(`/workspaces/${workspaceId}/files`, { params: query })
     return response.data

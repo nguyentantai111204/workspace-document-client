@@ -19,12 +19,28 @@ export const TextFieldUploadComponent = ({
     orientation = 'vertical',
     isDashed = true,
     onClick,
+    onDrop,
 }: TextFieldUploadProps) => {
     const theme = useTheme()
+
+    const handleDragOver = (e: React.DragEvent) => {
+        e.preventDefault()
+        e.stopPropagation()
+    }
+
+    const handleDrop = (e: React.DragEvent) => {
+        e.preventDefault()
+        e.stopPropagation()
+        if (e.dataTransfer.files && e.dataTransfer.files.length > 0) {
+            onDrop?.(Array.from(e.dataTransfer.files))
+        }
+    }
 
     return (
         <Box
             onClick={onClick}
+            onDragOver={handleDragOver}
+            onDrop={handleDrop}
             sx={{
                 width: '100%',
                 display: 'flex',
@@ -63,7 +79,7 @@ export const TextFieldUploadComponent = ({
             <Box sx={{ textAlign: orientation === 'vertical' ? 'center' : 'left' }}>
                 <Typography variant="subtitle1" fontWeight={600} color="text.primary">
                     <Typography component="span" color="primary.main" fontWeight={700}>
-                        {title.split(' ')[0]} 
+                        {title.split(' ')[0]}
                     </Typography>
                     {' ' + title.substring(title.indexOf(' ') + 1)}
                 </Typography>
