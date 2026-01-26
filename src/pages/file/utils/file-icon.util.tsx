@@ -6,10 +6,6 @@ import DescriptionIcon from '@mui/icons-material/Description'
 import TableChartIcon from '@mui/icons-material/TableChart'
 import { SvgIconProps } from '@mui/material'
 
-interface FileIconProps extends SvgIconProps {
-    mimeType: string
-}
-
 export const getFileIcon = (mimeType: string, props?: SvgIconProps) => {
     const iconProps = { ...props }
 

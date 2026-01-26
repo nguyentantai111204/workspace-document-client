@@ -1,5 +1,5 @@
 import { Box } from '@mui/material'
-import { FileExplorerComponent } from './parts/file-explorer/file-explorer.component'
+import { FileExplorerComponent } from '../file/parts/file-explorer.screen'
 
 export const WorkspacePage = () => {
 

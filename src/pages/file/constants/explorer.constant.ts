@@ -1,6 +1,6 @@
-import { FileResponse } from "../../../../apis/file/file.interface"
+import { FileResponse } from "../../../apis/file/file.interface";
 
-export const MOCK_FILES: FileResponse[] = [
+export const MOCK_FILES: FileResponse[] = [ // mock data test
     {
         id: '1',
         name: 'Tài liệu dự án A',

@@ -1,10 +1,10 @@
 import { Box, Typography, Paper, useTheme, IconButton } from '@mui/material'
-import { FileResponse } from '../../../../apis/file/file.interface'
-import { getFileIcon } from './file-icon.util'
 import MoreVertIcon from '@mui/icons-material/MoreVert'
 import { useState } from 'react'
-import { FileActionMenu } from './file-action-menu.part'
+import { FileActionMenu } from '../file-tools/file-action-menu.part'
+import { FileResponse } from '../../../../apis/file/file.interface'
 import { formatDateFile } from '../../../../common/utils/file.utils'
+import { getFileIcon } from '../../utils/file-icon.util'
 
 interface FileCardProps {
     file: FileResponse

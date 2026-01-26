@@ -1,14 +1,16 @@
-import { Box, Drawer, useTheme, useMediaQuery, CircularProgress, Typography, Pagination } from '@mui/material'
+import { Box, Drawer, useTheme, useMediaQuery, CircularProgress, Typography, Pagination, Zoom, Fab, Tooltip } from '@mui/material'
+import AddIcon from '@mui/icons-material/Add'
 import { useState } from 'react'
-import { FileResponse } from '../../../../apis/file/file.interface'
-import { ExplorerToolbar } from './explorer-toolbar.part'
-import { FileGrid } from './file-grid.part'
-import { FileList } from './file-list.part'
-import { FileDetailSidebar } from './file-detail.part'
-import { useWorkspace } from '../../../../contexts/workspace.context'
-import { useFiles } from '../../../../hooks/useFiles'
-import { useDebounce } from '../../../../hooks/useDebounce'
-import { PAGE_LIMIT_DEFAULT } from '../../../../common/constant/page-take.constant'
+import { ExplorerToolbar } from './file-tools/explorer-toolbar.part'
+import { FileGrid } from './file-view/file-grid.part'
+import { FileList } from './file-view/file-list.part'
+import { FileDetailSidebar } from './file-view/file-detail.part'
+import { UploadFileModal } from '../modals/upload-file.modal'
+import { useWorkspace } from '../../../contexts/workspace.context'
+import { FileResponse } from '../../../apis/file/file.interface'
+import { useDebounce } from '../../../hooks/useDebounce'
+import { useFiles } from '../../../hooks/useFiles'
+import { PAGE_LIMIT_DEFAULT } from '../../../common/constant/page-take.constant'
 
 
 export const FileExplorerComponent = () => {
@@ -23,6 +25,7 @@ export const FileExplorerComponent = () => {
     const [page, setPage] = useState(1)
     const [searchQuery, setSearchQuery] = useState('')
     const [filters, setFilters] = useState<any>({})
+    const [openUploadModal, setOpenUploadModal] = useState(false)
     const debouncedSearch = useDebounce(searchQuery, 500)
 
     const { files, meta, isLoading } = useFiles(currentWorkspace?.id, {
@@ -146,7 +149,6 @@ export const FileExplorerComponent = () => {
                 }}
             >
                 <ExplorerToolbar
-                    isClickedDetail={Boolean(selectedItem)}
                     isDisableListView={isMobile}
                     viewMode={viewMode}
                     workspaceName={currentWorkspace?.name}
@@ -156,6 +158,7 @@ export const FileExplorerComponent = () => {
                         setFilters(newFilters)
                         setPage(1)
                     }}
+                    onUpload={() => setOpenUploadModal(true)}
                 />
 
                 <Box sx={{ flex: 1, overflow: 'hidden', display: 'flex', flexDirection: 'column' }}>
@@ -205,6 +208,32 @@ export const FileExplorerComponent = () => {
 
             {/* Desktop Sidebar */}
             {!isMobile && !isTablet && selectedItem && detailContent}
+
+            {isMobile && (
+                <Zoom in={true} unmountOnExit>
+                    <Fab
+                        color="primary"
+                        aria-label="add"
+                        sx={{
+                            position: 'fixed',
+                            bottom: 200,
+                            right: 10,
+                            boxShadow: theme.shadows[4],
+                            zIndex: theme.zIndex.speedDial
+                        }}
+                        onClick={() => setOpenUploadModal(true)}
+                    >
+                        <Tooltip title="Thêm file">
+                            <AddIcon />
+                        </Tooltip>
+                    </Fab>
+                </Zoom>
+            )}
+
+            <UploadFileModal
+                open={openUploadModal}
+                onClose={() => setOpenUploadModal(false)}
+            />
         </Box>
     )
 }

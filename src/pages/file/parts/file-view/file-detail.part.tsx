@@ -1,13 +1,13 @@
 import { Box, Typography, IconButton, Stack, Divider, useTheme, alpha, Fade } from '@mui/material'
-import { ButtonComponent } from '../../../../components/button/button.component'
 import CloseIcon from '@mui/icons-material/Close'
 import ShareIcon from '@mui/icons-material/Share'
 import DownloadIcon from '@mui/icons-material/Download'
 import InfoOutlinedIcon from '@mui/icons-material/InfoOutlined'
+import { getFileIcon } from '../../utils/file-icon.util'
 import { FileResponse } from '../../../../apis/file/file.interface'
-import { getFileIcon } from './file-icon.util'
 import { SIDEBAR_WIDTH, TIME_ANIMATION } from '../../../../common/constant/style.constant'
 import { formatDateFile, formatFileSize } from '../../../../common/utils/file.utils'
+import { ButtonComponent } from '../../../../components/button/button.component'
 
 interface FileDetailSidebarProps {
     file: FileResponse

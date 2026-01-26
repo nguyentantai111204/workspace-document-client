@@ -1,12 +1,12 @@
 import { Box, Typography, IconButton } from '@mui/material'
 import MoreVertIcon from '@mui/icons-material/MoreVert'
-import { FileResponse } from '../../../../apis/file/file.interface'
-import { TableComponent } from '../../../../components/table/table.component'
-import { TableColumn } from '../../../../components/table/table.interface'
-import { getFileIcon } from './file-icon.util'
-import { FileActionMenu } from './file-action-menu.part'
+import { getFileIcon } from '../../utils/file-icon.util'
+import { FileActionMenu } from '../file-tools/file-action-menu.part'
 import React, { useState } from 'react'
+import { FileResponse } from '../../../../apis/file/file.interface'
+import { TableColumn } from '../../../../components/table/table.interface'
 import { formatDateFile, formatFileSize } from '../../../../common/utils/file.utils'
+import { TableComponent } from '../../../../components/table/table.component'
 
 interface FileListProps {
     files: FileResponse[]

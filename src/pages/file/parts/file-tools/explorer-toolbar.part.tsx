@@ -2,22 +2,23 @@ import { ToggleButton, ToggleButtonGroup, Stack, Typography, Popover, Drawer, us
 import GridViewIcon from '@mui/icons-material/GridView'
 import ViewListIcon from '@mui/icons-material/ViewList'
 import FilterListIcon from '@mui/icons-material/FilterList'
+import AddIcon from '@mui/icons-material/Add'
 import React, { useState } from 'react'
-import { ButtonComponent } from '../../../../components/button/button.component'
 import { ExplorerFilter } from './explorer-filter.part'
 import { TextFieldSearchComponent } from '../../../../components/textfield/text-field-search.component'
+import { ButtonComponent } from '../../../../components/button/button.component'
 
 interface ExplorerToolbarProps {
-    isClickedDetail?: boolean
     workspaceName?: string
     isDisableListView?: boolean
     viewMode: 'grid' | 'list'
     onViewChange: (mode: 'grid' | 'list') => void
     onSearch?: (value: string) => void
     onFilter?: (filters: any) => void
+    onUpload?: () => void
 }
 
-export const ExplorerToolbar = ({ viewMode, onViewChange, onSearch, onFilter, isDisableListView = false, isClickedDetail = false, workspaceName }: ExplorerToolbarProps) => {
+export const ExplorerToolbar = ({ viewMode, onViewChange, onSearch, onFilter, isDisableListView = false, workspaceName, onUpload }: ExplorerToolbarProps) => {
     const theme = useTheme()
     const isMobile = useMediaQuery(theme.breakpoints.down('sm'))
     const [filterAnchor, setFilterAnchor] = useState<HTMLElement | null>(null)
@@ -87,6 +88,17 @@ export const ExplorerToolbar = ({ viewMode, onViewChange, onSearch, onFilter, is
                                 <ViewListIcon fontSize="small" />
                             </ToggleButton>
                         </ToggleButtonGroup>
+                    )}
+
+                    {!isMobile && (
+                        <ButtonComponent
+                            variant="primary"
+                            icon={<AddIcon fontSize="small" />}
+                            sizeUI="sm"
+                            onClick={onUpload}
+                        >
+                            Thêm
+                        </ButtonComponent>
                     )}
 
                     <ButtonComponent
