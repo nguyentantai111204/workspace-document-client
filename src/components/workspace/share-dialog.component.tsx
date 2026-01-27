@@ -10,6 +10,7 @@ import { inviteMemberApi } from '../../apis/workspace/workspace.api'
 import { useAppDispatch } from '../../redux/store.redux'
 import { showSnackbar } from '../../redux/system/system.slice'
 import { UserResponse } from '../../apis/user/user.interface'
+import { UserItemComponent } from '../user/user-item.component'
 
 interface ShareDialogProps {
     open: boolean
@@ -65,7 +66,7 @@ export const ShareDialog = ({ open, onClose }: ShareDialogProps) => {
             fullWidth
             PaperProps={{
                 sx: { borderRadius: 2 },
-                elevation: 2 // Sửa lỗi theme không hỗ trợ elevation 24
+                elevation: 2
             }}
         >
             <DialogTitle sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', p: 3 }}>
@@ -109,26 +110,16 @@ export const ShareDialog = ({ open, onClose }: ShareDialogProps) => {
                         ) : (
                             <Stack spacing={1.5}>
                                 {members.map((member) => (
-                                    <Box key={member.userId} sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', p: 1, borderRadius: 1, '&:hover': { bgcolor: alpha(theme.palette.grey[500], 0.08) } }}>
-                                        <Stack direction="row" spacing={1.5} alignItems="center">
-                                            {member.avatarUrl ? (
-                                                <Box
-                                                    component="img"
-                                                    src={member.avatarUrl}
-                                                    sx={{ width: 32, height: 32, borderRadius: '50%', objectFit: 'cover' }}
-                                                />
-                                            ) : (
-                                                <Box sx={{ width: 32, height: 32, borderRadius: '50%', bgcolor: 'primary.main', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'common.white', fontSize: 14 }}>
-                                                    {member.fullName.charAt(0).toUpperCase()}
-                                                </Box>
-                                            )}
-                                            <Box>
-                                                <Typography variant="body2" fontWeight={500}>{member.fullName}</Typography>
-                                                <Typography variant="caption" color="text.secondary">{member.email}</Typography>
-                                            </Box>
-                                        </Stack>
-                                        <Chip label={member.role} size="small" variant="outlined" />
-                                    </Box>
+                                    <UserItemComponent
+                                        key={member.userId}
+                                        avatarUrl={member.avatarUrl}
+                                        fullName={member.fullName}
+                                        email={member.email}
+                                        action={<Chip label={member.role} size="small" variant="outlined" />}
+                                        sx={{
+                                            '&:hover': { bgcolor: alpha(theme.palette.grey[500], 0.08) }
+                                        }}
+                                    />
                                 ))}
                             </Stack>
                         )}

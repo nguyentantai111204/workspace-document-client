@@ -1,9 +1,10 @@
 import { useState, useEffect } from 'react'
-import { Autocomplete, TextField, CircularProgress, Box, Typography, type AutocompleteProps } from '@mui/material'
+import { Autocomplete, TextField, CircularProgress, type AutocompleteProps } from '@mui/material'
 import { searchUsersApi } from '../../apis/user/user.api'
 import { useDebounce } from '../../hooks/useDebounce'
 import { UserResponse } from '../../apis/user/user.interface'
 import { PAGE_LIMIT_DEFAULT } from '../../common/constant/page-take.constant'
+import { UserItemComponent } from '../user/user-item.component'
 
 export interface TextFieldSelectSearchComponentProps extends Omit<AutocompleteProps<UserResponse, false, false, false>, 'options' | 'renderInput' | 'size'> {
     label?: string
@@ -76,32 +77,15 @@ export const TextFieldSelectSearchComponent = ({
             renderOption={(props, option) => {
                 const { key, ...liProps } = props as any
                 return (
-                    <Box
+                    <UserItemComponent
                         key={key}
                         component="li"
                         {...liProps}
-                        sx={{ display: 'flex', alignItems: 'center', gap: 1.5, py: 1 }}
-                    >
-                        {option.avatarUrl ? (
-                            <Box
-                                component="img"
-                                src={option.avatarUrl}
-                                sx={{ width: 32, height: 32, borderRadius: '50%', objectFit: 'cover' }}
-                            />
-                        ) : (
-                            <Box sx={{ width: 32, height: 32, borderRadius: '50%', bgcolor: 'primary.main', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'common.white', fontSize: 14 }}>
-                                {option.fullName.charAt(0).toUpperCase()}
-                            </Box>
-                        )}
-                        <Box sx={{ flex: 1, minWidth: 0 }}>
-                            <Typography variant="body2" fontWeight={500} noWrap>
-                                {option.fullName}
-                            </Typography>
-                            <Typography variant="caption" color="text.secondary" noWrap>
-                                {option.email}
-                            </Typography>
-                        </Box>
-                    </Box>
+                        avatarUrl={option.avatarUrl}
+                        fullName={option.fullName}
+                        email={option.email}
+                        sx={{ py: 1 }}
+                    />
                 )
             }}
             renderInput={(params) => (
