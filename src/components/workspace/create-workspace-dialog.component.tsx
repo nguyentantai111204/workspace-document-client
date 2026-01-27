@@ -1,33 +1,47 @@
-import { Dialog, DialogTitle, DialogContent, DialogActions, Button, TextField, IconButton, Typography, Box } from '@mui/material'
+import { Dialog, DialogTitle, DialogContent, IconButton, Typography, Box, InputLabel } from '@mui/material'
 import CloseIcon from '@mui/icons-material/Close'
 import AddIcon from '@mui/icons-material/Add'
-import { useState } from 'react'
 import { useWorkspace } from '../../contexts/workspace.context'
+import { Formik, Form, FormikHelpers } from 'formik'
+import * as Yup from 'yup'
+import { TextFieldComponent } from '../textfield/text-field.component'
+import { ButtonComponent } from '../button/button.component'
 
 interface CreateWorkspaceDialogProps {
     open: boolean
     onClose: () => void
 }
 
+interface WorkspaceValues {
+    name: string
+}
+
+const initialValues: WorkspaceValues = {
+    name: ''
+}
+
+const validationSchema = Yup.object({
+    name: Yup.string()
+        .required('Tên workspace không được để trống')
+        .min(3, 'Tên workspace phải có ít nhất 3 ký tự')
+        .max(50, 'Tên workspace không được quá 50 ký tự')
+})
+
 export const CreateWorkspaceDialog = ({ open, onClose }: CreateWorkspaceDialogProps) => {
     const { createWorkspace } = useWorkspace()
-    const [name, setName] = useState('')
-    const [loading, setLoading] = useState(false)
-    const [error, setError] = useState<string | null>(null)
 
-    const handleSubmit = async () => {
-        if (!name.trim()) return
-
-        setLoading(true)
-        setError(null)
+    const handleSubmit = async (
+        values: WorkspaceValues,
+        { setSubmitting, resetForm }: FormikHelpers<WorkspaceValues>
+    ) => {
         try {
-            await createWorkspace({ name })
+            await createWorkspace({ name: values.name })
+            resetForm()
             onClose()
-            setName('')
         } catch (err) {
-            setError('Có lỗi xảy ra khi tạo workspace.')
+            console.error(err)
         } finally {
-            setLoading(false)
+            setSubmitting(false)
         }
     }
 
@@ -55,30 +69,67 @@ export const CreateWorkspaceDialog = ({ open, onClose }: CreateWorkspaceDialogPr
                     Workspace là nơi bạn và team lưu trữ, sắp xếp tài liệu.
                 </Typography>
 
-                <TextField
-                    autoFocus
-                    fullWidth
-                    label="Tên Workspace"
-                    placeholder="VD: Dự án Marketing, Tài liệu cá nhân..."
-                    value={name}
-                    onChange={(e) => setName(e.target.value)}
-                    error={!!error}
-                    helperText={error}
-                    disabled={loading}
-                />
-            </DialogContent>
-
-            <DialogActions sx={{ p: 3 }}>
-                <Button onClick={onClose} color="inherit" disabled={loading}>Hủy</Button>
-                <Button
-                    variant="contained"
-                    onClick={handleSubmit}
-                    startIcon={<AddIcon />}
-                    disabled={!name.trim() || loading}
+                <Formik
+                    initialValues={initialValues}
+                    validationSchema={validationSchema}
+                    onSubmit={handleSubmit}
                 >
-                    {loading ? 'Đang tạo...' : 'Tạo Workspace'}
-                </Button>
-            </DialogActions>
+                    {({
+                        values,
+                        errors,
+                        touched,
+                        handleChange,
+                        handleBlur,
+                        isSubmitting,
+                    }) => (
+                        <Form noValidate>
+                            <Box mb={3}>
+                                <InputLabel
+                                    sx={{
+                                        mb: 0.5,
+                                        fontSize: 13,
+                                        fontWeight: 600,
+                                        color: 'text.primary'
+                                    }}
+                                >
+                                    Tên Workspace
+                                </InputLabel>
+                                <TextFieldComponent
+                                    autoFocus
+                                    sizeUI="sm"
+                                    name="name"
+                                    placeholder="VD: Dự án Marketing, Tài liệu cá nhân..."
+                                    value={values.name}
+                                    onChange={handleChange}
+                                    onBlur={handleBlur}
+                                    error={touched.name && !!errors.name}
+                                    helperText={touched.name && errors.name}
+                                />
+                            </Box>
+
+                            <Box sx={{ display: 'flex', justifyContent: 'flex-end', gap: 1 }}>
+                                <ButtonComponent
+                                    sizeUI="sm"
+                                    variant="ghost"
+                                    onClick={onClose}
+                                    disabled={isSubmitting}
+                                >
+                                    Hủy
+                                </ButtonComponent>
+                                <ButtonComponent
+                                    sizeUI="sm"
+                                    variant="primary"
+                                    type="submit"
+                                    loading={isSubmitting}
+                                    icon={<AddIcon />}
+                                >
+                                    Tạo Workspace
+                                </ButtonComponent>
+                            </Box>
+                        </Form>
+                    )}
+                </Formik>
+            </DialogContent>
         </Dialog>
     )
 }

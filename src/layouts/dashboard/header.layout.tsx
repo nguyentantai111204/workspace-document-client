@@ -84,7 +84,7 @@ export const HeaderLayout = ({
                 </Box>
 
                 <Stack direction="row" alignItems="center" spacing={{ xs: 0.5, sm: 1 }}>
-                    {/* Mobile Share Button */}
+                    {/* Mobile Share  */}
                     <IconButton
                         onClick={() => setShareDialogOpen(true)}
                         sx={{
@@ -98,7 +98,7 @@ export const HeaderLayout = ({
                         <PersonAddOutlinedIcon />
                     </IconButton>
 
-                    {/* Tablet/Desktop Share Button */}
+                    {/* Tablet/Desktop */}
                     <Button
                         variant="outlined"
                         size="small"
@@ -106,7 +106,7 @@ export const HeaderLayout = ({
                         onClick={() => setShareDialogOpen(true)}
                         sx={{ mr: 1, display: { xs: 'none', sm: 'flex' } }}
                     >
-                        Share
+                        Chia sẻ
                     </Button>
 
                     <IconButton
