@@ -1,4 +1,4 @@
-import { Box, Typography, alpha, useTheme, Menu, MenuItem, Chip, Button } from '@mui/material'
+import { Box, Typography, alpha, useTheme, Menu, MenuItem, Chip, Button, Divider } from '@mui/material'
 import UnfoldMoreIcon from '@mui/icons-material/UnfoldMore'
 import AddIcon from '@mui/icons-material/Add'
 import WorkspacesIcon from '@mui/icons-material/Workspaces'
@@ -218,6 +218,39 @@ export const WorkspaceSwitcherComponent = ({
                         </MenuItem>
                     )
                 })}
+
+                <Divider sx={{ my: 1 }} />
+
+                <MenuItem
+                    onClick={handleCreateWorkspace}
+                    sx={{
+                        py: 1.5,
+                        px: 2,
+                        gap: 2,
+                        color: 'primary.main',
+                        '&:hover': {
+                            bgcolor: alpha(theme.palette.primary.main, 0.08),
+                        },
+                    }}
+                >
+                    <Box
+                        sx={{
+                            width: 32,
+                            height: 32,
+                            borderRadius: '50%',
+                            display: 'flex',
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                            border: `1px dashed ${theme.palette.primary.main}`,
+                            bgcolor: alpha(theme.palette.primary.main, 0.08)
+                        }}
+                    >
+                        <AddIcon fontSize="small" />
+                    </Box>
+                    <Typography variant="body2" fontWeight={600}>
+                        Tạo workspace mới
+                    </Typography>
+                </MenuItem>
             </Menu>
         </React.Fragment>
     )

@@ -7,10 +7,12 @@ import {
     alpha,
     useTheme,
     Fade,
+    Button,
 } from '@mui/material'
 import MenuIcon from '@mui/icons-material/Menu'
 import LightModeIcon from '@mui/icons-material/LightMode'
 import DarkModeOutlinedIcon from '@mui/icons-material/DarkModeOutlined'
+import PersonAddOutlinedIcon from '@mui/icons-material/PersonAddOutlined'
 import { useAppDispatch } from '../../redux/store.redux'
 import { toggleSidebar } from '../../redux/system/system.slice'
 import { HEADER_DESKTOP, HEADER_MOBILE, SIDEBAR_WIDTH, TIME_ANIMATION } from '../../common/constant/style.constant'
@@ -18,6 +20,8 @@ import { NotificationBellComponent } from '../../components/bell/notification-be
 import { AvatarUserComponent } from '../../components/avatar/avatar-user.component'
 import { useThemeMode } from '../../contexts/theme-mode.context'
 import { BreadcrumbComponent, type BreadcrumbItem } from '../../components/breadcrumb/breadcrumb.component'
+import { ShareDialog } from '../../components/workspace/share-dialog.component'
+import { useState } from 'react'
 
 interface HeaderLayoutProps {
     breadcrumbs?: BreadcrumbItem[]
@@ -29,6 +33,7 @@ export const HeaderLayout = ({
     const theme = useTheme()
     const dispatch = useAppDispatch()
     const { mode, toggleMode } = useThemeMode()
+    const [shareDialogOpen, setShareDialogOpen] = useState(false)
 
     const headerBgColor = mode === 'dark'
         ? theme.palette.background.paper
@@ -79,6 +84,31 @@ export const HeaderLayout = ({
                 </Box>
 
                 <Stack direction="row" alignItems="center" spacing={{ xs: 0.5, sm: 1 }}>
+                    {/* Mobile Share Button */}
+                    <IconButton
+                        onClick={() => setShareDialogOpen(true)}
+                        sx={{
+                            display: { xs: 'flex', sm: 'none' },
+                            color: 'text.primary',
+                            '&:hover': {
+                                bgcolor: alpha(theme.palette.primary.main, 0.08),
+                            },
+                        }}
+                    >
+                        <PersonAddOutlinedIcon />
+                    </IconButton>
+
+                    {/* Tablet/Desktop Share Button */}
+                    <Button
+                        variant="outlined"
+                        size="small"
+                        startIcon={<PersonAddOutlinedIcon />}
+                        onClick={() => setShareDialogOpen(true)}
+                        sx={{ mr: 1, display: { xs: 'none', sm: 'flex' } }}
+                    >
+                        Share
+                    </Button>
+
                     <IconButton
                         onClick={toggleMode}
                         sx={{
@@ -130,6 +160,11 @@ export const HeaderLayout = ({
                     <AvatarUserComponent />
                 </Stack>
             </Toolbar>
+
+            <ShareDialog
+                open={shareDialogOpen}
+                onClose={() => setShareDialogOpen(false)}
+            />
         </AppBar>
     )
 }

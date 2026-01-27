@@ -26,11 +26,15 @@ const MENU_ITEMS = [
     { text: 'Workspace', icon: <FolderIcon />, path: '/workspace' },
 ] as const
 
+import { CreateWorkspaceDialog } from '../../components/workspace/create-workspace-dialog.component'
+import { useState } from 'react'
+
 const SidebarContent = ({ onItemClick }: { onItemClick?: () => void }) => {
     const theme = useTheme()
     const navigate = useNavigate()
     const location = useLocation()
     const { workspaces, currentWorkspace, setCurrentWorkspace, isLoading } = useWorkspace()
+    const [createDialogOpen, setCreateDialogOpen] = useState(false)
 
     const mappedWorkspaces: Workspace[] = workspaces.map(ws => ({
         id: ws.id,
@@ -85,6 +89,7 @@ const SidebarContent = ({ onItemClick }: { onItemClick?: () => void }) => {
                             setCurrentWorkspace(selected)
                         }
                     }}
+                    onCreateWorkspace={() => setCreateDialogOpen(true)}
                 />
             )}
 
@@ -132,6 +137,11 @@ const SidebarContent = ({ onItemClick }: { onItemClick?: () => void }) => {
                     )
                 })}
             </List>
+
+            <CreateWorkspaceDialog
+                open={createDialogOpen}
+                onClose={() => setCreateDialogOpen(false)}
+            />
         </Box>
     )
 }
