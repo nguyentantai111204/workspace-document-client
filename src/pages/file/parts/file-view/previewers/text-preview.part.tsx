@@ -1,4 +1,4 @@
-import { Box, CircularProgress, Typography } from '@mui/material'
+import { Box, CircularProgress, Typography, useTheme } from '@mui/material'
 import { useEffect, useState } from 'react'
 
 interface TextPreviewProps {
@@ -6,6 +6,7 @@ interface TextPreviewProps {
 }
 
 export const TextPreview = ({ url }: TextPreviewProps) => {
+    const theme = useTheme()
     const [content, setContent] = useState<string | null>(null)
     const [loading, setLoading] = useState(false)
     const [error, setError] = useState<string | null>(null)
@@ -46,7 +47,15 @@ export const TextPreview = ({ url }: TextPreviewProps) => {
     }
 
     return (
-        <Box sx={{ p: 2, bgcolor: '#f5f5f5', borderRadius: 1, overflow: 'auto', maxHeight: 'calc(100vh - 200px)' }}>
+        <Box sx={{
+            p: 2,
+            bgcolor: theme.palette.background.default,
+            color: theme.palette.text.primary,
+            borderRadius: 1,
+            overflow: 'auto',
+            maxHeight: 'calc(100vh - 200px)',
+            border: `1px solid ${theme.palette.divider}`
+        }}>
             <pre style={{ margin: 0, whiteSpace: 'pre-wrap', wordBreak: 'break-word', fontFamily: 'monospace' }}>
                 {content}
             </pre>

@@ -68,9 +68,6 @@ export const FilePreviewDialog = ({ open, onClose, file }: FilePreviewDialogProp
             </DialogContent>
             <DialogActions sx={{ p: 2 }}>
                 <Button onClick={onClose} color="inherit">Đóng</Button>
-                <Button onClick={() => window.open(file.url, '_blank')} variant="contained">
-                    Mở trong tab mới
-                </Button>
             </DialogActions>
         </Dialog>
     )
