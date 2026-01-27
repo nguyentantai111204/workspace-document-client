@@ -121,7 +121,7 @@ export const UploadFileModal = ({ open, onClose, onSuccess }: UploadFileModalPro
             <DialogTitle sx={{ m: 0, p: 2 }}>
                 <StackRowAlignCenterJustBetween>
                     <Box>
-                        <Typography variant="h6" fontWeight={700}>
+                        <Typography component="span" variant="h6" fontWeight={700} display="block">
                             Tải tài liệu lên
                         </Typography>
                         <Typography variant="body2" color="text.secondary">

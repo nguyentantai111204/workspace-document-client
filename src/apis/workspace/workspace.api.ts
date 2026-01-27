@@ -29,8 +29,8 @@ export const getWorkspaceDetailApi = async (workspaceId: string): Promise<Worksp
 }
 
 // Members
-export const listMembersApi = async (workspaceId: string, query?: MemberQuery): Promise<MemberResponse[]> => {
-    const response = await axiosInstance.get<MemberResponse[]>(`/workspaces/${workspaceId}/members`, { params: query })
+export const listMembersApi = async (workspaceId: string, query?: MemberQuery) => {
+    const response = await axiosInstance.get(`/workspaces/${workspaceId}/members`, { params: query })
     return response.data
 }
 

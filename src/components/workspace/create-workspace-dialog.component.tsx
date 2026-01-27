@@ -56,7 +56,7 @@ export const CreateWorkspaceDialog = ({ open, onClose }: CreateWorkspaceDialogPr
             }}
         >
             <DialogTitle sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', p: 3 }}>
-                <Typography variant="h6" fontWeight={700}>
+                <Typography component="span" variant="h6" fontWeight={700}>
                     Tạo Workspace mới
                 </Typography>
                 <IconButton onClick={onClose} size="small">

@@ -41,20 +41,18 @@ export interface InviteResponse extends Omit<BaseEntity, 'updatedAt'> {
 }
 
 export interface MemberResponse {
-    id: string
-    workspaceId: string
     userId: string
+    fullName: string
+    email: string
+    avatarUrl: string | null
     role: WorkspaceRole
     joinedAt: string
-    user: {
-        id: string
-        email: string
-        fullName: string
-        avatarUrl: string | null
-    }
 }
 
 export interface MemberQuery extends PaginationParams {
+    search?: string
+    email?: string
+    role?: WorkspaceRole
 }
 
 export interface UpdateRoleRequest {

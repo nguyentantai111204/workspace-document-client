@@ -1,46 +1,61 @@
-import { Dialog, DialogTitle, DialogContent, Box, Typography, IconButton, Stack, Chip, MenuItem, Select, FormControl, InputLabel, alpha, useTheme } from '@mui/material'
+import { Dialog, DialogTitle, DialogContent, Box, Typography, IconButton, Stack, Chip, alpha, useTheme, CircularProgress } from '@mui/material'
 import CloseIcon from '@mui/icons-material/Close'
 import PersonAddIcon from '@mui/icons-material/PersonAdd'
-import { Formik, Form, FormikHelpers } from 'formik'
-import * as Yup from 'yup'
-import { TextFieldComponent } from '../textfield/text-field.component'
+import { useState } from 'react'
+import { TextFieldSelectSearchComponent } from '../textfield/text-field-select-search.component'
 import { ButtonComponent } from '../button/button.component'
+import { useWorkspace } from '../../contexts/workspace.context'
+import { useWorkspaceMembers } from '../../hooks/useWorkspaceMembers'
+import { inviteMemberApi } from '../../apis/workspace/workspace.api'
+import { useAppDispatch } from '../../redux/store.redux'
+import { showSnackbar } from '../../redux/system/system.slice'
+import { UserResponse } from '../../apis/user/user.interface'
 
 interface ShareDialogProps {
     open: boolean
     onClose: () => void
 }
 
-interface ShareValues {
-    email: string
-    role: string
-}
 
-const initialValues: ShareValues = {
-    email: '',
-    role: 'viewer'
-}
-
-const validationSchema = Yup.object({
-    email: Yup.string()
-        .required('Email không được để trống')
-        .email('Email không hợp lệ'),
-    role: Yup.string().required()
-})
 
 export const ShareDialog = ({ open, onClose }: ShareDialogProps) => {
     const theme = useTheme()
+    const dispatch = useAppDispatch()
+    const { currentWorkspace } = useWorkspace()
+    const { members, isLoading: isLoadingMembers, mutate } = useWorkspaceMembers(currentWorkspace?.id)
+    const [selectedUser, setSelectedUser] = useState<UserResponse | null>(null)
+    const [isSubmitting, setIsSubmitting] = useState(false)
+    const [error, setError] = useState<string>('')
 
-    const handleSubmit = (
-        values: ShareValues,
-        { setSubmitting, resetForm }: FormikHelpers<ShareValues>
-    ) => {
-        // Implement invite logic here
-        console.log('Invite sent to:', values.email, 'Role:', values.role)
-        resetForm()
-        onClose()
-        setSubmitting(false)
+    const handleInvite = async () => {
+        if (!selectedUser || !currentWorkspace) {
+            setError('Vui lòng chọn người dùng')
+            return
+        }
+
+        setIsSubmitting(true)
+        setError('')
+
+        try {
+            await inviteMemberApi(currentWorkspace.id, {
+                email: selectedUser.email,
+                role: 'MEMBER'
+            })
+
+            dispatch(showSnackbar({ message: 'Đã gửi lời mời thành công!', severity: 'success' }))
+            setSelectedUser(null)
+            mutate()
+            onClose()
+        } catch (err: any) {
+            const errorMessage = err?.response?.data?.message || 'Có lỗi xảy ra khi gửi lời mời'
+            setError(errorMessage)
+            dispatch(showSnackbar({ message: errorMessage, severity: 'error' }))
+        } finally {
+            setIsSubmitting(false)
+        }
     }
+
+
 
     return (
         <Dialog
@@ -49,11 +64,12 @@ export const ShareDialog = ({ open, onClose }: ShareDialogProps) => {
             maxWidth="sm"
             fullWidth
             PaperProps={{
-                sx: { borderRadius: 2 }
+                sx: { borderRadius: 2 },
+                elevation: 2 // Sửa lỗi theme không hỗ trợ elevation 24
             }}
         >
             <DialogTitle sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', p: 3 }}>
-                <Typography variant="h6" fontWeight={700}>
+                <Typography component="span" variant="h6" fontWeight={700} display="block">
                     Chia sẻ Workspace
                 </Typography>
                 <IconButton onClick={onClose} size="small">
@@ -66,115 +82,79 @@ export const ShareDialog = ({ open, onClose }: ShareDialogProps) => {
                     Mời thành viên mới tham gia vào workspace để cùng làm việc.
                 </Typography>
 
-                <Formik
-                    initialValues={initialValues}
-                    validationSchema={validationSchema}
-                    onSubmit={handleSubmit}
-                >
-                    {({
-                        values,
-                        errors,
-                        touched,
-                        handleChange,
-                        handleBlur,
-                        isSubmitting,
-                    }) => (
-                        <Form noValidate>
-                            <Stack spacing={3}>
-                                <Box sx={{ display: 'flex', gap: 1, alignItems: 'flex-start' }}>
-                                    <Box sx={{ flex: 1 }}>
-                                        <InputLabel
-                                            sx={{
-                                                mb: 0.5,
-                                                fontSize: 13,
-                                                fontWeight: 600,
-                                                color: 'text.primary'
-                                            }}
-                                        >
-                                            Địa chỉ Email
-                                        </InputLabel>
-                                        <TextFieldComponent
-                                            sizeUI="sm"
-                                            name="email"
-                                            placeholder="user@example.com"
-                                            value={values.email}
-                                            onChange={handleChange}
-                                            onBlur={handleBlur}
-                                            error={touched.email && !!errors.email}
-                                            helperText={touched.email && errors.email}
-                                        />
-                                    </Box>
-                                    <Box>
-                                        <InputLabel
-                                            sx={{
-                                                mb: 0.5,
-                                                fontSize: 13,
-                                                fontWeight: 600,
-                                                color: 'text.primary'
-                                            }}
-                                        >
-                                            Vai trò
-                                        </InputLabel>
-                                        <FormControl size="small" sx={{ minWidth: 120 }}>
-                                            <Select
-                                                name="role"
-                                                value={values.role}
-                                                onChange={handleChange}
-                                            >
-                                                <MenuItem value="viewer">Viewer</MenuItem>
-                                                <MenuItem value="editor">Editor</MenuItem>
-                                                <MenuItem value="admin">Admin</MenuItem>
-                                            </Select>
-                                        </FormControl>
-                                    </Box>
-                                </Box>
+                <Stack spacing={3}>
+                    <Box>
+                        <TextFieldSelectSearchComponent
+                            sizeUI="sm"
+                            label="Tìm kiếm người dùng"
+                            placeholder="Nhập email để tìm kiếm..."
+                            value={selectedUser}
+                            onSelectUser={setSelectedUser}
+                            errorMessage={error}
+                        />
+                    </Box>
 
-                                <Box>
-                                    <Typography variant="subtitle2" fontWeight={600} sx={{ mb: 1.5 }}>
-                                        Thành viên hiện tại
-                                    </Typography>
-                                    <Stack spacing={1.5}>
-                                        {/* Mock members */}
-                                        {['Admin', 'User 1'].map((user, index) => (
-                                            <Box key={index} sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', p: 1, borderRadius: 1, '&:hover': { bgcolor: alpha(theme.palette.grey[500], 0.08) } }}>
-                                                <Stack direction="row" spacing={1.5} alignItems="center">
-                                                    <Box sx={{ width: 32, height: 32, borderRadius: '50%', bgcolor: 'primary.main', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'common.white', fontSize: 14 }}>
-                                                        {user.charAt(0)}
-                                                    </Box>
-                                                    <Box>
-                                                        <Typography variant="body2" fontWeight={500}>{user}</Typography>
-                                                        <Typography variant="caption" color="text.secondary">{user === 'Admin' ? 'admin@doc.com' : 'user@doc.com'}</Typography>
-                                                    </Box>
-                                                </Stack>
-                                                <Chip label={user === 'Admin' ? 'Owner' : 'Editor'} size="small" variant="outlined" />
+                    <Box>
+                        <Typography variant="subtitle2" fontWeight={600} sx={{ mb: 1.5 }}>
+                            Thành viên hiện tại
+                        </Typography>
+                        {isLoadingMembers ? (
+                            <Box sx={{ display: 'flex', justifyContent: 'center', py: 3 }}>
+                                <CircularProgress size={24} />
+                            </Box>
+                        ) : members.length === 0 ? (
+                            <Typography variant="body2" color="text.secondary" sx={{ py: 2, textAlign: 'center' }}>
+                                Chưa có thành viên nào
+                            </Typography>
+                        ) : (
+                            <Stack spacing={1.5}>
+                                {members.map((member) => (
+                                    <Box key={member.userId} sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', p: 1, borderRadius: 1, '&:hover': { bgcolor: alpha(theme.palette.grey[500], 0.08) } }}>
+                                        <Stack direction="row" spacing={1.5} alignItems="center">
+                                            {member.avatarUrl ? (
+                                                <Box
+                                                    component="img"
+                                                    src={member.avatarUrl}
+                                                    sx={{ width: 32, height: 32, borderRadius: '50%', objectFit: 'cover' }}
+                                                />
+                                            ) : (
+                                                <Box sx={{ width: 32, height: 32, borderRadius: '50%', bgcolor: 'primary.main', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'common.white', fontSize: 14 }}>
+                                                    {member.fullName.charAt(0).toUpperCase()}
+                                                </Box>
+                                            )}
+                                            <Box>
+                                                <Typography variant="body2" fontWeight={500}>{member.fullName}</Typography>
+                                                <Typography variant="caption" color="text.secondary">{member.email}</Typography>
                                             </Box>
-                                        ))}
-                                    </Stack>
-                                </Box>
-
-                                <Box sx={{ display: 'flex', justifyContent: 'flex-end', gap: 1, pt: 2, borderTop: `1px solid ${theme.palette.divider}` }}>
-                                    <ButtonComponent
-                                        sizeUI="sm"
-                                        variant="ghost"
-                                        onClick={onClose}
-                                        disabled={isSubmitting}
-                                    >
-                                        Hủy
-                                    </ButtonComponent>
-                                    <ButtonComponent
-                                        sizeUI="sm"
-                                        variant="primary"
-                                        type="submit"
-                                        loading={isSubmitting}
-                                        icon={<PersonAddIcon />}
-                                    >
-                                        Gửi lời mời
-                                    </ButtonComponent>
-                                </Box>
+                                        </Stack>
+                                        <Chip label={member.role} size="small" variant="outlined" />
+                                    </Box>
+                                ))}
                             </Stack>
-                        </Form>
-                    )}
-                </Formik>
+                        )}
+                    </Box>
+
+                    <Box sx={{ display: 'flex', justifyContent: 'flex-end', gap: 1, pt: 2, borderTop: `1px solid ${theme.palette.divider}` }}>
+                        <ButtonComponent
+                            sizeUI="sm"
+                            variant="ghost"
+                            onClick={onClose}
+                            disabled={isSubmitting}
+                        >
+                            Hủy
+                        </ButtonComponent>
+                        <ButtonComponent
+                            sizeUI="sm"
+                            variant="primary"
+                            onClick={handleInvite}
+                            loading={isSubmitting}
+                            disabled={!selectedUser}
+                            icon={<PersonAddIcon />}
+                        >
+                            Gửi lời mời
+                        </ButtonComponent>
+                    </Box>
+                </Stack>
             </DialogContent>
         </Dialog>
     )

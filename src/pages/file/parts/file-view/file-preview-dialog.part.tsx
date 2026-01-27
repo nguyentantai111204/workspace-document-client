@@ -56,7 +56,7 @@ export const FilePreviewDialog = ({ open, onClose, file }: FilePreviewDialogProp
             }}
         >
             <DialogTitle sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', p: 2 }}>
-                <Typography variant="h6" noWrap sx={{ maxWidth: '80%' }}>
+                <Typography component="span" variant="h6" noWrap sx={{ maxWidth: '80%' }}>
                     {file.name}
                 </Typography>
                 <IconButton onClick={onClose} size="small">
