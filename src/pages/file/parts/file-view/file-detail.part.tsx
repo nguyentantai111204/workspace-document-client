@@ -1,6 +1,6 @@
 import { Box, Typography, IconButton, Stack, Divider, useTheme, alpha, Fade } from '@mui/material'
 import CloseIcon from '@mui/icons-material/Close'
-import ShareIcon from '@mui/icons-material/Share'
+import VisibilityIcon from '@mui/icons-material/Visibility'
 import DownloadIcon from '@mui/icons-material/Download'
 import InfoOutlinedIcon from '@mui/icons-material/InfoOutlined'
 import { getFileIcon } from '../../utils/file-icon.util'
@@ -14,8 +14,60 @@ interface FileDetailSidebarProps {
     onClose: () => void
 }
 
+import { FilePreviewDialog } from './file-preview-dialog.part'
+import { useState } from 'react'
+
 export const FileDetailSidebar = ({ file, onClose }: FileDetailSidebarProps) => {
     const theme = useTheme()
+    const [previewOpen, setPreviewOpen] = useState(false)
+
+    const handleViewFile = () => {
+        const supportedPreviewTypes = [
+            'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+            'application/pdf',
+            'text/plain',
+            'text/csv'
+        ]
+
+        if (supportedPreviewTypes.includes(file.mimeType) || file.mimeType.startsWith('image/')) {
+            setPreviewOpen(true)
+        } else {
+            const msOfficeTypes = [
+                'application/vnd.ms-excel',
+                'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+                'application/vnd.ms-powerpoint',
+                'application/vnd.openxmlformats-officedocument.presentationml.presentation',
+                // Legacy Word
+                'application/msword'
+            ]
+
+            if (msOfficeTypes.includes(file.mimeType)) {
+                // Try Microsoft Viewer first for these complex types
+                window.open(`https://view.officeapps.live.com/op/view.aspx?src=${encodeURIComponent(file.url)}`, '_blank')
+            } else {
+                // If not supported for preview, force a proper download
+                handleDownloadFile()
+            }
+        }
+    }
+
+    const handleDownloadFile = async () => {
+        try {
+            const response = await fetch(file.url)
+            const blob = await response.blob()
+            const url = window.URL.createObjectURL(blob)
+            const a = document.createElement('a')
+            a.href = url
+            a.download = file.name
+            document.body.appendChild(a)
+            a.click()
+            window.URL.revokeObjectURL(url)
+            document.body.removeChild(a)
+        } catch (error) {
+            console.error('Download failed:', error)
+            window.open(file.url, '_blank')
+        }
+    }
 
     return (
         <Fade in={true} timeout={TIME_ANIMATION}>
@@ -96,20 +148,28 @@ export const FileDetailSidebar = ({ file, onClose }: FileDetailSidebarProps) => 
                     <Stack direction="row" spacing={1}>
                         <ButtonComponent
                             variant="secondary"
-                            icon={<ShareIcon fontSize="small" />}
+                            icon={<VisibilityIcon fontSize="small" />}
                             fullWidth
+                            onClick={handleViewFile}
                         >
-                            Chia sẻ
+                            Xem
                         </ButtonComponent>
                         <ButtonComponent
                             variant="primary"
                             icon={<DownloadIcon fontSize="small" />}
                             fullWidth
+                            onClick={handleDownloadFile}
                         >
                             Tải về
                         </ButtonComponent>
                     </Stack>
                 </Box>
+
+                <FilePreviewDialog
+                    open={previewOpen}
+                    onClose={() => setPreviewOpen(false)}
+                    file={file}
+                />
             </Box>
         </Fade>
     )

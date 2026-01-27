@@ -2,14 +2,13 @@ import { BaseEntity, PaginationParams, PaginatedResponse } from '../common/commo
 
 export interface FileResponse extends BaseEntity {
     name: string
-    originalName: string
     mimeType: string
     size: number
-    path: string
+    url: string
     workspaceId: string
     ownerId: string
-    itemCount?: number
-    isPinned?: boolean
+    pubicId?: string
+    status: string
 }
 
 export type FileListResponse = PaginatedResponse<FileResponse>
@@ -19,7 +18,6 @@ export interface FileQuery extends PaginationParams {
     type?: string
     startDate?: string
     endDate?: string
-    isPinned?: boolean
     parentId?: string
     sortBy?: string
     sortOrder?: 'ASC' | 'DESC'
@@ -27,6 +25,5 @@ export interface FileQuery extends PaginationParams {
 
 export interface UpdateFileRequest {
     name?: string
-    isPinned?: boolean
     parentId?: string
 }
