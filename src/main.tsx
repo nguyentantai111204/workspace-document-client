@@ -7,7 +7,7 @@ import { PersistGate } from 'redux-persist/integration/react'
 import App from './App.tsx'
 import '../public/css/global.css'
 import './common/utils/dayjs.utils.ts'
-
+import './common/config/pdf/pdfjs.config.ts'
 import { ThemeModeProvider } from './contexts/theme-mode.context.tsx'
 import { AppThemeProvider } from './providers/theme.provider.tsx'
 import { TimeProvider } from './providers/time-ago.provider.tsx'
@@ -20,6 +20,7 @@ createRoot(document.getElementById('root')!).render(
         <AppThemeProvider>
           <TimeProvider>
             <App />
+
           </TimeProvider>
         </AppThemeProvider>
       </ThemeModeProvider>
