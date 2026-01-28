@@ -18,15 +18,10 @@ import { useAppDispatch } from '../../../../redux/store.redux'
 import { login } from '../../../../redux/account/account.action'
 import { useNavigate } from 'react-router-dom'
 import { useSnackbar } from '../../../../hooks/use-snackbar.hook'
-
-interface LoginValues {
-    email: string
-    password: string
-    remember: boolean
-}
+import { LoginPayload } from '../../auth.interface'
 
 
-const initialValues: LoginValues = {
+const initialValues: LoginPayload = {
     email: '',
     password: '',
     remember: false,
@@ -38,8 +33,8 @@ export const LoginForm = () => {
     const { showSuccess, showError } = useSnackbar()
 
     const handleSubmit = async (
-        values: LoginValues,
-        { setSubmitting }: FormikHelpers<LoginValues>,
+        values: LoginPayload,
+        { setSubmitting }: FormikHelpers<LoginPayload>,
     ) => {
         try {
             const result = await dispatch(login(values))

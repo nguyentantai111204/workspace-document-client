@@ -8,6 +8,4 @@ export const signupValidate = Yup.object({
     password: Yup.string()
         .min(6, 'Mật khẩu phải ít nhất 6 kí tự')
         .required('Mật khẩu là bắt buộc'),
-    acceptTerms: Yup.boolean()
-        .oneOf([true], 'Bạn phải chấp nhận các điều khoản để tiếp tục'),
 })

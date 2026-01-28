@@ -1,6 +1,6 @@
 import { createAction, createAsyncThunk } from '@reduxjs/toolkit'
-import type { LoginRequest, LoginResponse, UserProfile, RefreshTokenRequest, RefreshTokenResponse } from '../../apis/auth/auth.interface'
-import { getProfileApi, loginApi, logoutApi, refreshTokenApi } from '../../apis/auth/auth.api'
+import type { LoginRequest, LoginResponse, UserProfile, RefreshTokenRequest, RefreshTokenResponse, RegisterRequest } from '../../apis/auth/auth.interface'
+import { getProfileApi, loginApi, logoutApi, refreshTokenApi, registerApi } from '../../apis/auth/auth.api'
 
 export const logout = createAsyncThunk('account/logout', async (_, { rejectWithValue, getState }) => {
     try {
@@ -24,6 +24,17 @@ export const login = createAsyncThunk<LoginResponse, LoginRequest>(
             return data
         } catch (error: any) {
             return rejectWithValue(error.response?.data?.message || error.message || 'Login failed')
+        }
+    }
+)
+
+export const signup = createAsyncThunk<void, RegisterRequest>(
+    'account/signup',
+    async (data, { rejectWithValue }) => {
+        try {
+            await registerApi(data)
+        } catch (error: any) {
+            return rejectWithValue(error.response?.data?.message || error.message || 'Signup failed')
         }
     }
 )

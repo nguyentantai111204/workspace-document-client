@@ -1,155 +1,163 @@
-import { Formik } from 'formik'
-import { Box, Typography, Link, Stack, InputLabel } from '@mui/material'
+import { Formik, Form, FormikHelpers } from 'formik'
+import { Box, Typography, Link, InputLabel } from '@mui/material'
 import { signupValidate } from './signup.constant'
 import { TextFieldComponent } from '../../../../components/textfield/text-field.component'
-import { CheckboxComponent } from '../../../../components/checkbox/checkbox.component'
+import { TextFieldPasswordComponent } from '../../../../components/textfield/text-field-password.component'
 import { ButtonComponent } from '../../../../components/button/button.component'
 import { AuthHeader } from '../auth-header.part'
+import { SignUpPayload } from '../../auth.interface'
+import { useAppDispatch } from '../../../../redux/store.redux'
+import { useNavigate } from 'react-router-dom'
+import { useSnackbar } from '../../../../hooks/use-snackbar.hook'
+import { signup } from '../../../../redux/account/account.action'
 
-const initialValues = {
+const initialValues: SignUpPayload = {
     fullName: '',
     email: '',
     password: '',
-    acceptTerms: false,
 }
 
+
 export const SignUpForm = () => {
+    const dispatch = useAppDispatch()
+    const navigate = useNavigate()
+    const { showSuccess, showError } = useSnackbar()
+
+
+    const onSubmit = async (values: SignUpPayload,
+        { setSubmitting }: FormikHelpers<SignUpPayload>
+    ) => {
+        try {
+            const result = await dispatch(signup(values))
+            if (signup.fulfilled.match(result)) {
+                showSuccess('Đăng ký thành công!')
+                navigate('/login')
+            } else if (signup.rejected.match(result)) {
+                const errorMsg = typeof result.payload === 'string' ? result.payload : 'Đăng ký thất bại'
+                showError(errorMsg)
+            }
+        } catch (error) {
+            console.log(error)
+            showError('Đã có lỗi xảy ra')
+        } finally {
+            setSubmitting(false)
+        }
+    }
+
     return (
         <Formik
             initialValues={initialValues}
             validationSchema={signupValidate}
-            onSubmit={(values, { setSubmitting }) => {
-                console.log(values)
-                setSubmitting(false)
-            }}
+            onSubmit={onSubmit}
         >
             {({
                 values,
                 errors,
                 touched,
                 handleChange,
-                handleSubmit,
-                setFieldValue,
+                handleBlur,
                 isSubmitting,
             }) => (
-                <Box component="form" onSubmit={handleSubmit}>
-                    <AuthHeader />
+                <Form noValidate>
+                    <Box width="100%">
+                        <AuthHeader />
 
-                    <Box mb={2}>
-                        <InputLabel
-                            sx={{
-                                mb: 0.5,
-                                fontSize: 13,
-                                fontWeight: 600,
-                                color: 'text.primary'
-                            }}
-                        >
-                            Họ và tên
-                        </InputLabel>
-                        <TextFieldComponent
+                        <Box mb={2}>
+                            <InputLabel
+                                sx={{
+                                    mb: 0.5,
+                                    fontSize: 13,
+                                    fontWeight: 600,
+                                    color: 'text.primary'
+                                }}
+                            >
+                                Họ và tên
+                            </InputLabel>
+                            <TextFieldComponent
+                                sizeUI="sm"
+                                name="fullName"
+                                placeholder="Nhập họ và tên"
+                                value={values.fullName}
+                                onChange={handleChange}
+                                onBlur={handleBlur}
+                                error={touched.fullName && !!errors.fullName}
+                                helperText={touched.fullName && errors.fullName}
+                                fullWidth
+                            />
+                        </Box>
+
+                        <Box mb={2}>
+                            <InputLabel
+                                sx={{
+                                    mb: 0.5,
+                                    fontSize: 13,
+                                    fontWeight: 600,
+                                    color: 'text.primary'
+                                }}
+                            >
+                                Địa chỉ Email
+                            </InputLabel>
+                            <TextFieldComponent
+                                sizeUI="sm"
+                                placeholder="Nhập địa chỉ email"
+                                name="email"
+                                value={values.email}
+                                onChange={handleChange}
+                                onBlur={handleBlur}
+                                error={touched.email && !!errors.email}
+                                helperText={touched.email && errors.email}
+                                fullWidth
+                            />
+                        </Box>
+
+                        <Box mb={2}>
+                            <InputLabel
+                                sx={{
+                                    mb: 0.5,
+                                    fontSize: 13,
+                                    fontWeight: 600,
+                                    color: 'text.primary'
+                                }}
+                            >
+                                Mật khẩu
+                            </InputLabel>
+                            <TextFieldPasswordComponent
+                                sizeUI="sm"
+                                placeholder="Nhập mật khẩu"
+                                name="password"
+                                value={values.password}
+                                onChange={handleChange}
+                                onBlur={handleBlur}
+                                error={touched.password && !!errors.password}
+                                helperText={touched.password && errors.password}
+                                fullWidth
+                            />
+                        </Box>
+
+                        <ButtonComponent
                             sizeUI="sm"
-                            name="fullName"
-                            placeholder="Nhập họ và tên"
-                            value={values.fullName}
-                            onChange={handleChange}
-                            error={!!errors.fullName && touched.fullName}
-                            helperText={touched.fullName && errors.fullName}
+                            type="submit"
                             fullWidth
-                        />
-                    </Box>
-
-                    <Box mb={2}>
-                        <InputLabel
-                            sx={{
-                                mb: 0.5,
-                                fontSize: 13,
-                                fontWeight: 600,
-                                color: 'text.primary'
-                            }}
+                            loading={isSubmitting}
+                            sx={{ mt: 3, mb: 3 }}
                         >
-                            Địa chỉ Email
-                        </InputLabel>
-                        <TextFieldComponent
-                            sizeUI="sm"
-                            placeholder="Nhập địa chỉ email"
-                            name="email"
-                            value={values.email}
-                            onChange={handleChange}
-                            error={!!errors.email && touched.email}
-                            helperText={touched.email && errors.email}
-                            fullWidth
-                        />
+                            Đăng ký
+                        </ButtonComponent>
+
+                        <Box textAlign="center">
+                            <Typography
+                                variant="body2"
+                                component="span"
+                                fontSize={13}
+                            >
+                                Đã có tài khoản?{' '}
+                            </Typography>
+                            <Link href="/login" underline="hover" fontWeight={500} fontSize={13}>
+                                Đăng nhập
+                            </Link>
+                        </Box>
                     </Box>
-
-                    <Box mb={2}>
-                        <InputLabel
-                            sx={{
-                                mb: 0.5,
-                                fontSize: 13,
-                                fontWeight: 600,
-                                color: 'text.primary'
-                            }}
-                        >
-                            Mật khẩu
-                        </InputLabel>
-                        <TextFieldComponent
-                            sizeUI="sm"
-                            placeholder="Nhập mật khẩu"
-                            name="password"
-                            type="password"
-                            value={values.password}
-                            onChange={handleChange}
-                            error={!!errors.password && touched.password}
-                            helperText={touched.password && errors.password}
-                            fullWidth
-                        />
-                    </Box>
-
-                    <Box mt={2}>
-                        <CheckboxComponent
-                            sizeUI="sm"
-                            label={
-                                <Box component="span">
-                                    Đồng ý với <Link href="#" underline="hover">Điều khoản & Điều kiện.</Link>
-                                </Box>
-                            }
-                            checked={values.acceptTerms}
-                            variant="outlined"
-                            onChange={(e) =>
-                                setFieldValue(
-                                    'acceptTerms',
-                                    e.target.checked,
-                                )
-                            }
-                        />
-
-                        {touched.acceptTerms &&
-                            errors.acceptTerms && (
-                                <Typography
-                                    variant="caption"
-                                    color="error.main"
-                                    sx={{ ml: 4, fontSize: 11 }}
-                                >
-                                    {errors.acceptTerms}
-                                </Typography>
-                            )}
-                    </Box>
-
-                    <ButtonComponent
-                        sizeUI="sm"
-                        type="submit"
-                        fullWidth
-                        loading={isSubmitting}
-                        sx={{ mt: 3, mb: 3 }}
-                    >
-                        Đăng ký
-                    </ButtonComponent>
-
-                    <Stack direction="row" justifyContent="center" spacing={0.5}>
-                        <Typography variant="body2">Đã có tài khoản?</Typography>
-                        <Link href="/login" underline="hover" fontWeight={500}>Đăng nhập</Link>
-                    </Stack>
-                </Box>
+                </Form>
             )}
         </Formik>
     )

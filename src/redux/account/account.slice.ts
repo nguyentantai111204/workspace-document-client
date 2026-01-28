@@ -1,6 +1,6 @@
 import { createSlice } from '@reduxjs/toolkit'
 import type { AccountState } from './account.interface'
-import { getProfile, login, logout, refreshToken, updateProfile } from './account.action'
+import { getProfile, login, logout, refreshToken, signup, updateProfile } from './account.action'
 
 const initialState: AccountState = {
     user: null,
@@ -59,6 +59,25 @@ export const accountSlice = createSlice({
                     state.error = (action.payload as any).message
                 } else {
                     state.error = 'Login failed'
+                }
+            })
+
+            // Signup
+            .addCase(signup.pending, (state) => {
+                state.isLoading = true
+                state.error = null
+            })
+            .addCase(signup.fulfilled, (state) => {
+                state.isLoading = false
+            })
+            .addCase(signup.rejected, (state, action) => {
+                state.isLoading = false
+                if (typeof action.payload === 'string') {
+                    state.error = action.payload
+                } else if (typeof action.payload === 'object' && action.payload !== null && 'message' in action.payload) {
+                    state.error = (action.payload as any).message
+                } else {
+                    state.error = 'Signup failed'
                 }
             })
 
