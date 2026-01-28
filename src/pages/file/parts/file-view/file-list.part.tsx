@@ -14,9 +14,19 @@ interface FileListProps {
     selectedIds: string[]
     onToggleCheck: (id: string) => void
     onCheckAll: (checked: boolean, ids: string[]) => void
+    onEdit: (file: FileResponse) => void
+    onDelete: (file: FileResponse) => void
 }
 
-const FileActionCell = ({ file }: { file: FileResponse }) => {
+const FileActionCell = ({
+    file,
+    onEdit,
+    onDelete
+}: {
+    file: FileResponse,
+    onEdit: (file: FileResponse) => void
+    onDelete: (file: FileResponse) => void
+}) => {
     const [menuAnchorEl, setMenuAnchorEl] = useState<HTMLElement | null>(null)
 
     const handleOpenMenu = (event: React.MouseEvent<HTMLElement>) => {
@@ -36,8 +46,8 @@ const FileActionCell = ({ file }: { file: FileResponse }) => {
             <FileActionMenu
                 anchorEl={menuAnchorEl}
                 onClose={handleCloseMenu}
-                onEdit={() => console.log('Edit', file.name)}
-                onDelete={() => console.log('Delete', file.name)}
+                onEdit={() => onEdit(file)}
+                onDelete={() => onDelete(file)}
                 onPin={() => console.log('Pin', file.name)}
                 onShare={() => console.log('Share', file.name)}
             />
@@ -51,6 +61,8 @@ export const FileList = ({
     selectedIds,
     onToggleCheck,
     onCheckAll,
+    onEdit,
+    onDelete
 }: FileListProps) => {
 
     const columns: TableColumn<FileResponse>[] = [
@@ -91,7 +103,7 @@ export const FileList = ({
             id: 'actions',
             label: '',
             align: 'right',
-            render: (file) => <FileActionCell file={file} />
+            render: (file) => <FileActionCell file={file} onEdit={onEdit} onDelete={onDelete} />
         }
     ]
 

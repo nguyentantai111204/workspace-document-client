@@ -1,6 +1,6 @@
 import useSWR from 'swr'
-import { listFilesApi } from '../apis/file/file.api'
-import { FileQuery } from '../apis/file/file.interface'
+import { listFilesApi, updateFileApi, deleteFileApi } from '../apis/file/file.api'
+import { FileQuery, UpdateFileRequest } from '../apis/file/file.interface'
 
 export const useFiles = (workspaceId?: string, query?: FileQuery) => {
     const key = workspaceId ? [`/workspaces/${workspaceId}/files`, query] : null
@@ -14,11 +14,31 @@ export const useFiles = (workspaceId?: string, query?: FileQuery) => {
         }
     )
 
+    const updateFile = async (fileId: string, data: UpdateFileRequest) => {
+        try {
+            await updateFileApi(workspaceId!, fileId, data)
+            await mutate()
+        } catch (error) {
+            throw error
+        }
+    }
+
+    const deleteFile = async (fileId: string) => {
+        try {
+            await deleteFileApi(workspaceId!, fileId)
+            await mutate()
+        } catch (error) {
+            throw error
+        }
+    }
+
     return {
         files: data?.data || [],
         meta: data?.meta,
         isLoading,
         error,
         mutate,
+        updateFile,
+        deleteFile
     }
 }

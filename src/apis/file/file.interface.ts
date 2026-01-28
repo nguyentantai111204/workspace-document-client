@@ -8,7 +8,7 @@ export interface FileResponse extends BaseEntity {
     workspaceId: string
     ownerId: string
     pubicId?: string
-    status: string
+    itemCount?: number
 }
 
 export type FileListResponse = PaginatedResponse<FileResponse>
@@ -24,6 +24,5 @@ export interface FileQuery extends PaginationParams {
 }
 
 export interface UpdateFileRequest {
-    name?: string
-    parentId?: string
+    name: string
 }

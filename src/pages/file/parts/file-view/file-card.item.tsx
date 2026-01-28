@@ -10,9 +10,11 @@ interface FileCardProps {
     file: FileResponse
     selected?: boolean
     onSelect?: (file: FileResponse) => void
+    onEdit?: (file: FileResponse) => void
+    onDelete?: (file: FileResponse) => void
 }
 
-export const FileCard = ({ file, selected, onSelect }: FileCardProps) => {
+export const FileCard = ({ file, selected, onSelect, onEdit, onDelete }: FileCardProps) => {
     const theme = useTheme()
     const [menuAnchorEl, setMenuAnchorEl] = useState<HTMLElement | null>(null)
 
@@ -107,8 +109,8 @@ export const FileCard = ({ file, selected, onSelect }: FileCardProps) => {
             <FileActionMenu
                 anchorEl={menuAnchorEl}
                 onClose={handleCloseMenu}
-                onEdit={() => console.log('Edit', file.name)}
-                onDelete={() => console.log('Delete', file.name)}
+                onEdit={() => onEdit?.(file)}
+                onDelete={() => onDelete?.(file)}
                 onPin={() => console.log('Pin', file.name)}
                 onShare={() => console.log('Share', file.name)}
             />

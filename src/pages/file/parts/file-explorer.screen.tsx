@@ -6,7 +6,8 @@ import { ExplorerFilters } from './file-tools/explorer-filter.part'
 import { FileGrid } from './file-view/file-grid.part'
 import { FileList } from './file-view/file-list.part'
 import { FileDetailSidebar } from './file-view/file-detail.part'
-import { UploadFileModal } from '../modals/upload-file.modal'
+import { UploadFileModal } from '../components/upload-file.component'
+import { UpdateFileModal } from '../components/update-file.component'
 import { useWorkspace } from '../../../contexts/workspace.context'
 import { FileResponse } from '../../../apis/file/file.interface'
 import { useDebounce } from '../../../hooks/use-debounce.hook'
@@ -28,6 +29,7 @@ export const FileExplorerComponent = () => {
     const [searchQuery, setSearchQuery] = useState('')
     const [filters, setFilters] = useState<Partial<ExplorerFilters>>({})
     const [openUploadModal, setOpenUploadModal] = useState(false)
+    const [openRenameModal, setOpenRenameModal] = useState(false)
     const debouncedSearch = useDebounce(searchQuery, 500)
 
     const getFileTypesParams = () => {
@@ -41,7 +43,7 @@ export const FileExplorerComponent = () => {
         return types.length > 0 ? types.join(',') : undefined
     }
 
-    const { files, meta, isLoading, mutate } = useFiles(currentWorkspace?.id, {
+    const { files, meta, isLoading, mutate, updateFile, deleteFile } = useFiles(currentWorkspace?.id, {
         page: page,
         limit: PAGE_LIMIT_DEFAULT.limit,
         search: debouncedSearch || undefined,
@@ -49,6 +51,16 @@ export const FileExplorerComponent = () => {
         sortBy: 'createdAt',
         type: getFileTypesParams()
     })
+
+    const handleRenameSubmit = async (newName: string) => {
+        if (!selectedItem) return
+        try {
+            await updateFile(selectedItem.id, { name: newName })
+            setSelectedItem(prev => prev ? { ...prev, name: newName } : null)
+        } catch (error) {
+            console.error(error)
+        }
+    }
 
     const scrollbarStyle = {
         '&::-webkit-scrollbar': {
@@ -101,6 +113,16 @@ export const FileExplorerComponent = () => {
         setPage(1)
     }
 
+    const handleDeleteFile = async (id: string) => {
+        if (!window.confirm('Bạn có chắc chắn muốn xóa file này không?')) return
+        try {
+            await deleteFile(id)
+            setSelectedItem(null)
+        } catch (error) {
+            console.error(error)
+        }
+    }
+
     const detailContent = selectedItem && (
         <FileDetailSidebar
             file={selectedItem}
@@ -134,6 +156,11 @@ export const FileExplorerComponent = () => {
                         files={files}
                         selectedItem={selectedItem}
                         onSelect={handleSelect}
+                        onEdit={(file) => {
+                            setSelectedItem(file)
+                            setOpenRenameModal(true)
+                        }}
+                        onDelete={(file) => handleDeleteFile(file.id)}
                     />
                 </Box>
             )
@@ -146,6 +173,11 @@ export const FileExplorerComponent = () => {
                 selectedIds={selectedIds}
                 onToggleCheck={handleToggleCheck}
                 onCheckAll={handleCheckAll}
+                onEdit={(file) => {
+                    setSelectedItem(file)
+                    setOpenRenameModal(true)
+                }}
+                onDelete={(file) => handleDeleteFile(file.id)}
             />
         )
     }
@@ -251,6 +283,15 @@ export const FileExplorerComponent = () => {
                     setPage(1)
                 }}
             />
+
+            {selectedItem && (
+                <UpdateFileModal
+                    open={openRenameModal}
+                    fileName={selectedItem.name}
+                    onClose={() => setOpenRenameModal(false)}
+                    onSubmit={handleRenameSubmit}
+                />
+            )}
         </StackRow>
     )
 }

@@ -6,9 +6,11 @@ interface FileGridProps {
     files: FileResponse[]
     selectedItem: FileResponse | null
     onSelect: (file: FileResponse) => void
+    onEdit: (file: FileResponse) => void
+    onDelete: (file: FileResponse) => void
 }
 
-export const FileGrid = ({ files, selectedItem, onSelect }: FileGridProps) => {
+export const FileGrid = ({ files, selectedItem, onSelect, onEdit, onDelete }: FileGridProps) => {
     return (
         <Grid container spacing={3}>
             {files.map((file) => (
@@ -17,6 +19,8 @@ export const FileGrid = ({ files, selectedItem, onSelect }: FileGridProps) => {
                         file={file}
                         selected={selectedItem?.id === file.id}
                         onSelect={onSelect}
+                        onEdit={onEdit}
+                        onDelete={onDelete}
                     />
                 </Grid>
             ))}

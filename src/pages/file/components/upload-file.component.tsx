@@ -78,8 +78,6 @@ export const UploadFileModal = ({ open, onClose, onSuccess }: UploadFileModalPro
             if (failed.length > 0) {
                 const failedNames = failed.map(f => f.file.name).join(', ')
                 setError(`Không thể tải lên ${failed.length} tệp tin: ${failedNames} `)
-                // Keep selected files that failed? Or just close?
-                // For now, if any succeed, we trigger success.
                 if (failed.length < selectedFiles.length) {
                     onSuccess?.()
                 }
@@ -148,7 +146,6 @@ export const UploadFileModal = ({ open, onClose, onSuccess }: UploadFileModalPro
                     style={{ display: 'none' }}
                     onChange={handleFileInputChange}
                     multiple
-                // accept="image/*,application/pdf,application/vnd.ms-excel" // Optional: restrict types
                 />
 
                 <TextFieldUploadComponent
