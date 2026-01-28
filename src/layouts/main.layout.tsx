@@ -22,7 +22,7 @@ const MainStyle = styled('main')(({ theme }) => ({
 const BREADCRUMB_MAP: Record<string, BreadcrumbItem[]> = {
     '/profile': [
         { label: 'Trang chủ', href: '/' },
-        { label: 'Thông tin cá nhân' }
+        { label: 'Hồ sơ' }
     ],
 }
 

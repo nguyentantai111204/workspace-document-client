@@ -1,5 +1,5 @@
 import React, { createContext, useContext, useEffect, useState } from 'react'
-import { useNavigate, useParams } from 'react-router-dom'
+import { useLocation, useNavigate, useParams } from 'react-router-dom'
 import { createWorkspaceApi, updateWorkspaceApi } from '../apis/workspace/workspace.api'
 import { CreateWorkspaceRequest, UpdateWorkSpaceRequest, WorkspaceResponse } from '../apis/workspace/workspace.interface'
 import { useWorkspaces } from '../hooks/useWorkspaces'
@@ -20,13 +20,17 @@ export const WorkspaceProvider: React.FC<{ children: React.ReactNode }> = ({ chi
     const [currentWorkspace, setCurrentWorkspaceState] = useState<WorkspaceResponse | null>(null)
     const navigate = useNavigate()
     const { workspaceId } = useParams()
+    const location = useLocation()
 
     const setCurrentWorkspace = (workspace: WorkspaceResponse) => {
         setCurrentWorkspaceState(workspace)
         navigate(`/workspace/${workspace.id}`)
     }
+
     useEffect(() => {
-        if (workspaces.length > 0) {
+        const isWorkspaceRoute = location.pathname.startsWith('/workspace')
+
+        if (workspaces.length > 0 && isWorkspaceRoute) {
             if (workspaceId) {
                 const found = workspaces.find((ws) => ws.id === workspaceId)
                 if (found) {
@@ -40,7 +44,7 @@ export const WorkspaceProvider: React.FC<{ children: React.ReactNode }> = ({ chi
                 setCurrentWorkspace(workspaces[0])
             }
         }
-    }, [workspaces, workspaceId, isLoading])
+    }, [workspaces, workspaceId, isLoading, location.pathname])
 
     useEffect(() => {
         if (currentWorkspace && workspaces.length > 0) {
