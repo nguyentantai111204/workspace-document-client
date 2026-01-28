@@ -8,13 +8,13 @@ import { getProfile } from './redux/account/account.action'
 
 const AuthInitializer = () => {
   const dispatch = useAppDispatch()
-  const { isAuthenticated, token } = useAppSelector(state => state.account)
+  const { isAuthenticated, token, user } = useAppSelector(state => state.account)
 
   useEffect(() => {
-    if (isAuthenticated || token) {
+    if ((isAuthenticated || token) && !user) {
       dispatch(getProfile())
     }
-  }, [dispatch, isAuthenticated, token])
+  }, [dispatch, isAuthenticated, token, user])
 
   return null
 }

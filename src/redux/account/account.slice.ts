@@ -17,6 +17,10 @@ export const accountSlice = createSlice({
     reducers: {
         clearAccountError: (state) => {
             state.error = null
+        },
+        setTokens: (state, action: { payload: { token: string; refreshToken: string } }) => {
+            state.token = action.payload.token
+            state.refreshToken = action.payload.refreshToken
         }
     },
     extraReducers: (builder) => {
@@ -101,5 +105,5 @@ export const accountSlice = createSlice({
     },
 })
 
-export const { clearAccountError } = accountSlice.actions
+export const { clearAccountError, setTokens } = accountSlice.actions
 export default accountSlice.reducer

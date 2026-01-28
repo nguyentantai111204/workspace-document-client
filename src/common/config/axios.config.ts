@@ -74,9 +74,32 @@ axiosInstance.interceptors.response.use(
       isRefreshing = true
 
       try {
+        const state = store.getState()
+        const refreshToken = state.account.refreshToken
+
+        if (!refreshToken) {
+          // No refresh token available, logout
+          store.dispatch(logout())
+          isRefreshing = false
+          return Promise.reject(error)
+        }
+
+        const { refreshTokenApi } = await import('../../apis/auth/auth.api')
+        const response = await refreshTokenApi({ refreshToken })
+
+        const { setTokens } = await import('../../redux/account/account.slice')
+        store.dispatch(setTokens({
+          token: response.accessToken,
+          refreshToken: response.refreshToken
+        }))
+
+        processQueue(null, response.accessToken)
         isRefreshing = false
-        store.dispatch(logout())
-        return Promise.reject(error)
+
+        if (originalRequest.headers) {
+          originalRequest.headers.Authorization = `Bearer ${response.accessToken}`
+        }
+        return axiosInstance(originalRequest)
 
       } catch (refreshError) {
         processQueue(refreshError as Error, null)
