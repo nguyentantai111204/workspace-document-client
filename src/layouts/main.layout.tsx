@@ -20,10 +20,6 @@ const MainStyle = styled('main')(({ theme }) => ({
 }))
 
 const BREADCRUMB_MAP: Record<string, BreadcrumbItem[]> = {
-    '/workspace': [
-        { label: 'Trang chủ', href: '/' },
-        { label: 'Không gian làm việc' }
-    ],
     '/profile': [
         { label: 'Trang chủ', href: '/' },
         { label: 'Thông tin cá nhân' }
@@ -34,6 +30,13 @@ export const MainLayout = () => {
     const location = useLocation()
 
     const breadcrumbs = useMemo(() => {
+        if (location.pathname.startsWith('/workspace')) {
+            return [
+                { label: 'Trang chủ', href: '/' },
+                { label: 'Dự án' }
+            ]
+        }
+
         return BREADCRUMB_MAP[location.pathname] || [{ label: 'Trang chủ' }]
     }, [location.pathname])
 

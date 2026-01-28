@@ -20,10 +20,6 @@ export const appRoutes: RouteObject = {
                     path: 'workspace',
                     children: [
                         {
-                            index: true,
-                            element: <WorkspacePage />,
-                        },
-                        {
                             path: ':workspaceId',
                             element: <WorkspacePage />,
                         },

@@ -4,7 +4,6 @@ import type { SystemState } from './system.interface'
 
 
 const initialState: SystemState = {
-    mode: 'light',
     snackbar: {
         open: false,
         message: '',
@@ -18,9 +17,6 @@ export const systemSlice = createSlice({
     initialState,
 
     reducers: {
-        setMode: (state, action) => {
-            state.mode = action.payload
-        },
         showSnackbar: (state, action: { payload: { message: string, severity?: 'success' | 'error' | 'info' | 'warning' } }) => {
             state.snackbar.open = true
             state.snackbar.message = action.payload.message
@@ -38,5 +34,5 @@ export const systemSlice = createSlice({
     },
 })
 
-export const { setMode, showSnackbar, hideSnackbar, toggleSidebar, setSidebarOpen } = systemSlice.actions
+export const { showSnackbar, hideSnackbar, toggleSidebar, setSidebarOpen } = systemSlice.actions
 export default systemSlice.reducer

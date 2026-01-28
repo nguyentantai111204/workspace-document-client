@@ -89,7 +89,7 @@ const SidebarContent = ({ onItemClick }: { onItemClick?: () => void }) => {
 
             <List disablePadding>
                 {MENU_ITEMS.map((item) => {
-                    const isActive = location.pathname === item.path
+                    const isActive = location.pathname.startsWith(item.path)
 
                     return (
                         <ListItem key={item.text} disablePadding sx={{ mb: 0.5 }}>

@@ -1,9 +1,2 @@
-import { createSelector } from '@reduxjs/toolkit'
-import { RootState } from '../store.interface'
-
-const selectSystemState = (state: RootState) => state.system
-
-export const selectSystemMode = createSelector(
-    selectSystemState,
-    (system) => system.mode
-)
+// Theme mode is now managed by ThemeModeContext, not Redux
+// System selectors for snackbar and sidebar can be added here when needed
