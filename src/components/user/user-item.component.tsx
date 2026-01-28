@@ -29,7 +29,8 @@ export const UserItemComponent = ({
                 display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'space-between',
-                p: 1,
+                p: { xs: 0.75, sm: 1 },
+                px: { xs: 1, sm: 1 },
                 borderRadius: 1,
                 cursor: onClick ? 'pointer' : 'default',
                 transition: 'background-color 0.2s',
@@ -39,34 +40,56 @@ export const UserItemComponent = ({
                 ...sx
             }}
         >
-            <Stack direction="row" spacing={1.5} alignItems="center" sx={{ flex: 1, minWidth: 0 }}>
+            <Stack direction="row" spacing={{ xs: 1, sm: 1.5 }} alignItems="center" sx={{ flex: 1, minWidth: 0 }}>
                 {avatarUrl ? (
                     <Box
                         component="img"
                         src={avatarUrl}
-                        sx={{ width: 32, height: 32, borderRadius: '50%', objectFit: 'cover', flexShrink: 0 }}
+                        sx={{
+                            width: { xs: 28, sm: 32 },
+                            height: { xs: 28, sm: 32 },
+                            borderRadius: '50%',
+                            objectFit: 'cover',
+                            flexShrink: 0
+                        }}
                     />
                 ) : (
                     <Box sx={{
-                        width: 32,
-                        height: 32,
+                        width: { xs: 28, sm: 32 },
+                        height: { xs: 28, sm: 32 },
                         borderRadius: '50%',
                         bgcolor: 'primary.main',
                         display: 'flex',
                         alignItems: 'center',
                         justifyContent: 'center',
                         color: 'common.white',
-                        fontSize: 14,
+                        fontSize: { xs: 12, sm: 14 },
                         flexShrink: 0
                     }}>
                         {fullName.charAt(0).toUpperCase()}
                     </Box>
                 )}
                 <Box sx={{ flex: 1, minWidth: 0 }}>
-                    <Typography variant="body2" fontWeight={500} noWrap>
+                    <Typography
+                        variant="body2"
+                        fontWeight={500}
+                        noWrap
+                        sx={{
+                            fontSize: { xs: '0.8125rem', sm: '0.875rem' },
+                            lineHeight: 1.2
+                        }}
+                    >
                         {fullName}
                     </Typography>
-                    <Typography variant="caption" color="text.secondary" noWrap>
+                    <Typography
+                        variant="caption"
+                        color="text.secondary"
+                        noWrap
+                        sx={{
+                            fontSize: { xs: '0.7rem', sm: '0.75rem' },
+                            display: 'block'
+                        }}
+                    >
                         {email}
                     </Typography>
                 </Box>

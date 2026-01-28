@@ -59,3 +59,7 @@ export interface UpdateRoleRequest {
     userId: string
     role: WorkspaceRole
 }
+
+export interface UpdateWorkSpaceRequest {
+    name: string
+}

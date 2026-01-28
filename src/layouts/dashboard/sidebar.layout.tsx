@@ -27,6 +27,7 @@ const MENU_ITEMS = [
 ] as const
 
 import { CreateWorkspaceDialog } from '../../components/workspace/create-workspace-dialog.component'
+import { UpdateWorkspaceDialog } from '../../components/workspace/update-workspace-dialog.component'
 import { useState } from 'react'
 
 const SidebarContent = ({ onItemClick }: { onItemClick?: () => void }) => {
@@ -35,6 +36,8 @@ const SidebarContent = ({ onItemClick }: { onItemClick?: () => void }) => {
     const location = useLocation()
     const { workspaces, currentWorkspace, setCurrentWorkspace, isLoading } = useWorkspace()
     const [createDialogOpen, setCreateDialogOpen] = useState(false)
+    const [updateDialogOpen, setUpdateDialogOpen] = useState(false)
+    const [editingWorkspace, setEditingWorkspace] = useState<any>(null)
 
     const mappedWorkspaces: Workspace[] = workspaces.map(ws => ({
         id: ws.id,
@@ -53,6 +56,14 @@ const SidebarContent = ({ onItemClick }: { onItemClick?: () => void }) => {
     const handleNavigate = (path: string) => {
         navigate(path)
         onItemClick?.()
+    }
+
+    const handleEditWorkspace = (ws: Workspace) => {
+        const originalWs = workspaces.find(w => w.id === ws.id)
+        if (originalWs) {
+            setEditingWorkspace(originalWs)
+            setUpdateDialogOpen(true)
+        }
     }
 
     if (isLoading) {
@@ -90,6 +101,7 @@ const SidebarContent = ({ onItemClick }: { onItemClick?: () => void }) => {
                         }
                     }}
                     onCreateWorkspace={() => setCreateDialogOpen(true)}
+                    onEditWorkspace={handleEditWorkspace}
                 />
             )}
 
@@ -142,6 +154,17 @@ const SidebarContent = ({ onItemClick }: { onItemClick?: () => void }) => {
                 open={createDialogOpen}
                 onClose={() => setCreateDialogOpen(false)}
             />
+
+            {editingWorkspace && (
+                <UpdateWorkspaceDialog
+                    open={updateDialogOpen}
+                    onClose={() => {
+                        setUpdateDialogOpen(false)
+                        setEditingWorkspace(null)
+                    }}
+                    workspace={editingWorkspace}
+                />
+            )}
         </Box>
     )
 }

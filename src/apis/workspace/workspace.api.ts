@@ -9,7 +9,8 @@ import {
     InviteMemberRequest,
     UpdateRoleRequest,
     InviteResponse,
-    AcceptInviteRequest
+    AcceptInviteRequest,
+    UpdateWorkSpaceRequest
 } from './workspace.interface'
 
 // Workspace CRUD
@@ -54,4 +55,9 @@ export const revokeInviteApi = async (workspaceId: string, inviteId: string): Pr
 
 export const acceptInviteApi = async (data: AcceptInviteRequest): Promise<void> => {
     await axiosInstance.post('/workspaces/invites/accept', data)
+}
+
+export const updateWorkspaceApi = async (workspaceId: string, data: UpdateWorkSpaceRequest): Promise<WorkspaceResponse> => {
+    const response = await axiosInstance.patch<WorkspaceResponse>(`/workspaces/${workspaceId}`, data)
+    return response.data
 }

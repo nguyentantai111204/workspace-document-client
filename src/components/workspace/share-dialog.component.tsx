@@ -69,8 +69,8 @@ export const ShareDialog = ({ open, onClose }: ShareDialogProps) => {
                 elevation: 2
             }}
         >
-            <DialogTitle sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', p: 3 }}>
-                <Typography component="span" variant="h6" fontWeight={700} display="block">
+            <DialogTitle sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', p: { xs: 2.5, sm: 3 } }}>
+                <Typography component="span" variant="h6" fontWeight={700} display="block" sx={{ fontSize: { xs: '1.1rem', sm: '1.25rem' } }}>
                     Chia sẻ Workspace
                 </Typography>
                 <IconButton onClick={onClose} size="small">
@@ -78,12 +78,12 @@ export const ShareDialog = ({ open, onClose }: ShareDialogProps) => {
                 </IconButton>
             </DialogTitle>
 
-            <DialogContent sx={{ p: 3 }}>
-                <Typography variant="body2" color="text.secondary" sx={{ mb: 3 }}>
+            <DialogContent sx={{ p: { xs: 2.5, sm: 3 } }}>
+                <Typography variant="body2" color="text.secondary" sx={{ mb: { xs: 2, sm: 3 } }}>
                     Mời thành viên mới tham gia vào workspace để cùng làm việc.
                 </Typography>
 
-                <Stack spacing={3}>
+                <Stack spacing={{ xs: 2, sm: 3 }}>
                     <Box>
                         <TextFieldSelectSearchComponent
                             sizeUI="sm"
@@ -115,7 +115,7 @@ export const ShareDialog = ({ open, onClose }: ShareDialogProps) => {
                                         avatarUrl={member.avatarUrl}
                                         fullName={member.fullName}
                                         email={member.email}
-                                        action={<Chip label={member.role} size="small" variant="outlined" />}
+                                        action={<Chip label={member.role} size="small" variant="outlined" sx={{ height: 22, fontSize: '0.625rem' }} />}
                                         sx={{
                                             '&:hover': { bgcolor: alpha(theme.palette.grey[500], 0.08) }
                                         }}
@@ -125,7 +125,7 @@ export const ShareDialog = ({ open, onClose }: ShareDialogProps) => {
                         )}
                     </Box>
 
-                    <Box sx={{ display: 'flex', justifyContent: 'flex-end', gap: 1, pt: 2, borderTop: `1px solid ${theme.palette.divider}` }}>
+                    <Box sx={{ display: 'flex', justifyContent: 'flex-end', gap: 1, pt: { xs: 2, sm: 2.5 }, borderTop: `1px solid ${theme.palette.divider}` }}>
                         <ButtonComponent
                             sizeUI="sm"
                             variant="ghost"

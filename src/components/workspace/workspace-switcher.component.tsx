@@ -1,6 +1,7 @@
-import { Box, Typography, alpha, useTheme, Menu, MenuItem, Chip, Button, Divider } from '@mui/material'
+import { Box, Typography, alpha, useTheme, Menu, MenuItem, Chip, Button, Divider, IconButton } from '@mui/material'
 import UnfoldMoreIcon from '@mui/icons-material/UnfoldMore'
 import AddIcon from '@mui/icons-material/Add'
+import EditIcon from '@mui/icons-material/Edit'
 import WorkspacesIcon from '@mui/icons-material/Workspaces'
 import React, { useState } from 'react'
 
@@ -16,6 +17,7 @@ interface WorkspaceSwitcherProps {
     workspaces: Workspace[]
     onWorkspaceChange?: (workspace: Workspace) => void
     onCreateWorkspace?: () => void
+    onEditWorkspace?: (workspace: Workspace) => void
 }
 
 export const WorkspaceSwitcherComponent = ({
@@ -23,6 +25,7 @@ export const WorkspaceSwitcherComponent = ({
     workspaces,
     onWorkspaceChange,
     onCreateWorkspace,
+    onEditWorkspace,
 }: WorkspaceSwitcherProps) => {
     const theme = useTheme()
     const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null)
@@ -205,16 +208,38 @@ export const WorkspaceSwitcherComponent = ({
                             <Typography variant="body2" noWrap flex={1}>
                                 {workspace.name}
                             </Typography>
-                            <Chip
-                                label={workspace.plan}
-                                size="small"
-                                color={getPlanColor(workspace.plan)}
-                                sx={{
-                                    height: 20,
-                                    fontSize: '0.6875rem',
-                                    fontWeight: 600,
-                                }}
-                            />
+                            <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                                <IconButton
+                                    size="small"
+                                    onClick={(e) => {
+                                        e.stopPropagation()
+                                        onEditWorkspace?.(workspace)
+                                    }}
+                                    sx={{
+                                        p: 0.5,
+                                        color: 'text.secondary',
+                                        opacity: { xs: 1, md: 0.6 },
+                                        transition: theme.transitions.create(['opacity', 'color', 'background-color']),
+                                        '&:hover': {
+                                            color: 'primary.main',
+                                            opacity: 1,
+                                            bgcolor: alpha(theme.palette.primary.main, 0.1),
+                                        },
+                                    }}
+                                >
+                                    <EditIcon fontSize="inherit" sx={{ fontSize: 16 }} />
+                                </IconButton>
+                                <Chip
+                                    label={workspace.plan}
+                                    size="small"
+                                    color={getPlanColor(workspace.plan)}
+                                    sx={{
+                                        height: 20,
+                                        fontSize: '0.6875rem',
+                                        fontWeight: 600,
+                                    }}
+                                />
+                            </Box>
                         </MenuItem>
                     )
                 })}
