@@ -19,7 +19,7 @@ const getInitialMode = (): ThemeMode => {
             return stored
         }
     } catch (error) {
-        console.warn('Failed to read theme mode from localStorage:', error)
+        console.warn('Lỗi khi đọc theme mode từ localStorage:', error)
     }
     return 'light'
 }
@@ -31,7 +31,7 @@ export const ThemeModeProvider = ({ children }: { children: ReactNode }) => {
         try {
             localStorage.setItem(STORAGE_KEY, mode)
         } catch (error) {
-            console.warn('Failed to save theme mode to localStorage:', error)
+            console.warn('Lỗi khi lưu theme mode vào localStorage:', error)
         }
     }, [mode])
 
@@ -53,7 +53,7 @@ export const ThemeModeProvider = ({ children }: { children: ReactNode }) => {
 export const useThemeMode = () => {
     const context = useContext(ThemeModeContext)
     if (!context) {
-        throw new Error('useThemeMode must be used within ThemeModeProvider')
+        throw new Error('Lỗi khi sử dụng useThemeMode')
     }
     return context
 }

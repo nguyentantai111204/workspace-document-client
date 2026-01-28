@@ -1,6 +1,7 @@
-import React, { createContext, useContext, useState, useEffect } from 'react'
-import { WorkspaceResponse, CreateWorkspaceRequest, UpdateWorkSpaceRequest } from '../apis/workspace/workspace.interface'
+import React, { createContext, useContext, useEffect, useState } from 'react'
+import { useNavigate, useParams } from 'react-router-dom'
 import { createWorkspaceApi, updateWorkspaceApi } from '../apis/workspace/workspace.api'
+import { CreateWorkspaceRequest, UpdateWorkSpaceRequest, WorkspaceResponse } from '../apis/workspace/workspace.interface'
 import { useWorkspaces } from '../hooks/useWorkspaces'
 
 interface WorkspaceContextType {
@@ -16,28 +17,47 @@ const WorkspaceContext = createContext<WorkspaceContextType | undefined>(undefin
 
 export const WorkspaceProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
     const { workspaces, isLoading, mutate } = useWorkspaces()
-    const [currentWorkspace, setCurrentWorkspace] = useState<WorkspaceResponse | null>(null)
+    const [currentWorkspace, setCurrentWorkspaceState] = useState<WorkspaceResponse | null>(null)
+    const navigate = useNavigate()
+    const { workspaceId } = useParams()
 
+    const setCurrentWorkspace = (workspace: WorkspaceResponse) => {
+        setCurrentWorkspaceState(workspace)
+        navigate(`/workspace/${workspace.id}`)
+    }
     useEffect(() => {
         if (workspaces.length > 0) {
-            if (!currentWorkspace) {
-                setCurrentWorkspace(workspaces[0])
-            } else {
-                const updated = workspaces.find((ws) => ws.id === currentWorkspace.id)
-                if (updated && JSON.stringify(updated) !== JSON.stringify(currentWorkspace)) {
-                    setCurrentWorkspace(updated)
+            if (workspaceId) {
+                const found = workspaces.find((ws) => ws.id === workspaceId)
+                if (found) {
+                    if (!currentWorkspace || currentWorkspace.id !== found.id) {
+                        setCurrentWorkspaceState(found)
+                    }
+                } else if (!isLoading) {
+                    setCurrentWorkspace(workspaces[0])
                 }
+            } else if (!isLoading) {
+                setCurrentWorkspace(workspaces[0])
             }
         }
-    }, [workspaces, currentWorkspace])
+    }, [workspaces, workspaceId, isLoading])
+
+    useEffect(() => {
+        if (currentWorkspace && workspaces.length > 0) {
+            const updated = workspaces.find((ws) => ws.id === currentWorkspace.id)
+            if (updated && JSON.stringify(updated) !== JSON.stringify(currentWorkspace)) {
+                setCurrentWorkspaceState(updated)
+            }
+        }
+    }, [workspaces])
 
     const createWorkspace = async (data: CreateWorkspaceRequest) => {
         try {
             const newWorkspace = await createWorkspaceApi(data)
-            await mutate() // Refresh the list
+            await mutate()
             setCurrentWorkspace(newWorkspace)
         } catch (error) {
-            console.error('Failed to create workspace:', error)
+            console.error('Lỗi khi tạo workspace:', error)
             throw error
         }
     }
@@ -45,12 +65,12 @@ export const WorkspaceProvider: React.FC<{ children: React.ReactNode }> = ({ chi
     const updateWorkspace = async (workspaceId: string, data: UpdateWorkSpaceRequest) => {
         try {
             const updated = await updateWorkspaceApi(workspaceId, data)
-            await mutate() // Refresh the list
+            await mutate()
             if (currentWorkspace?.id === workspaceId) {
-                setCurrentWorkspace({ ...currentWorkspace, ...updated })
+                setCurrentWorkspaceState({ ...currentWorkspace, ...updated })
             }
         } catch (error) {
-            console.error('Failed to update workspace:', error)
+            console.error('Lỗi khi cập nhật workspace:', error)
             throw error
         }
     }
@@ -65,7 +85,7 @@ export const WorkspaceProvider: React.FC<{ children: React.ReactNode }> = ({ chi
 export const useWorkspace = () => {
     const context = useContext(WorkspaceContext)
     if (context === undefined) {
-        throw new Error('useWorkspace must be used within a WorkspaceProvider')
+        throw new Error('Lỗi khi sử dụng useWorkspace')
     }
     return context
 }

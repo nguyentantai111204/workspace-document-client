@@ -18,7 +18,16 @@ export const appRoutes: RouteObject = {
                 },
                 {
                     path: 'workspace',
-                    element: <WorkspacePage />,
+                    children: [
+                        {
+                            index: true,
+                            element: <WorkspacePage />,
+                        },
+                        {
+                            path: ':workspaceId',
+                            element: <WorkspacePage />,
+                        },
+                    ]
                 },
                 {
                     path: 'profile',
