@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react'
 import { Autocomplete, TextField, CircularProgress, type AutocompleteProps } from '@mui/material'
 import { searchUsersApi } from '../../apis/user/user.api'
-import { useDebounce } from '../../hooks/useDebounce'
+import { useDebounce } from '../../hooks/use-debounce.hook'
 import { UserResponse } from '../../apis/user/user.interface'
 import { PAGE_LIMIT_DEFAULT } from '../../common/constant/page-take.constant'
 import { UserItemComponent } from '../user/user-item.component'

@@ -4,7 +4,6 @@ import {
     WorkspaceResponse,
     WorkspaceListResponse,
     WorkspaceQuery,
-    MemberResponse,
     MemberQuery,
     InviteMemberRequest,
     UpdateRoleRequest,

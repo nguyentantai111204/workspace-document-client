@@ -5,12 +5,13 @@ import { useState } from 'react'
 import { TextFieldSelectSearchComponent } from '../textfield/text-field-select-search.component'
 import { ButtonComponent } from '../button/button.component'
 import { useWorkspace } from '../../contexts/workspace.context'
-import { useWorkspaceMembers } from '../../hooks/useWorkspaceMembers'
+import { useWorkspaceMembers } from '../../hooks/use-workspace-member.hook'
 import { inviteMemberApi } from '../../apis/workspace/workspace.api'
 import { useAppDispatch } from '../../redux/store.redux'
 import { showSnackbar } from '../../redux/system/system.slice'
 import { UserResponse } from '../../apis/user/user.interface'
 import { UserItemComponent } from '../user/user-item.component'
+import { useSnackbar } from '../../hooks/use-snackbar.hook'
 
 interface ShareDialogProps {
     open: boolean
@@ -23,19 +24,19 @@ export const ShareDialog = ({ open, onClose }: ShareDialogProps) => {
     const theme = useTheme()
     const dispatch = useAppDispatch()
     const { currentWorkspace } = useWorkspace()
-    const { members, isLoading: isLoadingMembers, mutate } = useWorkspaceMembers(currentWorkspace?.id)
+    const { members, isLoading: isLoadingMembers, mutate } = useWorkspaceMembers(open ? currentWorkspace?.id : undefined)
     const [selectedUser, setSelectedUser] = useState<UserResponse | null>(null)
     const [isSubmitting, setIsSubmitting] = useState(false)
-    const [error, setError] = useState<string>('')
+    const { showError } = useSnackbar()
+
 
     const handleInvite = async () => {
         if (!selectedUser || !currentWorkspace) {
-            setError('Vui lòng chọn người dùng')
+            showError('Vui lòng chọn người dùng')
             return
         }
 
         setIsSubmitting(true)
-        setError('')
 
         try {
             await inviteMemberApi(currentWorkspace.id, {
@@ -49,8 +50,7 @@ export const ShareDialog = ({ open, onClose }: ShareDialogProps) => {
             onClose()
         } catch (err: any) {
             const errorMessage = err?.response?.data?.message || 'Có lỗi xảy ra khi gửi lời mời'
-            setError(errorMessage)
-            dispatch(showSnackbar({ message: errorMessage, severity: 'error' }))
+            showError(errorMessage)
         } finally {
             setIsSubmitting(false)
         }
@@ -91,7 +91,6 @@ export const ShareDialog = ({ open, onClose }: ShareDialogProps) => {
                             placeholder="Nhập email để tìm kiếm..."
                             value={selectedUser}
                             onSelectUser={setSelectedUser}
-                            errorMessage={error}
                         />
                     </Box>
 

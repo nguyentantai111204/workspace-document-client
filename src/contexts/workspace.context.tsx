@@ -2,7 +2,7 @@ import React, { createContext, useContext, useEffect, useState } from 'react'
 import { useLocation, useNavigate, useParams } from 'react-router-dom'
 import { createWorkspaceApi, updateWorkspaceApi } from '../apis/workspace/workspace.api'
 import { CreateWorkspaceRequest, UpdateWorkSpaceRequest, WorkspaceResponse } from '../apis/workspace/workspace.interface'
-import { useWorkspaces } from '../hooks/useWorkspaces'
+import { useWorkspaces } from '../hooks/use-workspace.hook'
 
 interface WorkspaceContextType {
     workspaces: WorkspaceResponse[]
