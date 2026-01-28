@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useEffect, useState } from 'react'
+import React, { createContext, useContext, useEffect } from 'react'
 import { useLocation, useNavigate, useParams } from 'react-router-dom'
 import { createWorkspaceApi, updateWorkspaceApi } from '../apis/workspace/workspace.api'
 import { CreateWorkspaceRequest, UpdateWorkSpaceRequest, WorkspaceResponse } from '../apis/workspace/workspace.interface'
@@ -17,43 +17,47 @@ const WorkspaceContext = createContext<WorkspaceContextType | undefined>(undefin
 
 export const WorkspaceProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
     const { workspaces, isLoading, mutate } = useWorkspaces()
-    const [currentWorkspace, setCurrentWorkspaceState] = useState<WorkspaceResponse | null>(null)
     const navigate = useNavigate()
     const { workspaceId } = useParams()
     const location = useLocation()
 
+    // Derive current workspace from URL param
+    const currentWorkspace = React.useMemo(() => {
+        if (!workspaceId || !workspaces.length) return null
+        return workspaces.find((ws) => ws.id === workspaceId) || null
+    }, [workspaces, workspaceId])
+
     const setCurrentWorkspace = (workspace: WorkspaceResponse) => {
-        setCurrentWorkspaceState(workspace)
+        localStorage.setItem('lastWorkspaceId', workspace.id)
         navigate(`/workspace/${workspace.id}`)
     }
 
+    // Effect to handle redirections for empty or invalid routes
     useEffect(() => {
+        if (isLoading || workspaces.length === 0) return
+
         const isWorkspaceRoute = location.pathname.startsWith('/workspace')
 
-        if (workspaces.length > 0 && isWorkspaceRoute) {
-            if (workspaceId) {
-                const found = workspaces.find((ws) => ws.id === workspaceId)
-                if (found) {
-                    if (!currentWorkspace || currentWorkspace.id !== found.id) {
-                        setCurrentWorkspaceState(found)
-                    }
-                } else if (!isLoading) {
-                    setCurrentWorkspace(workspaces[0])
+        // precise match for /workspace or /workspace/ (root of workspace feature)
+        // or if we are deep in workspace but the ID doesn't match any workspace (invalid ID)
+        if (isWorkspaceRoute) {
+            if (!workspaceId) {
+                // No ID provided, try last used or first available
+                const lastId = localStorage.getItem('lastWorkspaceId')
+                const targetWorkspace = workspaces.find(w => w.id === lastId) || workspaces[0]
+                if (targetWorkspace) {
+                    navigate(`/workspace/${targetWorkspace.id}`, { replace: true })
                 }
-            } else if (!isLoading) {
-                setCurrentWorkspace(workspaces[0])
+            } else if (!currentWorkspace) {
+                // ID provided but not found, redirect to first available
+                // Warn: This assumes we have full list. If paginated, this logic needs care.
+                // For now assuming full list is loaded for context.
+                if (workspaces.length > 0) {
+                    navigate(`/workspace/${workspaces[0].id}`, { replace: true })
+                }
             }
         }
-    }, [workspaces, workspaceId, isLoading, location.pathname])
-
-    useEffect(() => {
-        if (currentWorkspace && workspaces.length > 0) {
-            const updated = workspaces.find((ws) => ws.id === currentWorkspace.id)
-            if (updated && JSON.stringify(updated) !== JSON.stringify(currentWorkspace)) {
-                setCurrentWorkspaceState(updated)
-            }
-        }
-    }, [workspaces])
+    }, [workspaces, workspaceId, isLoading, location.pathname, currentWorkspace, navigate])
 
     const createWorkspace = async (data: CreateWorkspaceRequest) => {
         try {
@@ -68,11 +72,9 @@ export const WorkspaceProvider: React.FC<{ children: React.ReactNode }> = ({ chi
 
     const updateWorkspace = async (workspaceId: string, data: UpdateWorkSpaceRequest) => {
         try {
-            const updated = await updateWorkspaceApi(workspaceId, data)
+            await updateWorkspaceApi(workspaceId, data)
             await mutate()
-            if (currentWorkspace?.id === workspaceId) {
-                setCurrentWorkspaceState({ ...currentWorkspace, ...updated })
-            }
+            // No need to update local state as it is derived from "workspaces" which comes from SWR and is updated by mutate()
         } catch (error) {
             console.error('Lỗi khi cập nhật workspace:', error)
             throw error
