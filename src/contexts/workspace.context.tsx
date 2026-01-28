@@ -19,8 +19,15 @@ export const WorkspaceProvider: React.FC<{ children: React.ReactNode }> = ({ chi
     const [currentWorkspace, setCurrentWorkspace] = useState<WorkspaceResponse | null>(null)
 
     useEffect(() => {
-        if (!currentWorkspace && workspaces.length > 0) {
-            setCurrentWorkspace(workspaces[0])
+        if (workspaces.length > 0) {
+            if (!currentWorkspace) {
+                setCurrentWorkspace(workspaces[0])
+            } else {
+                const updated = workspaces.find((ws) => ws.id === currentWorkspace.id)
+                if (updated && JSON.stringify(updated) !== JSON.stringify(currentWorkspace)) {
+                    setCurrentWorkspace(updated)
+                }
+            }
         }
     }, [workspaces, currentWorkspace])
 
@@ -40,7 +47,7 @@ export const WorkspaceProvider: React.FC<{ children: React.ReactNode }> = ({ chi
             const updated = await updateWorkspaceApi(workspaceId, data)
             await mutate() // Refresh the list
             if (currentWorkspace?.id === workspaceId) {
-                setCurrentWorkspace(updated)
+                setCurrentWorkspace({ ...currentWorkspace, ...updated })
             }
         } catch (error) {
             console.error('Failed to update workspace:', error)

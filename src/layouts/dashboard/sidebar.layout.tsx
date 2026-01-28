@@ -16,7 +16,7 @@ import FolderIcon from '@mui/icons-material/Folder'
 import { useNavigate, useLocation } from 'react-router-dom'
 import { useAppDispatch, useAppSelector } from '../../redux/store.redux'
 import { setSidebarOpen } from '../../redux/system/system.slice'
-import { WorkspaceSwitcherComponent, Workspace } from '../../components/workspace/workspace-switcher.component'
+import { WorkspaceSwitcherComponent } from '../../components/workspace/workspace-switcher.component'
 import { SIDEBAR_WIDTH, TIME_ANIMATION } from '../../common/constant/style.constant'
 import { useThemeMode } from '../../contexts/theme-mode.context'
 import { useWorkspace } from '../../contexts/workspace.context'
@@ -30,6 +30,8 @@ import { CreateWorkspaceDialog } from '../../components/workspace/create-workspa
 import { UpdateWorkspaceDialog } from '../../components/workspace/update-workspace-dialog.component'
 import { useState } from 'react'
 
+import { WorkspaceResponse } from '../../apis/workspace/workspace.interface'
+
 const SidebarContent = ({ onItemClick }: { onItemClick?: () => void }) => {
     const theme = useTheme()
     const navigate = useNavigate()
@@ -37,33 +39,16 @@ const SidebarContent = ({ onItemClick }: { onItemClick?: () => void }) => {
     const { workspaces, currentWorkspace, setCurrentWorkspace, isLoading } = useWorkspace()
     const [createDialogOpen, setCreateDialogOpen] = useState(false)
     const [updateDialogOpen, setUpdateDialogOpen] = useState(false)
-    const [editingWorkspace, setEditingWorkspace] = useState<any>(null)
-
-    const mappedWorkspaces: Workspace[] = workspaces.map(ws => ({
-        id: ws.id,
-        name: ws.name,
-        avatar: '/assets/images/avatar/avatar-1.webp',
-        plan: 'Free'
-    }))
-
-    const mappedCurrentWorkspace: Workspace | undefined = currentWorkspace ? {
-        id: currentWorkspace.id,
-        name: currentWorkspace.name,
-        avatar: '/assets/images/avatar/avatar-1.webp',
-        plan: 'Free'
-    } : undefined
+    const [editingWorkspace, setEditingWorkspace] = useState<WorkspaceResponse | null>(null)
 
     const handleNavigate = (path: string) => {
         navigate(path)
         onItemClick?.()
     }
 
-    const handleEditWorkspace = (ws: Workspace) => {
-        const originalWs = workspaces.find(w => w.id === ws.id)
-        if (originalWs) {
-            setEditingWorkspace(originalWs)
-            setUpdateDialogOpen(true)
-        }
+    const handleEditWorkspace = (ws: WorkspaceResponse) => {
+        setEditingWorkspace(ws)
+        setUpdateDialogOpen(true)
     }
 
     if (isLoading) {
@@ -90,15 +75,12 @@ const SidebarContent = ({ onItemClick }: { onItemClick?: () => void }) => {
                 </Typography>
             </Stack>
 
-            {mappedCurrentWorkspace && (
+            {currentWorkspace && (
                 <WorkspaceSwitcherComponent
-                    currentWorkspace={mappedCurrentWorkspace}
-                    workspaces={mappedWorkspaces}
-                    onWorkspaceChange={(ws: Workspace) => {
-                        const selected = workspaces.find((w: { id: string }) => w.id === ws.id)
-                        if (selected) {
-                            setCurrentWorkspace(selected)
-                        }
+                    currentWorkspace={currentWorkspace}
+                    workspaces={workspaces}
+                    onWorkspaceChange={(ws: WorkspaceResponse) => {
+                        setCurrentWorkspace(ws)
                     }}
                     onCreateWorkspace={() => setCreateDialogOpen(true)}
                     onEditWorkspace={handleEditWorkspace}

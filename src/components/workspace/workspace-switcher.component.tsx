@@ -1,23 +1,17 @@
-import { Box, Typography, alpha, useTheme, Menu, MenuItem, Chip, Button, Divider, IconButton } from '@mui/material'
+import { Box, Typography, alpha, useTheme, Menu, MenuItem, Button, Divider, IconButton, Avatar } from '@mui/material'
 import UnfoldMoreIcon from '@mui/icons-material/UnfoldMore'
 import AddIcon from '@mui/icons-material/Add'
 import EditIcon from '@mui/icons-material/Edit'
 import WorkspacesIcon from '@mui/icons-material/Workspaces'
 import React, { useState } from 'react'
-
-export interface Workspace {
-    id: string
-    name: string
-    avatar: string
-    plan: 'Free' | 'Pro' | 'Enterprise'
-}
+import { WorkspaceResponse } from '../../apis/workspace/workspace.interface'
 
 interface WorkspaceSwitcherProps {
-    currentWorkspace?: Workspace
-    workspaces: Workspace[]
-    onWorkspaceChange?: (workspace: Workspace) => void
+    currentWorkspace?: WorkspaceResponse
+    workspaces: WorkspaceResponse[]
+    onWorkspaceChange?: (workspace: WorkspaceResponse) => void
     onCreateWorkspace?: () => void
-    onEditWorkspace?: (workspace: Workspace) => void
+    onEditWorkspace?: (workspace: WorkspaceResponse) => void
 }
 
 export const WorkspaceSwitcherComponent = ({
@@ -41,25 +35,13 @@ export const WorkspaceSwitcherComponent = ({
         setAnchorEl(null)
     }
 
-    const handleSelectWorkspace = (workspace: Workspace) => {
+    const handleSelectWorkspace = (workspace: WorkspaceResponse) => {
         onWorkspaceChange?.(workspace)
         handleClose()
     }
 
     const handleCreateWorkspace = () => {
         onCreateWorkspace?.()
-        console.log('Create workspace clicked')
-    }
-
-    const getPlanColor = (plan: Workspace['plan']) => {
-        switch (plan) {
-            case 'Pro':
-                return 'info'
-            case 'Enterprise':
-                return 'success'
-            default:
-                return 'default'
-        }
     }
 
     if (workspaces.length === 0 || !currentWorkspace) {
@@ -121,22 +103,24 @@ export const WorkspaceSwitcherComponent = ({
                     },
                 }}
             >
-                <Box
-                    component="img"
-                    src={currentWorkspace.avatar || 'test'}
+                <Avatar
                     sx={{
                         width: 40,
                         height: 40,
                         borderRadius: '50%',
-                        objectFit: 'cover',
+                        bgcolor: 'primary.main',
+                        fontSize: '1rem',
+                        fontWeight: 700,
                     }}
-                />
+                >
+                    {(currentWorkspace.name || '').substring(0, 1).toUpperCase()}
+                </Avatar>
                 <Box overflow="hidden" flex={1}>
-                    <Typography variant="subtitle2" noWrap>
+                    <Typography variant="subtitle2" noWrap fontWeight={700}>
                         {currentWorkspace.name}
                     </Typography>
-                    <Typography variant="body2" color="text.secondary" noWrap>
-                        {currentWorkspace.plan}
+                    <Typography variant="caption" color="text.secondary" noWrap>
+                        Cá nhân
                     </Typography>
                 </Box>
                 <UnfoldMoreIcon
@@ -194,18 +178,19 @@ export const WorkspaceSwitcherComponent = ({
                                 },
                             }}
                         >
-                            <Box
-                                component="img"
-                                src={workspace.avatar || '/assets/images/avatar/avatar-25.webp'}
-                                alt={workspace.name}
+                            <Avatar
                                 sx={{
                                     width: 32,
                                     height: 32,
                                     borderRadius: '50%',
-                                    objectFit: 'cover',
+                                    bgcolor: isActive ? 'primary.main' : 'grey.400',
+                                    fontSize: '0.875rem',
+                                    fontWeight: 700,
                                 }}
-                            />
-                            <Typography variant="body2" noWrap flex={1}>
+                            >
+                                {(workspace.name || '').substring(0, 1).toUpperCase()}
+                            </Avatar>
+                            <Typography variant="body2" noWrap flex={1} fontWeight={isActive ? 600 : 400}>
                                 {workspace.name}
                             </Typography>
                             <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
@@ -229,16 +214,6 @@ export const WorkspaceSwitcherComponent = ({
                                 >
                                     <EditIcon fontSize="inherit" sx={{ fontSize: 16 }} />
                                 </IconButton>
-                                <Chip
-                                    label={workspace.plan}
-                                    size="small"
-                                    color={getPlanColor(workspace.plan)}
-                                    sx={{
-                                        height: 20,
-                                        fontSize: '0.6875rem',
-                                        fontWeight: 600,
-                                    }}
-                                />
                             </Box>
                         </MenuItem>
                     )

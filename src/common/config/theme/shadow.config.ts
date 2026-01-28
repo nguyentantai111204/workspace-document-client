@@ -1,11 +1,7 @@
 import type { Shadows } from '@mui/material/styles'
 
-/**
- * Creates theme-aware shadows with appropriate opacity for light and dark modes.
- * Dark mode uses stronger shadows for better depth perception.
- */
+
 export const createShadows = (mode: 'light' | 'dark'): Shadows => {
-    // Dark mode needs stronger shadows to create depth on dark backgrounds
     const baseOpacity = mode === 'dark' ? 0.4 : 0.1
 
     return [
@@ -22,6 +18,6 @@ export const createShadows = (mode: 'light' | 'dark'): Shadows => {
         `0px 32px 64px rgba(0, 0, 0, ${baseOpacity * 2.2})`,
         `0px 36px 72px rgba(0, 0, 0, ${baseOpacity * 2.4})`,
         `0px 40px 80px rgba(0, 0, 0, ${baseOpacity * 2.5})`,
-        ...Array(11).fill(`0px 40px 80px rgba(0, 0, 0, ${baseOpacity * 2.5})`),
+        ...Array(12).fill(`0px 40px 80px rgba(0, 0, 0, ${baseOpacity * 2.5})`),
     ] as Shadows
 }
