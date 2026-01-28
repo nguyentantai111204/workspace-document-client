@@ -2,7 +2,7 @@ import { Menu, MenuItem, ListItemIcon, ListItemText, useTheme, alpha, useMediaQu
 import EditIcon from '@mui/icons-material/Edit'
 import DeleteIcon from '@mui/icons-material/Delete'
 import ShareIcon from '@mui/icons-material/Share'
-import PushPinIcon from '@mui/icons-material/PushPin'
+// import PushPinIcon from '@mui/icons-material/PushPin'
 
 interface FileActionMenuProps {
     anchorEl: HTMLElement | null
@@ -19,7 +19,7 @@ export const FileActionMenu = ({
     onEdit,
     onDelete,
     onShare,
-    onPin
+    // onPin
 }: FileActionMenuProps) => {
     const theme = useTheme()
     const isMobile = useMediaQuery(theme.breakpoints.down('sm'))
@@ -87,13 +87,6 @@ export const FileActionMenu = ({
                     <ShareIcon fontSize={iconSize} color="action" />
                 </ListItemIcon>
                 <ListItemText {...textProps}>Chia sẻ</ListItemText>
-            </MenuItem>
-
-            <MenuItem onClick={() => handleAction(onPin)}>
-                <ListItemIcon sx={iconSx}>
-                    <PushPinIcon fontSize={iconSize} color="action" />
-                </ListItemIcon>
-                <ListItemText {...textProps}>Ghim</ListItemText>
             </MenuItem>
 
             <MenuItem

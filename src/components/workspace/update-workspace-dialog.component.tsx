@@ -1,4 +1,4 @@
-import { Dialog, DialogTitle, DialogContent, IconButton, Typography, Box, InputLabel, alpha, useTheme, Avatar } from '@mui/material'
+import { Dialog, DialogTitle, DialogContent, IconButton, Typography, Box, InputLabel, alpha, useTheme, Avatar, useMediaQuery } from '@mui/material'
 import CloseIcon from '@mui/icons-material/Close'
 import SaveIcon from '@mui/icons-material/Save'
 import { useWorkspace } from '../../contexts/workspace.context'
@@ -28,6 +28,7 @@ const validationSchema = Yup.object({
 
 export const UpdateWorkspaceDialog = ({ open, onClose, workspace }: UpdateWorkspaceDialogProps) => {
     const theme = useTheme()
+    const isMobile = useMediaQuery(theme.breakpoints.down('sm'))
     const { updateWorkspace } = useWorkspace()
 
     const initialValues: WorkspaceValues = {
@@ -56,9 +57,10 @@ export const UpdateWorkspaceDialog = ({ open, onClose, workspace }: UpdateWorksp
             fullWidth
             PaperProps={{
                 sx: {
-                    borderRadius: 3,
+                    borderRadius: isMobile ? 3 : 4,
                     backgroundImage: 'none',
                     boxShadow: theme.shadows[10],
+                    m: isMobile ? 2 : 'auto',
                 }
             }}
         >
@@ -67,54 +69,55 @@ export const UpdateWorkspaceDialog = ({ open, onClose, workspace }: UpdateWorksp
                 size="small"
                 sx={{
                     position: 'absolute',
-                    right: 16,
-                    top: 16,
+                    right: 8,
+                    top: 8,
                     color: 'text.disabled',
-                    '&:hover': { color: 'text.primary' }
+                    '&:hover': { color: 'text.primary' },
+                    zIndex: 1
                 }}
             >
-                <CloseIcon />
+                <CloseIcon fontSize="small" />
             </IconButton>
 
-            <DialogTitle sx={{ pt: 5, pb: 2, px: 3, textAlign: 'center' }}>
-                <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 2 }}>
+            <DialogTitle sx={{ pt: isMobile ? 4 : 5, pb: 1, px: isMobile ? 2 : 3, textAlign: 'center' }}>
+                <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: isMobile ? 1.5 : 2 }}>
                     <Box
                         sx={{
-                            p: 1.5,
+                            p: 1,
                             borderRadius: '50%',
                             bgcolor: alpha(theme.palette.primary.main, 0.1),
                             color: 'primary.main',
                             display: 'flex',
                             alignItems: 'center',
                             justifyContent: 'center',
-                            boxShadow: `0 0 20px ${alpha(theme.palette.primary.main, 0.2)}`,
+                            boxShadow: `0 0 15px ${alpha(theme.palette.primary.main, 0.15)}`,
                         }}
                     >
                         <Avatar
                             sx={{
-                                width: 64,
-                                height: 64,
+                                width: isMobile ? 48 : 64,
+                                height: isMobile ? 48 : 64,
                                 bgcolor: 'primary.main',
-                                fontSize: '1.5rem',
+                                fontSize: isMobile ? '1.25rem' : '1.5rem',
                                 fontWeight: 700,
                             }}
                         >
-                            {workspace.name.substring(0, 1).toUpperCase()}
+                            {(workspace.name || '').substring(0, 1).toUpperCase()}
                         </Avatar>
                     </Box>
 
-                    <StackColumnAlignStart sx={{ alignItems: 'center', textAlign: 'center', width: '100%', gap: 0.5 }}>
-                        <Typography variant="h5" fontWeight={800} sx={{ letterSpacing: '-0.02em' }}>
+                    <StackColumnAlignStart sx={{ alignItems: 'center', textAlign: 'center', width: '100%', gap: 0.25 }}>
+                        <Typography variant={isMobile ? 'h6' : 'h5'} fontWeight={800} sx={{ letterSpacing: '-0.02em' }}>
                             Cập nhật Workspace
                         </Typography>
-                        <Typography variant="body2" color="text.secondary" sx={{ maxWidth: '80%', lineHeight: 1.6 }}>
-                            Tùy chỉnh tên workspace để giúp bạn và đồng đội dễ dàng nhận diện dự án hơn.
+                        <Typography variant="body2" color="text.secondary" sx={{ maxWidth: '90%', lineHeight: 1.5, fontSize: isMobile ? 13 : 14 }}>
+                            {isMobile ? 'Cập nhật tên dự án theo sở thích của bạn' : 'Tùy chỉnh tên workspace để giúp bạn và đồng đội dễ dàng nhận diện dự án hơn.'}
                         </Typography>
                     </StackColumnAlignStart>
                 </Box>
             </DialogTitle>
 
-            <DialogContent sx={{ p: 4 }}>
+            <DialogContent sx={{ p: isMobile ? 3 : 4, pt: isMobile ? 2 : 3, mt: isMobile ? 2 : 3 }}>
                 <Formik
                     initialValues={initialValues}
                     validationSchema={validationSchema}
@@ -130,11 +133,11 @@ export const UpdateWorkspaceDialog = ({ open, onClose, workspace }: UpdateWorksp
                         isSubmitting,
                     }) => (
                         <Form noValidate>
-                            <Box sx={{ mb: 4 }}>
+                            <Box sx={{ mb: isMobile ? 3 : 4 }}>
                                 <InputLabel
                                     sx={{
-                                        mb: 1,
-                                        fontSize: 14,
+                                        mb: 0.75,
+                                        fontSize: isMobile ? 13 : 14,
                                         fontWeight: 700,
                                         color: 'text.primary',
                                         ml: 0.5
@@ -144,9 +147,9 @@ export const UpdateWorkspaceDialog = ({ open, onClose, workspace }: UpdateWorksp
                                 </InputLabel>
                                 <TextFieldComponent
                                     autoFocus
-                                    sizeUI="md"
+                                    sizeUI={isMobile ? 'sm' : 'md'}
                                     name="name"
-                                    placeholder="VD: Dự án Marketing, Tài liệu cá nhân..."
+                                    placeholder="VD: Dự án Marketing..."
                                     value={values.name}
                                     onChange={handleChange}
                                     onBlur={handleBlur}
@@ -156,9 +159,9 @@ export const UpdateWorkspaceDialog = ({ open, onClose, workspace }: UpdateWorksp
                                 />
                             </Box>
 
-                            <Box sx={{ display: 'flex', gap: 2 }}>
+                            <Box sx={{ display: 'flex', gap: isMobile ? 1.5 : 2 }}>
                                 <ButtonComponent
-                                    sizeUI="md"
+                                    sizeUI={isMobile ? 'sm' : 'md'}
                                     variant="ghost"
                                     onClick={onClose}
                                     disabled={isSubmitting}
@@ -168,18 +171,18 @@ export const UpdateWorkspaceDialog = ({ open, onClose, workspace }: UpdateWorksp
                                     Hủy
                                 </ButtonComponent>
                                 <ButtonComponent
-                                    sizeUI="md"
+                                    sizeUI={isMobile ? 'sm' : 'md'}
                                     variant="primary"
                                     type="submit"
                                     loading={isSubmitting}
-                                    icon={<SaveIcon />}
+                                    icon={<SaveIcon sx={{ fontSize: isMobile ? 18 : 20 }} />}
                                     fullWidth
                                     sx={{
                                         borderRadius: 2,
-                                        boxShadow: `0 4px 14px 0 ${alpha(theme.palette.primary.main, 0.39)}`,
+                                        boxShadow: `0 4px 12px 0 ${alpha(theme.palette.primary.main, 0.3)}`,
                                     }}
                                 >
-                                    Lưu thay đổi
+                                    {isMobile ? 'Lưu' : 'Lưu thay đổi'}
                                 </ButtonComponent>
                             </Box>
                         </Form>

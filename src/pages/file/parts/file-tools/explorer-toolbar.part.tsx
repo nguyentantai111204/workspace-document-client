@@ -98,6 +98,7 @@ export const ExplorerToolbar = ({ viewMode, onViewChange, onSearch, onFilter, is
                             icon={<AddIcon fontSize="small" />}
                             sizeUI="sm"
                             onClick={onUpload}
+                            
                         >
                             Thêm
                         </ButtonComponent>
