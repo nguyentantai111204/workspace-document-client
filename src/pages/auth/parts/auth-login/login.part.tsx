@@ -14,12 +14,13 @@ import {
 } from '../../../../components/mui-custom/stack/stack.mui-custom'
 
 import { AuthHeader } from '../auth-header.part'
+import { getDeviceId } from '../../../../common/utils/device.utils'
+
 import { useAppDispatch } from '../../../../redux/store.redux'
 import { login } from '../../../../redux/account/account.action'
 import { useNavigate } from 'react-router-dom'
 import { useSnackbar } from '../../../../hooks/use-snackbar.hook'
 import { LoginPayload } from '../../auth.interface'
-
 
 const initialValues: LoginPayload = {
     email: '',
@@ -37,7 +38,10 @@ export const LoginForm = () => {
         { setSubmitting }: FormikHelpers<LoginPayload>,
     ) => {
         try {
-            const result = await dispatch(login(values))
+            const deviceId = getDeviceId()
+            // Exclude 'remember' because it's not in LoginRequest (API)
+            const { remember, ...loginData } = values
+            const result = await dispatch(login({ ...loginData, deviceId }))
             if (login.fulfilled.match(result)) {
                 showSuccess('Đăng nhập thành công!')
                 navigate('/workspace')

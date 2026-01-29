@@ -1,6 +1,7 @@
 export interface LoginRequest {
     email?: string;
     password?: string;
+    deviceId?: string;
 }
 
 export interface LoginResponse {
@@ -30,6 +31,7 @@ export interface RegisterRequest {
     email: string
     password: string
     fullName: string
+    deviceId?: string;
 }
 
 export interface LogoutRequest {

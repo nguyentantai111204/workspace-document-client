@@ -10,6 +10,7 @@ import { useAppDispatch } from '../../../../redux/store.redux'
 import { useNavigate } from 'react-router-dom'
 import { useSnackbar } from '../../../../hooks/use-snackbar.hook'
 import { signup } from '../../../../redux/account/account.action'
+import { getDeviceId } from '../../../../common/utils/device.utils' // New import
 
 const initialValues: SignUpPayload = {
     fullName: '',
@@ -28,7 +29,8 @@ export const SignUpForm = () => {
         { setSubmitting }: FormikHelpers<SignUpPayload>
     ) => {
         try {
-            const result = await dispatch(signup(values))
+            const deviceId = getDeviceId()
+            const result = await dispatch(signup({ ...values, deviceId }))
             if (signup.fulfilled.match(result)) {
                 showSuccess('Đăng ký thành công!')
                 navigate('/login')
