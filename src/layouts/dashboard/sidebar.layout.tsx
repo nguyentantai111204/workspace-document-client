@@ -12,7 +12,6 @@ import {
     Stack,
     useTheme,
 } from '@mui/material'
-import FolderIcon from '@mui/icons-material/Folder'
 import { useNavigate, useLocation } from 'react-router-dom'
 import { useAppDispatch, useAppSelector } from '../../redux/store.redux'
 import { setSidebarOpen } from '../../redux/system/system.slice'
@@ -22,9 +21,15 @@ import { useThemeMode } from '../../contexts/theme-mode.context'
 import { useWorkspace } from '../../contexts/workspace.context'
 
 
-const MENU_ITEMS = [
-    { text: 'Workspace', icon: <FolderIcon />, path: '/workspace' },
-] as const
+import { mainRoutes } from '../../router/main.routes'
+
+const MENU_ITEMS = mainRoutes
+    .filter(route => route.handle?.title)
+    .map(route => ({
+        text: route.handle.title,
+        icon: route.handle.icon,
+        path: `/${route.path}`
+    }))
 
 import { CreateWorkspaceDialog } from '../../components/workspace/create-workspace-dialog.component'
 import { UpdateWorkspaceDialog } from '../../components/workspace/update-workspace-dialog.component'
@@ -52,7 +57,7 @@ const SidebarContent = ({ onItemClick }: { onItemClick?: () => void }) => {
     }
 
     if (isLoading) {
-        return <Box sx={{ p: 2 }}>Loading...</Box>
+        return <Box sx={{ p: 2 }}>Đang tải...</Box>
     }
 
     return (
