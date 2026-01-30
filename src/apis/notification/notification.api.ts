@@ -6,13 +6,13 @@ import {
 } from './notification.interface'
 
 export const listNotificationsApi = async (query?: NotificationQuery): Promise<NotificationListResponse> => {
-    const response = await axiosInstance.get<NotificationListResponse>('/notifications', { params: query })
+    const response = await axiosInstance.get<{ success: boolean } & NotificationListResponse>('/notifications', { params: query })
     return response.data
 }
 
 export const getUnreadCountApi = async (): Promise<number> => {
-    const response = await axiosInstance.get<number>('/notifications/unread-count')
-    return response.data
+    const response = await axiosInstance.get<{ success: boolean; data: number }>('/notifications/unread-count')
+    return response.data.data
 }
 
 export const markAsReadApi = async (id: string): Promise<void> => {

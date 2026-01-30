@@ -6,7 +6,8 @@ export interface NotificationState {
     unreadCount: number
     page: number
     limit: number
-    hasMore: boolean
+    total: number
+    totalPages: number
     loading: boolean
 }
 
@@ -15,7 +16,8 @@ const initialState: NotificationState = {
     unreadCount: 0,
     page: 1,
     limit: 20,
-    hasMore: true,
+    total: 0,
+    totalPages: 0,
     loading: false
 }
 
@@ -26,12 +28,14 @@ const notificationSlice = createSlice({
         setNotifications: (state, action: PayloadAction<{ notifications: Notification[], total: number, unreadCount: number }>) => {
             state.notifications = action.payload.notifications
             state.unreadCount = action.payload.unreadCount
-            state.hasMore = action.payload.notifications.length < action.payload.total
+            state.total = action.payload.total
+            state.totalPages = Math.ceil(action.payload.total / state.limit)
             state.loading = false
         },
         appendNotifications: (state, action: PayloadAction<{ notifications: Notification[], total: number }>) => {
             state.notifications = [...state.notifications, ...action.payload.notifications]
-            state.hasMore = state.notifications.length < action.payload.total
+            state.total = action.payload.total
+            state.totalPages = Math.ceil(action.payload.total / state.limit)
             state.loading = false
         },
         addNotification: (state, action: PayloadAction<Notification>) => {
@@ -66,8 +70,12 @@ const notificationSlice = createSlice({
         resetNotifications: (state) => {
             state.notifications = []
             state.page = 1
-            state.hasMore = true
+            state.total = 0
+            state.totalPages = 0
             state.unreadCount = 0
+        },
+        setPage: (state, action: PayloadAction<number>) => {
+            state.page = action.payload
         }
     }
 })
@@ -81,7 +89,8 @@ export const {
     markAllAsRead,
     incrementPage,
     setLoading,
-    resetNotifications
+    resetNotifications,
+    setPage
 } = notificationSlice.actions
 
 export default notificationSlice.reducer

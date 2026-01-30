@@ -150,7 +150,7 @@ export const NotificationItemComponent = ({
                             disabled={isAccepting || isDeclining}
                             sx={{ minWidth: 100 }}
                         >
-                            {isAccepting ? <CircularProgress size={16} /> : 'Join Workspace'}
+                            {isAccepting ? <CircularProgress size={16} /> : 'Tham gia Workspace'}
                         </Button>
                         <Button
                             variant="outlined"
@@ -158,7 +158,7 @@ export const NotificationItemComponent = ({
                             onClick={handleDeclineInvite}
                             disabled={isAccepting || isDeclining}
                         >
-                            {isDeclining ? <CircularProgress size={16} /> : 'Decline'}
+                            {isDeclining ? <CircularProgress size={16} /> : 'Từ chối'}
                         </Button>
                     </Stack>
                 )}

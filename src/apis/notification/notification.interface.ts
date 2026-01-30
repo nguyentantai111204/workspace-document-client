@@ -10,7 +10,6 @@ export const NotificationType = {
 export type NotificationType = (typeof NotificationType)[keyof typeof NotificationType]
 
 export interface NotificationData {
-    // For INVITE type
     workspaceId?: string
     workspaceName?: string
     inviteToken?: string
@@ -18,16 +17,13 @@ export interface NotificationData {
     inviterName?: string
     inviterId?: string
 
-    // For WORKSPACE type
     memberId?: string
     memberName?: string
 
-    // For FILE type
     fileId?: string
     fileName?: string
     action?: string
 
-    // Generic data
     [key: string]: any
 }
 
@@ -42,7 +38,6 @@ export interface Notification extends BaseEntity {
 }
 
 export interface NotificationListResponse {
-    success: boolean
     data: Notification[]
     meta: {
         page: number
@@ -50,8 +45,6 @@ export interface NotificationListResponse {
         total: number
         totalPages: number
     }
-    unreadCount: number
-    message: string
 }
 
 export interface NotificationQuery extends PaginationParams {

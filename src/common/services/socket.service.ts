@@ -10,10 +10,12 @@ class SocketService {
             return
         }
 
-        const apiUrl = import.meta.env.VITE_API_URL || 'http://localhost:3000'
-        const baseUrl = apiUrl.replace('/api', '')
+        // Backend WebSocket server runs on port 3000, not the Vite dev server port
+        const BACKEND_URL = 'http://localhost:3000'
 
-        this.socket = io(`${baseUrl}${this.namespace}`, {
+        console.log('[Socket] Connecting to:', `${BACKEND_URL}${this.namespace}`)
+
+        this.socket = io(`${BACKEND_URL}${this.namespace}`, {
             auth: {
                 token
             },
