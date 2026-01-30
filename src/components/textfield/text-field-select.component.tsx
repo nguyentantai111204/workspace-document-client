@@ -50,6 +50,11 @@ export const TextFieldSelectComponent = ({
             {label && <InputLabel>{label}</InputLabel>}
             <Select
                 label={label}
+                displayEmpty
+                renderValue={(selected) => {
+                    const selectedOption = options.find(opt => opt.value === selected)
+                    return selectedOption?.label || options[0]?.label || ''
+                }}
                 {...rest}
             >
                 {options.map((option) => (
