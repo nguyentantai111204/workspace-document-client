@@ -13,6 +13,7 @@ import {
 import storage from 'redux-persist/lib/storage'
 import systemReducer from './system/system.slice'
 import accountReducer from './account/account.slice'
+import notificationReducer from './notification/notification.slice'
 import type { AppDispatch, RootState } from './store.interface'
 
 const systemPersistConfig = {
@@ -32,6 +33,7 @@ const accountPersistConfig = {
 const rootReducer = combineReducers({
     system: persistReducer(systemPersistConfig, systemReducer),
     account: persistReducer(accountPersistConfig, accountReducer),
+    notification: notificationReducer,
 })
 
 export const store = configureStore({

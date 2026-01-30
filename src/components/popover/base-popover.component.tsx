@@ -11,7 +11,7 @@ interface BasePopoverProps {
     anchorEl: HTMLElement | null
     onClose: () => void
     title: string
-    subTitle?: string
+    subTitle?: ReactNode
     footer?: ReactNode
     children: ReactNode
     width?: number

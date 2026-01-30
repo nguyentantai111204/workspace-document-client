@@ -52,8 +52,9 @@ export const revokeInviteApi = async (workspaceId: string, inviteId: string): Pr
     await axiosInstance.delete(`/workspaces/${workspaceId}/invites/${inviteId}`)
 }
 
-export const acceptInviteApi = async (data: AcceptInviteRequest): Promise<void> => {
-    await axiosInstance.post('/workspaces/invites/accept', data)
+export const acceptInviteApi = async (data: AcceptInviteRequest): Promise<{ workspaceId: string }> => {
+    const response = await axiosInstance.post<{ workspaceId: string }>('/workspaces/invites/accept', data)
+    return response.data
 }
 
 export const updateWorkspaceApi = async (workspaceId: string, data: UpdateWorkSpaceRequest): Promise<WorkspaceResponse> => {
