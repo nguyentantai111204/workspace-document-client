@@ -68,15 +68,15 @@ export const NotificationItemComponent = ({
     const getNotificationIcon = () => {
         switch (notification.type) {
             case NotificationType.INVITE:
-                return <WorkspacesIcon sx={{ fontSize: 40, color: 'primary.main' }} />
+                return <WorkspacesIcon sx={{ fontSize: 30, color: 'primary.main' }} />
             case NotificationType.WORKSPACE:
-                return <WorkspacesIcon sx={{ fontSize: 40, color: 'info.main' }} />
+                return <WorkspacesIcon sx={{ fontSize: 30, color: 'info.main' }} />
             case NotificationType.FILE:
-                return <InsertDriveFileIcon sx={{ fontSize: 40, color: 'success.main' }} />
+                return <InsertDriveFileIcon sx={{ fontSize: 30, color: 'success.main' }} />
             case NotificationType.SYSTEM:
-                return <InfoIcon sx={{ fontSize: 40, color: 'text.secondary' }} />
+                return <InfoIcon sx={{ fontSize: 30, color: 'text.secondary' }} />
             default:
-                return <InfoIcon sx={{ fontSize: 40, color: 'text.secondary' }} />
+                return <InfoIcon sx={{ fontSize: 30, color: 'text.secondary' }} />
         }
     }
 
@@ -140,7 +140,6 @@ export const NotificationItemComponent = ({
                     {getActionIcon()}
                 </Typography>
 
-                {/* Action Buttons for Invite */}
                 {notification.type === NotificationType.INVITE && !notification.isRead && (
                     <Stack direction="row" spacing={1} sx={{ mt: 1.5 }}>
                         <Button
@@ -150,7 +149,7 @@ export const NotificationItemComponent = ({
                             disabled={isAccepting || isDeclining}
                             sx={{ minWidth: 100 }}
                         >
-                            {isAccepting ? <CircularProgress size={16} /> : 'Tham gia Workspace'}
+                            {isAccepting ? <CircularProgress size={16} /> : 'Tham gia'}
                         </Button>
                         <Button
                             variant="outlined"
