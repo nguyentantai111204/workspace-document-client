@@ -20,7 +20,7 @@ import { NotificationBellComponent } from '../../components/bell/notification-be
 import { AvatarUserComponent } from '../../components/avatar/avatar-user.component'
 import { useThemeMode } from '../../contexts/theme-mode.context'
 import { BreadcrumbComponent, type BreadcrumbItem } from '../../components/breadcrumb/breadcrumb.component'
-import { ShareDialog } from '../../components/workspace/share-dialog.component'
+import { ShareDialog } from '../../pages/workspace/components/share-dialog.component'
 import { useState } from 'react'
 
 interface HeaderLayoutProps {

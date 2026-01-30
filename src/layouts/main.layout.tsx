@@ -30,6 +30,14 @@ export const MainLayout = () => {
     const location = useLocation()
 
     const breadcrumbs = useMemo(() => {
+        if (location.pathname.includes('/members')) {
+            return [
+                { label: 'Trang chủ', href: '/' },
+                { label: 'Dự án', href: '/workspace' },
+                { label: 'Thành viên' }
+            ]
+        }
+
         if (location.pathname.startsWith('/workspace')) {
             return [
                 { label: 'Trang chủ', href: '/' },

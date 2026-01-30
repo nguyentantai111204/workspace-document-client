@@ -11,14 +11,16 @@ import {
     alpha,
     Stack,
     useTheme,
+    Divider,
 } from '@mui/material'
-import { useNavigate, useLocation } from 'react-router-dom'
+import { useNavigate, useLocation, useParams } from 'react-router-dom'
 import { useAppDispatch, useAppSelector } from '../../redux/store.redux'
 import { setSidebarOpen } from '../../redux/system/system.slice'
-import { WorkspaceSwitcherComponent } from '../../components/workspace/workspace-switcher.component'
+import { WorkspaceSwitcherComponent } from '../../pages/workspace/components/workspace-switcher.component'
 import { SIDEBAR_WIDTH, TIME_ANIMATION } from '../../common/constant/style.constant'
 import { useThemeMode } from '../../contexts/theme-mode.context'
 import { useWorkspace } from '../../contexts/workspace.context'
+import PeopleIcon from '@mui/icons-material/People'
 
 
 import { mainRoutes } from '../../router/main.routes'
@@ -31,8 +33,8 @@ const MENU_ITEMS = mainRoutes
         path: `/${route.path}`
     }))
 
-import { CreateWorkspaceDialog } from '../../components/workspace/create-workspace-dialog.component'
-import { UpdateWorkspaceDialog } from '../../components/workspace/update-workspace-dialog.component'
+import { CreateWorkspaceDialog } from '../../pages/workspace/components/create-workspace-dialog.component'
+import { UpdateWorkspaceDialog } from '../../pages/workspace/components/update-workspace-dialog.component'
 import { useState } from 'react'
 
 import { WorkspaceResponse } from '../../apis/workspace/workspace.interface'
@@ -41,6 +43,7 @@ const SidebarContent = ({ onItemClick }: { onItemClick?: () => void }) => {
     const theme = useTheme()
     const navigate = useNavigate()
     const location = useLocation()
+    const { workspaceId } = useParams()
     const { workspaces, currentWorkspace, setCurrentWorkspace, isLoading } = useWorkspace()
     const [createDialogOpen, setCreateDialogOpen] = useState(false)
     const [updateDialogOpen, setUpdateDialogOpen] = useState(false)
@@ -59,6 +62,15 @@ const SidebarContent = ({ onItemClick }: { onItemClick?: () => void }) => {
     if (isLoading) {
         return <Box sx={{ p: 2 }}>Đang tải...</Box>
     }
+
+    // Workspace-specific menu items
+    const workspaceMenuItems = workspaceId ? [
+        {
+            text: 'Thành viên',
+            icon: <PeopleIcon />,
+            path: `/workspace/${workspaceId}/members`
+        }
+    ] : []
 
     return (
         <Box sx={{ p: 2, height: '100%', display: 'flex', flexDirection: 'column' }}>
@@ -136,6 +148,69 @@ const SidebarContent = ({ onItemClick }: { onItemClick?: () => void }) => {
                     )
                 })}
             </List>
+
+            {workspaceMenuItems.length > 0 && (
+                <>
+                    <Divider sx={{ my: 2 }} />
+                    <Typography
+                        variant="caption"
+                        sx={{
+                            px: 2,
+                            mb: 1,
+                            color: 'text.secondary',
+                            fontWeight: 600,
+                            textTransform: 'uppercase',
+                            letterSpacing: 0.5
+                        }}
+                    >
+                        Workspace
+                    </Typography>
+                    <List disablePadding>
+                        {workspaceMenuItems.map((item) => {
+                            const isActive = location.pathname === item.path
+
+                            return (
+                                <ListItem key={item.text} disablePadding sx={{ mb: 0.5 }}>
+                                    <ListItemButton
+                                        selected={isActive}
+                                        onClick={() => handleNavigate(item.path)}
+                                        sx={{
+                                            borderRadius: (theme) => Number(theme.shape.borderRadius) / 6.67,
+                                            px: 1.5,
+                                            py: 1,
+                                            color: 'text.secondary',
+                                            '&.Mui-selected': {
+                                                bgcolor: (theme) => alpha(theme.palette.primary.main, 0.08),
+                                                color: 'primary.main',
+                                                '& .MuiListItemIcon-root': { color: 'primary.main' },
+                                                fontWeight: 'fontWeightBold',
+                                            },
+                                            '&.Mui-selected:hover': {
+                                                bgcolor: (theme) => alpha(theme.palette.primary.main, 0.12),
+                                            },
+                                            '&:hover': {
+                                                bgcolor: (theme) => alpha(theme.palette.primary.main, 0.04),
+                                            },
+                                        }}
+                                    >
+                                        <ListItemIcon sx={{ minWidth: 40, color: 'inherit' }}>
+                                            {item.icon}
+                                        </ListItemIcon>
+
+                                        <ListItemText
+                                            primary={item.text}
+                                            primaryTypographyProps={{
+                                                variant: 'body2',
+                                                fontWeight: 'inherit',
+                                            }}
+                                        />
+                                    </ListItemButton>
+                                </ListItem>
+                            )
+                        })}
+                    </List>
+                </>
+            )}
 
             <CreateWorkspaceDialog
                 open={createDialogOpen}

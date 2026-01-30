@@ -127,7 +127,6 @@ export const NotificationItemComponent = ({
                 </Box>
             )}
 
-            {/* Content */}
             <Box flex={1}>
                 <Typography variant="body2">
                     <Box component="span" sx={{ fontWeight: 600 }}>
@@ -135,7 +134,18 @@ export const NotificationItemComponent = ({
                     </Box>
                 </Typography>
 
-                <Typography variant="body2" sx={{ color: 'text.secondary', mt: 0.5 }}>
+                <Typography
+                    variant="body2"
+                    sx={{
+                        color: 'text.secondary',
+                        mt: 0.5,
+                        display: '-webkit-box',
+                        WebkitLineClamp: 2,
+                        WebkitBoxOrient: 'vertical',
+                        overflow: 'hidden',
+                        textOverflow: 'ellipsis'
+                    }}
+                >
                     {notification.body}
                     {getActionIcon()}
                 </Typography>

@@ -1,8 +1,8 @@
 import { Box, CircularProgress } from '@mui/material'
 import { FileExplorerComponent } from '../file/parts/file-explorer.screen'
-import { EmptyWorkspaceState } from '../../components/workspace/empty-workspace-state.component'
+import { EmptyWorkspaceState } from './components/empty-workspace-state.component'
 import { useState } from 'react'
-import { CreateWorkspaceDialog } from '../../components/workspace/create-workspace-dialog.component'
+import { CreateWorkspaceDialog } from './components/create-workspace-dialog.component'
 import { useWorkspaces } from '../../hooks/use-workspace.hook'
 
 export const WorkspacePage = () => {

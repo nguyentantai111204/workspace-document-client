@@ -40,7 +40,7 @@ export interface InviteResponse extends Omit<BaseEntity, 'updatedAt'> {
     workspaceId: string
 }
 
-export interface MemberResponse {
+export interface MemberResponse extends BaseEntity {
     userId: string
     fullName: string
     email: string
