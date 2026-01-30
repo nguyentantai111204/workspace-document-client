@@ -26,9 +26,9 @@ export const TextFieldSelectComponent = ({
     return (
         <FormControl
             size={size}
-            fullWidth
             error={!!errorMessage}
             sx={{
+                minWidth: 150,
                 ...(isSmall && {
                     '& .MuiOutlinedInput-root': {
                         minHeight: 40,

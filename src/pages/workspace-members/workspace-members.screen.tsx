@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { Box, Button, Stack, Typography } from '@mui/material'
+import { Box, Button, Stack, Typography, Pagination, useMediaQuery, useTheme } from '@mui/material'
 import PersonAddIcon from '@mui/icons-material/PersonAdd'
 import { useWorkspace } from '../../contexts/workspace.context'
 import { useWorkspaceMembers } from '../../hooks/use-workspace-member.hook'
@@ -13,6 +13,8 @@ import { MemberFilters } from './components/member-filters.component'
 import { MemberDeleteDialog } from './components/member-delete-dialog.component'
 
 export const WorkspaceMembersPage = () => {
+    const theme = useTheme()
+    const isMobile = useMediaQuery(theme.breakpoints.down('sm'))
     const dispatch = useAppDispatch()
     const { currentWorkspace } = useWorkspace()
     const [searchQuery, setSearchQuery] = useState('')
@@ -20,10 +22,13 @@ export const WorkspaceMembersPage = () => {
     const [inviteDialogOpen, setInviteDialogOpen] = useState(false)
     const [deleteDialogOpen, setDeleteDialogOpen] = useState(false)
     const [selectedMember, setSelectedMember] = useState<MemberResponse | null>(null)
+    const [page, setPage] = useState(1) // 1-based indexing like file-explorer
 
-    const { members, mutate } = useWorkspaceMembers(currentWorkspace?.id, {
+    const { members, meta, mutate } = useWorkspaceMembers(currentWorkspace?.id, {
         search: searchQuery || undefined,
         role: roleFilter || undefined,
+        page,
+        limit: 10
     })
 
     const handleUpdateRole = async (member: MemberResponse, newRole: WorkspaceRole) => {
@@ -112,7 +117,6 @@ export const WorkspaceMembersPage = () => {
             {/* Search & Filter */}
             <Box sx={{ mb: 3 }}>
                 <MemberFilters
-                    searchQuery={searchQuery}
                     onSearchChange={setSearchQuery}
                     roleFilter={roleFilter}
                     onRoleFilterChange={setRoleFilter}
@@ -127,6 +131,21 @@ export const WorkspaceMembersPage = () => {
                     onDelete={handleDeleteClick}
                 />
             </Box>
+
+            {/* Pagination */}
+            {meta && meta.totalPages > 0 && (
+                <Box sx={{ pt: 2, display: 'flex', justifyContent: 'flex-end' }}>
+                    <Pagination
+                        count={meta.totalPages}
+                        page={page}
+                        onChange={(_event, newPage) => setPage(newPage)}
+                        color="primary"
+                        shape="rounded"
+                        size={isMobile ? 'small' : 'medium'}
+                        siblingCount={isMobile ? 0 : 1}
+                    />
+                </Box>
+            )}
 
             {/* Delete Confirmation Dialog */}
             <MemberDeleteDialog

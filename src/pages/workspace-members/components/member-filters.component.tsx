@@ -1,55 +1,39 @@
-import { Stack, TextField, MenuItem } from '@mui/material'
-import SearchIcon from '@mui/icons-material/Search'
+import { Stack } from '@mui/material'
 import { WorkspaceRole } from '../../../apis/workspace/workspace.interface'
+import { TextFieldSearchComponent } from '../../../components/textfield/text-field-search.component'
+import { TextFieldSelectComponent } from '../../../components/textfield/text-field-select.component'
 
 interface MemberFiltersProps {
-    searchQuery: string
     onSearchChange: (value: string) => void
     roleFilter: WorkspaceRole | ''
     onRoleFilterChange: (value: WorkspaceRole | '') => void
 }
 
+const ROLE_OPTIONS = [
+    { value: '', label: 'Tất cả vai trò' },
+    { value: WorkspaceRole.ADMIN, label: 'Admin' },
+    { value: WorkspaceRole.MEMBER, label: 'Editor' },
+    { value: WorkspaceRole.VIEWER, label: 'Viewer' },
+]
+
 export const MemberFilters = ({
-    searchQuery,
     onSearchChange,
     roleFilter,
     onRoleFilterChange
 }: MemberFiltersProps) => {
     return (
         <Stack direction="row" spacing={2}>
-            <TextField
+            <TextFieldSearchComponent
                 placeholder="Tìm kiếm theo tên hoặc email..."
-                value={searchQuery}
-                onChange={(e) => onSearchChange(e.target.value)}
-                size="small"
-                InputProps={{
-                    startAdornment: <SearchIcon sx={{ color: 'text.secondary', mr: 1 }} />
-                }}
-                sx={{
-                    flex: 1,
-                    maxWidth: 400,
-                    '& .MuiOutlinedInput-root': {
-                        borderRadius: 2
-                    }
-                }}
+                onChange={onSearchChange}
+                maxWidth={400}
             />
-            <TextField
-                select
+            <TextFieldSelectComponent
                 value={roleFilter}
                 onChange={(e) => onRoleFilterChange(e.target.value as WorkspaceRole | '')}
-                size="small"
-                sx={{
-                    minWidth: 150,
-                    '& .MuiOutlinedInput-root': {
-                        borderRadius: 2
-                    }
-                }}
-            >
-                <MenuItem value="">Tất cả vai trò</MenuItem>
-                <MenuItem value={WorkspaceRole.ADMIN}>Admin</MenuItem>
-                <MenuItem value={WorkspaceRole.MEMBER}>Editor</MenuItem>
-                <MenuItem value={WorkspaceRole.VIEWER}>Viewer</MenuItem>
-            </TextField>
+                options={ROLE_OPTIONS}
+                sizeUI="sm"
+            />
         </Stack>
     )
 }

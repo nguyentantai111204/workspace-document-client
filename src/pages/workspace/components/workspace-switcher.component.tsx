@@ -4,7 +4,7 @@ import AddIcon from '@mui/icons-material/Add'
 import EditIcon from '@mui/icons-material/Edit'
 import WorkspacesIcon from '@mui/icons-material/Workspaces'
 import React, { useState } from 'react'
-import { WorkspaceResponse } from '../../apis/workspace/workspace.interface'
+import { WorkspaceResponse } from '../../../apis/workspace/workspace.interface'
 
 interface WorkspaceSwitcherProps {
     currentWorkspace?: WorkspaceResponse

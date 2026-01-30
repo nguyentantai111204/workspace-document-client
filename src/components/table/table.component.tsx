@@ -8,6 +8,7 @@ import {
     TablePagination,
     Paper,
     Box,
+    Typography,
     useTheme,
     alpha
 } from '@mui/material'
@@ -56,6 +57,7 @@ export function TableComponent<T extends { id: string }>({
                                             onChange={(e) => selection.onSelectAll(e.target.checked, data.map((d: T) => d.id))}
                                             sizeUI="sm"
                                             shape="square"
+                                            disabled={data.length === 0}
                                         />
                                     </Box>
                                 </TableCell>
@@ -79,49 +81,67 @@ export function TableComponent<T extends { id: string }>({
                         </TableRow>
                     </TableHead>
                     <TableBody>
-                        {data.map((row: T) => {
-                            const isSelected = selection?.selectedIds.includes(row.id)
-                            return (
-                                <TableRow
-                                    key={row.id}
-                                    hover
-                                    onClick={() => selection?.onRowClick?.(row)}
+                        {data.length === 0 ? (
+                            <TableRow>
+                                <TableCell
+                                    colSpan={columns.length + (selection ? 1 : 0)}
                                     sx={{
-                                        cursor: selection?.onRowClick ? 'pointer' : 'default',
-                                        bgcolor: isSelected
-                                            ? alpha(theme.palette.primary.main, 0.04)
-                                            : 'transparent',
-                                        '&:hover': {
-                                            bgcolor: alpha(theme.palette.primary.main, 0.02),
-                                        },
-                                        '& td': {
-                                            borderBottom: `1px solid ${theme.palette.divider}`,
-                                        }
+                                        textAlign: 'center',
+                                        py: 8,
+                                        color: 'text.secondary',
+                                        borderBottom: 'none'
                                     }}
                                 >
-                                    {selection && (
-                                        <TableCell padding="checkbox">
-                                            <Box
-                                                display="flex"
-                                                justifyContent="center"
-                                                onClick={(e) => e.stopPropagation()}
-                                            >
-                                                <CheckboxComponent
-                                                    checked={!!isSelected}
-                                                    onChange={() => selection.onSelect(row.id)}
-                                                    sizeUI="sm"
-                                                />
-                                            </Box>
-                                        </TableCell>
-                                    )}
-                                    {columns.map((column: TableColumn<T>) => (
-                                        <TableCell key={column.id} align={column.align || 'left'}>
-                                            {column.render ? column.render(row) : (row as any)[column.id]}
-                                        </TableCell>
-                                    ))}
-                                </TableRow>
-                            )
-                        })}
+                                    <Typography variant="body2">
+                                        Không có dữ liệu
+                                    </Typography>
+                                </TableCell>
+                            </TableRow>
+                        ) : (
+                            data.map((row: T) => {
+                                const isSelected = selection?.selectedIds.includes(row.id)
+                                return (
+                                    <TableRow
+                                        key={row.id}
+                                        hover
+                                        onClick={() => selection?.onRowClick?.(row)}
+                                        sx={{
+                                            cursor: selection?.onRowClick ? 'pointer' : 'default',
+                                            bgcolor: isSelected
+                                                ? alpha(theme.palette.primary.main, 0.04)
+                                                : 'transparent',
+                                            '&:hover': {
+                                                bgcolor: alpha(theme.palette.primary.main, 0.02),
+                                            },
+                                            '& td': {
+                                                borderBottom: `1px solid ${theme.palette.divider}`,
+                                            }
+                                        }}
+                                    >
+                                        {selection && (
+                                            <TableCell padding="checkbox">
+                                                <Box
+                                                    display="flex"
+                                                    justifyContent="center"
+                                                    onClick={(e) => e.stopPropagation()}
+                                                >
+                                                    <CheckboxComponent
+                                                        checked={!!isSelected}
+                                                        onChange={() => selection.onSelect(row.id)}
+                                                        sizeUI="sm"
+                                                    />
+                                                </Box>
+                                            </TableCell>
+                                        )}
+                                        {columns.map((column: TableColumn<T>) => (
+                                            <TableCell key={column.id} align={column.align || 'left'}>
+                                                {column.render ? column.render(row) : (row as any)[column.id]}
+                                            </TableCell>
+                                        ))}
+                                    </TableRow>
+                                )
+                            })
+                        )}
                     </TableBody>
                 </Table>
             </TableContainer>
@@ -142,5 +162,3 @@ export function TableComponent<T extends { id: string }>({
         </Paper>
     )
 }
-
-

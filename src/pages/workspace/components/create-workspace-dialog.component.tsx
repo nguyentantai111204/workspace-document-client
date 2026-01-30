@@ -1,11 +1,11 @@
 import { Dialog, DialogTitle, DialogContent, IconButton, Typography, Box, InputLabel } from '@mui/material'
 import CloseIcon from '@mui/icons-material/Close'
 import AddIcon from '@mui/icons-material/Add'
-import { useWorkspace } from '../../contexts/workspace.context'
+import { useWorkspace } from '../../../contexts/workspace.context'
 import { Formik, Form, FormikHelpers } from 'formik'
 import * as Yup from 'yup'
-import { TextFieldComponent } from '../textfield/text-field.component'
-import { ButtonComponent } from '../button/button.component'
+import { TextFieldComponent } from '../../../components/textfield/text-field.component'
+import { ButtonComponent } from '../../../components/button/button.component'
 
 interface CreateWorkspaceDialogProps {
     open: boolean
