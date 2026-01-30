@@ -12,6 +12,7 @@ interface MemberFiltersProps {
 const ROLE_OPTIONS = [
     { value: '', label: 'Tất cả vai trò' },
     { value: WorkspaceRole.ADMIN, label: 'Admin' },
+    { value: WorkspaceRole.OWNER, label: 'Owner' },
     { value: WorkspaceRole.MEMBER, label: 'Editor' },
     { value: WorkspaceRole.VIEWER, label: 'Viewer' },
 ]

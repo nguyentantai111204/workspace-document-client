@@ -81,71 +81,75 @@ export const WorkspaceMembersPage = () => {
 
     if (!currentWorkspace) {
         return (
-            <Box sx={{ p: 3 }}>
+            <Box sx={{ p: { xs: 2, md: 3 } }}>
                 <Typography>Không tìm thấy workspace</Typography>
             </Box>
         )
     }
 
     return (
-        <Box sx={{ height: '100%', display: 'flex', flexDirection: 'column' }}>
-            {/* Header */}
-            <Stack direction="row" justifyContent="space-between" alignItems="center" sx={{ mb: 3 }}>
-                <Box>
-                    <Typography variant="h5" fontWeight={700} gutterBottom>
-                        Thành viên
-                    </Typography>
-                    <Typography variant="body2" color="text.secondary">
-                        Quản lý thành viên trong workspace
-                    </Typography>
+        <Box sx={{ height: '100%', display: 'flex', flexDirection: 'column', overflow: 'hidden' }}>
+            <Box sx={{ flex: 1, overflow: 'hidden', p: { xs: 2, md: 3 } }}>
+                <Box sx={{ height: '100%', display: 'flex', flexDirection: 'column' }}>
+                    {/* Header */}
+                    <Stack direction="row" justifyContent="space-between" alignItems="center" sx={{ mb: 3 }}>
+                        <Box>
+                            <Typography variant="h5" fontWeight={700} gutterBottom>
+                                Thành viên
+                            </Typography>
+                            <Typography variant="body2" color="text.secondary">
+                                Quản lý thành viên trong workspace
+                            </Typography>
+                        </Box>
+                        <Button
+                            variant="contained"
+                            startIcon={<PersonAddIcon />}
+                            onClick={() => setInviteDialogOpen(true)}
+                            sx={{
+                                textTransform: 'none',
+                                fontWeight: 600,
+                                px: 3,
+                                borderRadius: 2
+                            }}
+                        >
+                            Mời thành viên
+                        </Button>
+                    </Stack>
+
+                    {/* Search & Filter */}
+                    <Box sx={{ mb: 3 }}>
+                        <MemberFilters
+                            onSearchChange={setSearchQuery}
+                            roleFilter={roleFilter}
+                            onRoleFilterChange={setRoleFilter}
+                        />
+                    </Box>
+
+                    {/* Table */}
+                    <Box sx={{ flex: 1, overflow: 'hidden' }}>
+                        <MemberList
+                            members={members}
+                            onUpdateRole={handleUpdateRole}
+                            onDelete={handleDeleteClick}
+                        />
+                    </Box>
+
+                    {/* Pagination */}
+                    {meta && meta.totalPages > 0 && (
+                        <Box sx={{ pt: 2, display: 'flex', justifyContent: 'flex-end' }}>
+                            <Pagination
+                                count={meta.totalPages}
+                                page={page}
+                                onChange={(_event, newPage) => setPage(newPage)}
+                                color="primary"
+                                shape="rounded"
+                                size={isMobile ? 'small' : 'medium'}
+                                siblingCount={isMobile ? 0 : 1}
+                            />
+                        </Box>
+                    )}
                 </Box>
-                <Button
-                    variant="contained"
-                    startIcon={<PersonAddIcon />}
-                    onClick={() => setInviteDialogOpen(true)}
-                    sx={{
-                        textTransform: 'none',
-                        fontWeight: 600,
-                        px: 3,
-                        borderRadius: 2
-                    }}
-                >
-                    Mời thành viên
-                </Button>
-            </Stack>
-
-            {/* Search & Filter */}
-            <Box sx={{ mb: 3 }}>
-                <MemberFilters
-                    onSearchChange={setSearchQuery}
-                    roleFilter={roleFilter}
-                    onRoleFilterChange={setRoleFilter}
-                />
             </Box>
-
-            {/* Table */}
-            <Box sx={{ flex: 1 }}>
-                <MemberList
-                    members={members}
-                    onUpdateRole={handleUpdateRole}
-                    onDelete={handleDeleteClick}
-                />
-            </Box>
-
-            {/* Pagination */}
-            {meta && meta.totalPages > 0 && (
-                <Box sx={{ pt: 2, display: 'flex', justifyContent: 'flex-end' }}>
-                    <Pagination
-                        count={meta.totalPages}
-                        page={page}
-                        onChange={(_event, newPage) => setPage(newPage)}
-                        color="primary"
-                        shape="rounded"
-                        size={isMobile ? 'small' : 'medium'}
-                        siblingCount={isMobile ? 0 : 1}
-                    />
-                </Box>
-            )}
 
             {/* Delete Confirmation Dialog */}
             <MemberDeleteDialog
