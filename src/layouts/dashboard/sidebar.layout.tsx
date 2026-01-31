@@ -21,6 +21,7 @@ import { SIDEBAR_WIDTH, TIME_ANIMATION } from '../../common/constant/style.const
 import { useThemeMode } from '../../contexts/theme-mode.context'
 import { useWorkspace } from '../../contexts/workspace.context'
 import PeopleIcon from '@mui/icons-material/People'
+import ChatIcon from '@mui/icons-material/Chat'
 
 
 import { mainRoutes } from '../../router/main.routes'
@@ -69,6 +70,11 @@ const SidebarContent = ({ onItemClick }: { onItemClick?: () => void }) => {
             text: 'Thành viên',
             icon: <PeopleIcon />,
             path: `/workspace/${workspaceId}/members`
+        },
+        {
+            text: 'Trò chuyện',
+            icon: <ChatIcon />,
+            path: `/workspace/${workspaceId}/chat`
         }
     ] : []
 
