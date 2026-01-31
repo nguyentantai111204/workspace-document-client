@@ -6,6 +6,7 @@ import { TableColumn } from '../../../components/table/table.interface'
 import { MemberResponse, WorkspaceRole } from '../../../apis/workspace/workspace.interface'
 import React, { useState } from 'react'
 import { MemberActionMenu } from '../components/member-action-menu.component'
+import { WORKSPACE_ROLE_CONFIG } from '../constants'
 
 interface MemberListProps {
     members: MemberResponse[]
@@ -13,12 +14,6 @@ interface MemberListProps {
     onDelete: (member: MemberResponse) => void
 }
 
-const ROLE_CONFIG = {
-    [WorkspaceRole.OWNER]: { label: 'Owner', color: 'error' as const },
-    [WorkspaceRole.ADMIN]: { label: 'Admin', color: 'warning' as const },
-    [WorkspaceRole.MEMBER]: { label: 'Editor', color: 'primary' as const },
-    [WorkspaceRole.VIEWER]: { label: 'Viewer', color: 'default' as const },
-}
 
 const MemberActionCell = ({
     member,
@@ -86,7 +81,7 @@ export const MemberList = ({ members, onUpdateRole, onDelete }: MemberListProps)
             label: 'VAI TRÒ',
             width: 150,
             render: (member) => {
-                const config = ROLE_CONFIG[member.role]
+                const config = WORKSPACE_ROLE_CONFIG[member.role]
                 return (
                     <Chip
                         label={config.label}

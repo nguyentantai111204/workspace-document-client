@@ -2,6 +2,7 @@ import { Stack } from '@mui/material'
 import { WorkspaceRole } from '../../../apis/workspace/workspace.interface'
 import { TextFieldSearchComponent } from '../../../components/textfield/text-field-search.component'
 import { TextFieldSelectComponent } from '../../../components/textfield/text-field-select.component'
+import { WORKSPACE_ROLE_OPTIONS } from '../constants'
 
 interface MemberFiltersProps {
     onSearchChange: (value: string) => void
@@ -9,13 +10,6 @@ interface MemberFiltersProps {
     onRoleFilterChange: (value: WorkspaceRole | '') => void
 }
 
-const ROLE_OPTIONS = [
-    { value: '', label: 'Tất cả vai trò' },
-    { value: WorkspaceRole.ADMIN, label: 'Admin' },
-    { value: WorkspaceRole.OWNER, label: 'Owner' },
-    { value: WorkspaceRole.MEMBER, label: 'Editor' },
-    { value: WorkspaceRole.VIEWER, label: 'Viewer' },
-]
 
 export const MemberFilters = ({
     onSearchChange,
@@ -31,7 +25,7 @@ export const MemberFilters = ({
             <TextFieldSelectComponent
                 value={roleFilter}
                 onChange={(e) => onRoleFilterChange(e.target.value as WorkspaceRole | '')}
-                options={ROLE_OPTIONS}
+                options={WORKSPACE_ROLE_OPTIONS}
                 sizeUI="sm"
             />
         </Stack>

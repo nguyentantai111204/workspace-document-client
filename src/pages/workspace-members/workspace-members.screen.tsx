@@ -3,6 +3,7 @@ import { Box, Button, Stack, Typography, Pagination, useMediaQuery, useTheme } f
 import PersonAddIcon from '@mui/icons-material/PersonAdd'
 import { useWorkspace } from '../../contexts/workspace.context'
 import { useWorkspaceMembers } from '../../hooks/use-workspace-member.hook'
+import { useDebounce } from '../../hooks/use-debounce.hook'
 import { MemberResponse, WorkspaceRole } from '../../apis/workspace/workspace.interface'
 import { updateMemberRoleApi } from '../../apis/workspace/workspace.api'
 import { useAppDispatch } from '../../redux/store.redux'
@@ -17,19 +18,25 @@ export const WorkspaceMembersPage = () => {
     const isMobile = useMediaQuery(theme.breakpoints.down('sm'))
     const dispatch = useAppDispatch()
     const { currentWorkspace } = useWorkspace()
+    const [page, setPage] = useState(1)
     const [searchQuery, setSearchQuery] = useState('')
+    const debouncedSearch = useDebounce(searchQuery, 500)
     const [roleFilter, setRoleFilter] = useState<WorkspaceRole | ''>('')
     const [inviteDialogOpen, setInviteDialogOpen] = useState(false)
     const [deleteDialogOpen, setDeleteDialogOpen] = useState(false)
     const [selectedMember, setSelectedMember] = useState<MemberResponse | null>(null)
-    const [page, setPage] = useState(1) // 1-based indexing like file-explorer
 
     const { members, meta, mutate } = useWorkspaceMembers(currentWorkspace?.id, {
-        search: searchQuery || undefined,
+        search: debouncedSearch || undefined,
         role: roleFilter || undefined,
         page,
         limit: 10
     })
+
+    const handleSearchChange = (value: string) => {
+        setSearchQuery(value)
+        setPage(1)
+    }
 
     const handleUpdateRole = async (member: MemberResponse, newRole: WorkspaceRole) => {
         if (!currentWorkspace) return
@@ -61,8 +68,6 @@ export const WorkspaceMembersPage = () => {
         if (!currentWorkspace || !selectedMember) return
 
         try {
-            // TODO: Add remove member API
-            // await removeMemberApi(currentWorkspace.id, selectedMember.userId)
             await mutate()
             dispatch(showSnackbar({
                 message: 'Đã xóa thành viên',
@@ -119,7 +124,7 @@ export const WorkspaceMembersPage = () => {
                     {/* Search & Filter */}
                     <Box sx={{ mb: 3 }}>
                         <MemberFilters
-                            onSearchChange={setSearchQuery}
+                            onSearchChange={handleSearchChange}
                             roleFilter={roleFilter}
                             onRoleFilterChange={setRoleFilter}
                         />
