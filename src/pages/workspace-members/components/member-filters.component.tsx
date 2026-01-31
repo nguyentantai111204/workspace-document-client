@@ -27,7 +27,6 @@ export const MemberFilters = ({
             <TextFieldSearchComponent
                 placeholder="Tìm kiếm theo tên hoặc email..."
                 onChange={onSearchChange}
-                maxWidth={400}
             />
             <TextFieldSelectComponent
                 value={roleFilter}

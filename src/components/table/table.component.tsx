@@ -41,7 +41,7 @@ export function TableComponent<T extends { id: string }>({
                 transition: theme.transitions.create(['background-color', 'border-color']),
             }}
         >
-            <TableContainer sx={{ flex: 1 }}>
+            <TableContainer sx={{ flex: 1, minHeight: 400 }}>
                 <Table stickyHeader>
                     <TableHead>
                         <TableRow>
