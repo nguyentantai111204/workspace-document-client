@@ -135,7 +135,7 @@ export const NotificationBellComponent = () => {
                         </Typography>
                     </Box>
                 ) : (
-                    <Box sx={{ maxHeight: 400, overflow: 'auto' }}>
+                    <Box sx={{ height: 'auto', overflow: 'auto' }}>
                         {notifications.map((notification) => (
                             <NotificationItemComponent
                                 key={notification.id}

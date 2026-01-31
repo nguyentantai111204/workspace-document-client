@@ -105,10 +105,9 @@ export const NotificationItemComponent = ({
                 },
                 position: 'relative',
                 borderBottom: '1px solid',
-                borderColor: 'divider'
+                borderColor: 'divider',
             }}
         >
-            {/* Notification Icon or Avatar */}
             {notification.senderId && notification.data?.senderAvatar ? (
                 <Avatar src={notification.data.senderAvatar} sx={{ width: 40, height: 40 }} />
             ) : (

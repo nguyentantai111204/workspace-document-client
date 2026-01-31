@@ -24,7 +24,7 @@ export const BasePopoverComponent = ({
     subTitle,
     footer,
     children,
-    width = 320,
+    width = 400,
 }: BasePopoverProps) => {
     const open = Boolean(anchorEl)
     const theme = useTheme()

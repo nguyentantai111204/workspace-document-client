@@ -46,6 +46,7 @@ export const AvatarUserComponent = () => {
                         Logout
                     </Button>
                 }
+                width={320}
             >
                 <List disablePadding>
                     <ListItemButton
