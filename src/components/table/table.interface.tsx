@@ -1,4 +1,4 @@
-import { ReactNode, ChangeEvent } from 'react'
+import { ReactNode } from 'react'
 
 export interface TableColumn<T> {
     id: string
@@ -12,10 +12,7 @@ export interface TableColumn<T> {
 export interface TablePaginationProps {
     count: number
     page: number
-    rowsPerPage: number
-    onPageChange: (event: unknown, newPage: number) => void
-    onRowsPerPageChange: (event: ChangeEvent<HTMLInputElement>) => void
-    rowsPerPageOptions?: number[]
+    onChange: (event: unknown, newPage: number) => void
 }
 
 export interface TableSelectionProps<T> {
@@ -29,6 +26,5 @@ export interface TableProps<T> {
     data: T[]
     columns: TableColumn<T>[]
     selection?: TableSelectionProps<T>
-    pagination?: TablePaginationProps
     loading?: boolean
 }

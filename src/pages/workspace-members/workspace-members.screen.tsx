@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { Box, Button, Stack, Typography, Pagination, useMediaQuery, useTheme } from '@mui/material'
+import { Box, Button, Stack, Typography } from '@mui/material'
 import PersonAddIcon from '@mui/icons-material/PersonAdd'
 import { useWorkspace } from '../../contexts/workspace.context'
 import { useWorkspaceMembers } from '../../hooks/use-workspace-member.hook'
@@ -12,13 +12,13 @@ import { InviteMemberDialog } from '../workspace/components/invite-member-dialog
 import { MemberList } from './parts/member-list.part'
 import { MemberFilters } from './components/member-filters.component'
 import { MemberDeleteDialog } from './components/member-delete-dialog.component'
+import { PAGE_LIMIT_DEFAULT } from '../../common/constant/page-take.constant'
+import { usePagination } from '../../hooks/use-pagination.hook'
+import { PaginationComponent } from '../../components/pagination/pagination.component'
 
 export const WorkspaceMembersPage = () => {
-    const theme = useTheme()
-    const isMobile = useMediaQuery(theme.breakpoints.down('sm'))
     const dispatch = useAppDispatch()
     const { currentWorkspace } = useWorkspace()
-    const [page, setPage] = useState(1)
     const [searchQuery, setSearchQuery] = useState('')
     const debouncedSearch = useDebounce(searchQuery, 500)
     const [roleFilter, setRoleFilter] = useState<WorkspaceRole | ''>('')
@@ -26,16 +26,20 @@ export const WorkspaceMembersPage = () => {
     const [deleteDialogOpen, setDeleteDialogOpen] = useState(false)
     const [selectedMember, setSelectedMember] = useState<MemberResponse | null>(null)
 
+    const { page, resetPage } = usePagination()
+
     const { members, meta, mutate } = useWorkspaceMembers(currentWorkspace?.id, {
         search: debouncedSearch || undefined,
         role: roleFilter || undefined,
         page,
-        limit: 10
+        limit: PAGE_LIMIT_DEFAULT.limit
     })
+
+    const { paginationProps } = usePagination({ totalPages: meta?.totalPages })
 
     const handleSearchChange = (value: string) => {
         setSearchQuery(value)
-        setPage(1)
+        resetPage()
     }
 
     const handleUpdateRole = async (member: MemberResponse, newRole: WorkspaceRole) => {
@@ -140,18 +144,8 @@ export const WorkspaceMembersPage = () => {
                     </Box>
 
                     {/* Pagination */}
-                    {meta && meta.totalPages > 0 && (
-                        <Box sx={{ pt: 2, display: 'flex', justifyContent: 'flex-end' }}>
-                            <Pagination
-                                count={meta.totalPages}
-                                page={page}
-                                onChange={(_event, newPage) => setPage(newPage)}
-                                color="primary"
-                                shape="rounded"
-                                size={isMobile ? 'small' : 'medium'}
-                                siblingCount={isMobile ? 0 : 1}
-                            />
-                        </Box>
+                    {paginationProps && (
+                        <PaginationComponent {...paginationProps} />
                     )}
                 </Box>
             </Box>

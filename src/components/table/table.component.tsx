@@ -5,7 +5,6 @@ import {
     TableContainer,
     TableHead,
     TableRow,
-    TablePagination,
     Paper,
     Box,
     Typography,
@@ -18,8 +17,7 @@ import { TableColumn, TableProps } from './table.interface'
 export function TableComponent<T extends { id: string }>({
     data,
     columns,
-    selection,
-    pagination,
+    selection
 }: TableProps<T>) {
     const theme = useTheme()
 
@@ -145,20 +143,6 @@ export function TableComponent<T extends { id: string }>({
                     </TableBody>
                 </Table>
             </TableContainer>
-            {pagination && (
-                <TablePagination
-                    rowsPerPageOptions={pagination.rowsPerPageOptions || [5, 10, 25]}
-                    component="div"
-                    count={pagination.count}
-                    rowsPerPage={pagination.rowsPerPage}
-                    page={pagination.page}
-                    onPageChange={pagination.onPageChange}
-                    onRowsPerPageChange={pagination.onRowsPerPageChange}
-                    sx={{
-                        borderTop: `1px solid ${theme.palette.divider}`,
-                    }}
-                />
-            )}
         </Paper>
     )
 }
