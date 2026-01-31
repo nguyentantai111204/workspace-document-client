@@ -1,4 +1,4 @@
-import { Box, Drawer, useTheme, useMediaQuery, CircularProgress, Typography, Pagination, Zoom, Fab, Tooltip } from '@mui/material'
+import { Box, Drawer, useTheme, useMediaQuery, CircularProgress, Typography, Zoom, Fab, Tooltip } from '@mui/material'
 import AddIcon from '@mui/icons-material/Add'
 import { useState } from 'react'
 import { ExplorerToolbar } from './file-tools/explorer-toolbar.part'
@@ -14,6 +14,8 @@ import { useDebounce } from '../../../hooks/use-debounce.hook'
 import { useFiles } from '../../../hooks/use-file.hook'
 import { PAGE_LIMIT_DEFAULT } from '../../../common/constant/page-take.constant'
 import { StackColumn, StackRow } from '../../../components/mui-custom/stack/stack.mui-custom'
+import { usePagination } from '../../../hooks/use-pagination.hook'
+import { PaginationComponent } from '../../../components/pagination/pagination.component'
 
 
 export const FileExplorerComponent = () => {
@@ -25,12 +27,13 @@ export const FileExplorerComponent = () => {
     const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid')
     const [selectedItem, setSelectedItem] = useState<FileResponse | null>(null)
     const [selectedIds, setSelectedIds] = useState<string[]>([])
-    const [page, setPage] = useState(1)
     const [searchQuery, setSearchQuery] = useState('')
     const [filters, setFilters] = useState<Partial<ExplorerFilters>>({})
     const [openUploadModal, setOpenUploadModal] = useState(false)
     const [openRenameModal, setOpenRenameModal] = useState(false)
     const debouncedSearch = useDebounce(searchQuery, 500)
+
+    const { page, setPage, resetPage } = usePagination()
 
     const getFileTypesParams = () => {
         if (!filters.fileTypes) return undefined
@@ -49,8 +52,10 @@ export const FileExplorerComponent = () => {
         search: debouncedSearch || undefined,
         sortOrder: filters.dateSort === 'oldest' ? 'ASC' : 'DESC',
         sortBy: 'createdAt',
-        type: getFileTypesParams()
+        type: getFileTypesParams(),
     })
+
+    const { paginationProps } = usePagination({ totalPages: meta?.totalPages })
 
     const handleRenameSubmit = async (newName: string) => {
         if (!selectedItem) return
@@ -87,10 +92,6 @@ export const FileExplorerComponent = () => {
         setSelectedItem(null)
     }
 
-    const handleChangePage = (_event: unknown, newPage: number) => {
-        setPage(newPage)
-    }
-
     const handleToggleCheck = (id: string) => {
         setSelectedIds(prev =>
             prev.includes(id)
@@ -110,7 +111,7 @@ export const FileExplorerComponent = () => {
 
     const handleSearch = (value: string) => {
         setSearchQuery(value)
-        setPage(1)
+        resetPage()
     }
 
     const handleDeleteFile = async (id: string) => {
@@ -201,7 +202,7 @@ export const FileExplorerComponent = () => {
                     onSearch={handleSearch}
                     onFilter={(newFilters) => {
                         setFilters(newFilters)
-                        setPage(1)
+                        resetPage()
                     }}
                     onUpload={() => setOpenUploadModal(true)}
                 />
@@ -210,18 +211,8 @@ export const FileExplorerComponent = () => {
                     {renderContent()}
                 </StackColumn>
 
-                {meta && meta.totalPages > 0 && (
-                    <Box sx={{ pt: 2, display: 'flex', justifyContent: 'flex-end' }}>
-                        <Pagination
-                            count={meta.totalPages}
-                            page={page}
-                            onChange={handleChangePage}
-                            color="primary"
-                            shape="rounded"
-                            size={isMobile ? 'small' : 'medium'}
-                            siblingCount={isMobile ? 0 : 1}
-                        />
-                    </Box>
+                {paginationProps && (
+                    <PaginationComponent {...paginationProps} />
                 )}
             </StackColumn>
 
@@ -280,7 +271,7 @@ export const FileExplorerComponent = () => {
                 onClose={() => setOpenUploadModal(false)}
                 onSuccess={() => {
                     mutate()
-                    setPage(1)
+                    resetPage()
                 }}
             />
 
