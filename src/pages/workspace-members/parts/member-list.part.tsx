@@ -1,4 +1,4 @@
-import { Typography, IconButton, alpha, useTheme, Chip } from '@mui/material'
+import { Typography, IconButton, alpha, useTheme, useMediaQuery, Chip } from '@mui/material'
 import MoreVertIcon from '@mui/icons-material/MoreVert'
 import { TableComponent } from '../../../components/table/table.component'
 import { UserItemComponent } from '../../../components/user/user-item.component'
@@ -63,11 +63,14 @@ const MemberActionCell = ({
 }
 
 export const MemberList = ({ members, onUpdateRole, onDelete }: MemberListProps) => {
+    const theme = useTheme()
+    const isMobile = useMediaQuery(theme.breakpoints.down('sm'))
+
     const columns: TableColumn<MemberResponse>[] = [
         {
             id: 'member',
             label: 'THÀNH VIÊN',
-            minWidth: 250,
+            minWidth: isMobile ? 140 : 250,
             render: (member) => (
                 <UserItemComponent
                     avatarUrl={member.avatarUrl}
@@ -79,7 +82,7 @@ export const MemberList = ({ members, onUpdateRole, onDelete }: MemberListProps)
         {
             id: 'role',
             label: 'VAI TRÒ',
-            width: 150,
+            width: isMobile ? 100 : 150,
             render: (member) => {
                 const config = WORKSPACE_ROLE_CONFIG[member.role]
                 return (
@@ -89,27 +92,28 @@ export const MemberList = ({ members, onUpdateRole, onDelete }: MemberListProps)
                         size="small"
                         sx={{
                             fontWeight: 500,
-                            fontSize: '0.75rem'
+                            fontSize: isMobile ? '0.7rem' : '0.75rem',
+                            height: isMobile ? 22 : 24
                         }}
                     />
                 )
             }
         },
-        {
-            id: 'joinedAt',
+        ...(!isMobile ? [{
+            id: 'joinedAt' as const,
             label: 'NGÀY THAM GIA',
             width: 150,
-            render: (member) => (
+            render: (member: MemberResponse) => (
                 <Typography variant="body2" color="text.secondary">
                     {new Date(member.joinedAt).toLocaleDateString('vi-VN')}
                 </Typography>
             )
-        },
+        }] : []),
         {
             id: 'actions',
             label: '',
-            align: 'right',
-            width: 80,
+            align: 'right' as const,
+            width: isMobile ? 60 : 80,
             render: (member) => (
                 <MemberActionCell
                     member={member}

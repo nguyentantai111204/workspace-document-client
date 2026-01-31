@@ -39,14 +39,18 @@ export function TableComponent<T extends { id: string }>({
                 transition: theme.transitions.create(['background-color', 'border-color']),
             }}
         >
-            <TableContainer sx={{ flex: 1, minHeight: 400 }}>
+            <TableContainer sx={{ flex: 1, minHeight: 400, overflowX: 'auto' }}>
                 <Table stickyHeader>
                     <TableHead>
                         <TableRow>
                             {selection && (
                                 <TableCell
                                     padding="checkbox"
-                                    sx={{ bgcolor: 'background.paper', transition: theme.transitions.create('background-color') }}
+                                    sx={{
+                                        bgcolor: 'background.paper',
+                                        transition: theme.transitions.create('background-color'),
+                                        px: { xs: 0.5, sm: 1 }
+                                    }}
                                 >
                                     <Box display="flex" justifyContent="center">
                                         <CheckboxComponent
@@ -70,7 +74,9 @@ export function TableComponent<T extends { id: string }>({
                                         fontSize: 13,
                                         bgcolor: 'background.paper',
                                         width: column.width,
-                                        minWidth: column.minWidth
+                                        minWidth: column.minWidth,
+                                        px: { xs: 1, sm: 2 },
+                                        py: { xs: 1, sm: 2 }
                                     }}
                                 >
                                     {column.label}
@@ -117,7 +123,10 @@ export function TableComponent<T extends { id: string }>({
                                         }}
                                     >
                                         {selection && (
-                                            <TableCell padding="checkbox">
+                                            <TableCell
+                                                padding="checkbox"
+                                                sx={{ px: { xs: 0.5, sm: 1 } }}
+                                            >
                                                 <Box
                                                     display="flex"
                                                     justifyContent="center"
@@ -132,7 +141,14 @@ export function TableComponent<T extends { id: string }>({
                                             </TableCell>
                                         )}
                                         {columns.map((column: TableColumn<T>) => (
-                                            <TableCell key={column.id} align={column.align || 'left'}>
+                                            <TableCell
+                                                key={column.id}
+                                                align={column.align || 'left'}
+                                                sx={{
+                                                    px: { xs: 1, sm: 2 },
+                                                    py: { xs: 1, sm: 2 }
+                                                }}
+                                            >
                                                 {column.render ? column.render(row) : (row as any)[column.id]}
                                             </TableCell>
                                         ))}

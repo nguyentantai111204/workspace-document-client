@@ -17,7 +17,11 @@ export const MemberFilters = ({
     onRoleFilterChange
 }: MemberFiltersProps) => {
     return (
-        <Stack direction="row" spacing={2}>
+        <Stack
+            direction={{ xs: 'column', sm: 'row' }}
+            spacing={2}
+            sx={{ width: '100%' }}
+        >
             <TextFieldSearchComponent
                 placeholder="Tìm kiếm theo tên hoặc email..."
                 onChange={onSearchChange}

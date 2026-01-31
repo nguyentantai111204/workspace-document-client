@@ -101,7 +101,13 @@ export const WorkspaceMembersPage = () => {
             <Box sx={{ flex: 1, overflow: 'hidden', p: { xs: 2, md: 3 } }}>
                 <Box sx={{ height: '100%', display: 'flex', flexDirection: 'column' }}>
                     {/* Header */}
-                    <Stack direction="row" justifyContent="space-between" alignItems="center" sx={{ mb: 3 }}>
+                    <Stack
+                        direction={{ xs: 'column', sm: 'row' }}
+                        justifyContent="space-between"
+                        alignItems={{ xs: 'stretch', sm: 'center' }}
+                        spacing={{ xs: 2, sm: 0 }}
+                        sx={{ mb: 3 }}
+                    >
                         <Box>
                             <Typography variant="h5" fontWeight={700} gutterBottom>
                                 Thành viên
@@ -117,11 +123,17 @@ export const WorkspaceMembersPage = () => {
                             sx={{
                                 textTransform: 'none',
                                 fontWeight: 600,
-                                px: 3,
-                                borderRadius: 2
+                                px: { xs: 2, sm: 3 },
+                                borderRadius: 2,
+                                whiteSpace: 'nowrap'
                             }}
                         >
-                            Mời thành viên
+                            <Box component="span" sx={{ display: { xs: 'none', sm: 'inline' } }}>
+                                Mời thành viên
+                            </Box>
+                            <Box component="span" sx={{ display: { xs: 'inline', sm: 'none' } }}>
+                                Mời
+                            </Box>
                         </Button>
                     </Stack>
 
