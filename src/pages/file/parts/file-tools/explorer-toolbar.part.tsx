@@ -1,4 +1,4 @@
-import { ToggleButton, ToggleButtonGroup, Stack, Typography, Popover, Drawer, useTheme, useMediaQuery, Box } from '@mui/material'
+import { ToggleButton, ToggleButtonGroup, Stack, Typography, Popover, Drawer, useTheme, useMediaQuery, Box, Badge } from '@mui/material'
 import GridViewIcon from '@mui/icons-material/GridView'
 import ViewListIcon from '@mui/icons-material/ViewList'
 import FilterListIcon from '@mui/icons-material/FilterList'
@@ -7,6 +7,8 @@ import React, { useState } from 'react'
 import { ExplorerFilter, ExplorerFilters } from './explorer-filter.part'
 import { TextFieldSearchComponent } from '../../../../components/textfield/text-field-search.component'
 import { ButtonComponent } from '../../../../components/button/button.component'
+import { ActiveFiltersDisplay } from '../../components/active-filters-display.component'
+import { getActiveFilterCount, getFilterChips, getDefaultFilters, FilterChipData } from '../../utils/filter.utils'
 
 interface ExplorerToolbarProps {
     workspaceName?: string
@@ -23,6 +25,9 @@ export const ExplorerToolbar = ({ viewMode, onViewChange, onSearch, onFilter, is
     const theme = useTheme()
     const isMobile = useMediaQuery(theme.breakpoints.down('sm'))
     const [filterAnchor, setFilterAnchor] = useState<HTMLElement | null>(null)
+
+    const activeFilterCount = getActiveFilterCount(currentFilters)
+    const filterChips = getFilterChips(currentFilters)
 
     const handleViewChange = (
         _event: React.MouseEvent<HTMLElement>,
@@ -41,6 +46,29 @@ export const ExplorerToolbar = ({ viewMode, onViewChange, onSearch, onFilter, is
         setFilterAnchor(null)
     }
 
+    const handleRemoveFilter = (chip: FilterChipData) => {
+        if (!currentFilters) return
+
+        const newFilters = { ...currentFilters }
+
+        if (chip.filterType === 'fileType' && chip.value && newFilters.fileTypes) {
+            // Remove specific file type by setting it to false
+            newFilters.fileTypes = {
+                ...newFilters.fileTypes,
+                [chip.value]: false
+            }
+        } else if (chip.filterType === 'dateSort') {
+            // Reset to default 'newest'
+            newFilters.dateSort = 'newest'
+        }
+
+        onFilter?.(newFilters as ExplorerFilters)
+    }
+
+    const handleClearAll = () => {
+        onFilter?.(getDefaultFilters())
+    }
+
     const filterContent = (
         <ExplorerFilter
             initialFilters={currentFilters}
@@ -49,7 +77,13 @@ export const ExplorerToolbar = ({ viewMode, onViewChange, onSearch, onFilter, is
                 handleFilterClose()
             }}
             onClose={handleFilterClose}
-            onReset={() => console.log('Reset filters')}
+            onReset={() => {
+                onFilter?.({
+                    fileTypes: { folder: false, image: false, document: false },
+                    dateSort: 'newest'
+                })
+                handleFilterClose()
+            }}
         />
     )
 
@@ -98,22 +132,35 @@ export const ExplorerToolbar = ({ viewMode, onViewChange, onSearch, onFilter, is
                             icon={<AddIcon fontSize="small" />}
                             sizeUI="sm"
                             onClick={onUpload}
-                            
+
                         >
                             Thêm
                         </ButtonComponent>
                     )}
 
-                    <ButtonComponent
-                        variant="secondary"
-                        icon={<FilterListIcon fontSize="small" />}
-                        sizeUI="sm"
-                        onClick={handleFilterClick}
+                    <Badge
+                        badgeContent={activeFilterCount}
+                        color="primary"
+                        invisible={activeFilterCount === 0}
                     >
-                        Lọc
-                    </ButtonComponent>
+                        <ButtonComponent
+                            variant="secondary"
+                            icon={<FilterListIcon fontSize="small" />}
+                            sizeUI="sm"
+                            onClick={handleFilterClick}
+                        >
+                            Lọc
+                        </ButtonComponent>
+                    </Badge>
                 </Stack>
             </Stack>
+
+            {/* Active Filters Display */}
+            <ActiveFiltersDisplay
+                chips={filterChips}
+                onRemoveChip={handleRemoveFilter}
+                onClearAll={handleClearAll}
+            />
 
 
             {isMobile ? (

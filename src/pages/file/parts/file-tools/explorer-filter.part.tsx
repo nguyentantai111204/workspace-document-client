@@ -24,9 +24,9 @@ interface ExplorerFilterProps {
 
 export const ExplorerFilter = ({ initialFilters, onApply, onClose, onReset }: ExplorerFilterProps) => {
     const [fileTypes, setFileTypes] = useState<ExplorerFileTypes>(initialFilters?.fileTypes || {
-        folder: true,
-        image: true,
-        document: true,
+        folder: false,
+        image: false,
+        document: false,
     })
     const [dateSort, setDateSort] = useState(initialFilters?.dateSort || 'newest')
 
