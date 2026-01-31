@@ -17,6 +17,7 @@ import {
 } from '../apis/notification/notification.api'
 import { acceptInviteApi } from '../apis/workspace/workspace.api'
 import { socketService } from '../common/services/socket.service'
+import { PAGE_LIMIT_DEFAULT } from '../common/constant/page-take.constant'
 
 export const useNotifications = () => {
     const dispatch = useAppDispatch()
@@ -35,7 +36,7 @@ export const useNotifications = () => {
     const fetchNotifications = useCallback(async (pageNum: number = 1) => {
         try {
             dispatch(setLoading(true))
-            const response = await listNotificationsApi({ page: pageNum, limit: 20 })
+            const response = await listNotificationsApi({ page: pageNum, limit: PAGE_LIMIT_DEFAULT.limit })
             console.log('[Notification Hook] Fetched notifications:', response)
 
             console.log('[Notification Hook] Setting notifications:', {
