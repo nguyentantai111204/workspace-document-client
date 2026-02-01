@@ -13,23 +13,21 @@ import {
     UnreadCountResponse
 } from './chat.interface'
 
-const BASE_PATH = '/api'
-
-// ==================== Conversations ====================
+//Conversations
 
 export const listConversationsApi = async (
     workspaceId: string,
     query?: ConversationListQuery
 ): Promise<ConversationListResponse> => {
     const response = await axiosInstance.get(
-        `${BASE_PATH}/workspaces/${workspaceId}/conversations`,
+        `/workspaces/${workspaceId}/conversations`,
         { params: query }
     )
-    return response.data
+    return response.data;
 }
 
 export const getConversationApi = async (id: string): Promise<Conversation> => {
-    const response = await axiosInstance.get(`${BASE_PATH}/conversations/${id}`)
+    const response = await axiosInstance.get(`/conversations/${id}`)
     return response.data
 }
 
@@ -38,7 +36,7 @@ export const createConversationApi = async (
     data: CreateConversationRequest
 ): Promise<Conversation> => {
     const response = await axiosInstance.post(
-        `${BASE_PATH}/workspaces/${workspaceId}/conversations`,
+        `/workspaces/${workspaceId}/conversations`,
         data
     )
     return response.data
@@ -49,23 +47,23 @@ export const updateConversationApi = async (
     data: UpdateConversationRequest
 ): Promise<Conversation> => {
     const response = await axiosInstance.patch(
-        `${BASE_PATH}/conversations/${id}`,
+        `/conversations/${id}`,
         data
     )
     return response.data
 }
 
 export const leaveConversationApi = async (id: string): Promise<void> => {
-    await axiosInstance.delete(`${BASE_PATH}/conversations/${id}/leave`)
+    await axiosInstance.delete(`/conversations/${id}/leave`)
 }
 
-// ==================== Participants ====================
+//Participants
 
 export const getParticipantsApi = async (
     conversationId: string
 ): Promise<Participant[]> => {
     const response = await axiosInstance.get(
-        `${BASE_PATH}/conversations/${conversationId}/participants`
+        `/conversations/${conversationId}/participants`
     )
     return response.data
 }
@@ -75,20 +73,20 @@ export const addParticipantApi = async (
     userId: string
 ): Promise<Participant> => {
     const response = await axiosInstance.post(
-        `${BASE_PATH}/conversations/${conversationId}/participants`,
+        `/conversations/${conversationId}/participants`,
         { userId }
     )
     return response.data
 }
 
-// ==================== Messages ====================
+// Messagae
 
 export const getMessagesApi = async (
     conversationId: string,
     query?: MessageQuery
 ): Promise<MessageListResponse> => {
     const response = await axiosInstance.get(
-        `${BASE_PATH}/conversations/${conversationId}/messages`,
+        `/conversations/${conversationId}/messages`,
         { params: query }
     )
     return response.data
@@ -99,19 +97,19 @@ export const sendMessageApi = async (
     data: SendMessageRequest
 ): Promise<Message> => {
     const response = await axiosInstance.post(
-        `${BASE_PATH}/conversations/${conversationId}/messages`,
+        `/conversations/${conversationId}/messages`,
         data
     )
     return response.data
 }
 
 export const markMessageAsReadApi = async (messageId: string): Promise<void> => {
-    await axiosInstance.patch(`${BASE_PATH}/messages/${messageId}/read`)
+    await axiosInstance.patch(`/messages/${messageId}/read`)
 }
 
 export const markAllAsReadApi = async (conversationId: string): Promise<void> => {
     await axiosInstance.patch(
-        `${BASE_PATH}/conversations/${conversationId}/read-all`
+        `/conversations/${conversationId}/read-all`
     )
 }
 
@@ -119,7 +117,7 @@ export const getUnreadCountApi = async (
     conversationId: string
 ): Promise<UnreadCountResponse> => {
     const response = await axiosInstance.get(
-        `${BASE_PATH}/conversations/${conversationId}/unread-count`
+        `/conversations/${conversationId}/unread-count`
     )
     return response.data
 }
@@ -132,7 +130,7 @@ export const searchMessagesApi = async (
     limit: number = 20
 ): Promise<Message[]> => {
     const response = await axiosInstance.get(
-        `${BASE_PATH}/workspaces/${workspaceId}/messages/search`,
+        `/workspaces/${workspaceId}/messages/search`,
         { params: { q: query, limit } }
     )
     return response.data

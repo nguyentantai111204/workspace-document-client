@@ -65,7 +65,7 @@ export const useChat = () => {
         })
     }, [])
 
-    const handleUserOffline = useCallback((data: { userId: string; lastSeenAt: string }) => {
+    const handleUserOffline = useCallback((data: { userId: string; lastSeenAt?: string }) => {
         setOnlineUsers(prev => {
             const newMap = new Map(prev)
             newMap.set(data.userId, {

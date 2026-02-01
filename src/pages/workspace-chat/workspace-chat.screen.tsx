@@ -7,6 +7,7 @@ import { useChat } from '../../hooks/use-chat.hook'
 import { ConversationList } from './components/conversation-list.component'
 import { MessageList } from './components/message-list.component'
 import { MessageInput } from './components/message-input.component'
+import { CreateConversationDialog } from './components/create-conversation-dialog.component'
 import { ConversationWithUnread } from '../../apis/chat/chat.interface'
 import { PAGE_LIMIT_DEFAULT } from '../../common/constant/page-take.constant'
 
@@ -17,6 +18,7 @@ export const WorkspaceChatPage = () => {
 
     const [selectedConversation, setSelectedConversation] = useState<ConversationWithUnread | null>(null)
     const [showConversationList, setShowConversationList] = useState(true)
+    const [createDialogOpen, setCreateDialogOpen] = useState(false)
 
     // Fetch conversations
     const { conversations, isLoading: conversationsLoading, mutate: mutateConversations } = useConversations(
@@ -110,11 +112,24 @@ export const WorkspaceChatPage = () => {
         ? getTypingUsers(selectedConversation.id)
         : []
 
-    // Handle create conversation (placeholder)
+    // Handle create conversation
     const handleCreateConversation = () => {
-        console.log('Create conversation - to be implemented')
-        // TODO: Open create conversation dialog
+        setCreateDialogOpen(true)
     }
+
+    // Handle conversation created successfully
+    const handleConversationCreated = useCallback(async (conversationId: string) => {
+        // Refresh conversations list and wait for new data
+        const updatedData = await mutateConversations()
+
+        // Find and select the new conversation from updated data
+        if (updatedData?.data) {
+            const newConv = updatedData.data.find((c: ConversationWithUnread) => c.id === conversationId)
+            if (newConv) {
+                handleSelectConversation(newConv)
+            }
+        }
+    }, [mutateConversations, handleSelectConversation])
 
     if (!currentWorkspace) {
         return (
@@ -230,6 +245,13 @@ export const WorkspaceChatPage = () => {
                     </Box>
                 )}
             </Box>
+
+            {/* Create Conversation Dialog */}
+            <CreateConversationDialog
+                open={createDialogOpen}
+                onClose={() => setCreateDialogOpen(false)}
+                onSuccess={handleConversationCreated}
+            />
         </Box>
     )
 }

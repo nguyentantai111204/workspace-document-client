@@ -1,3 +1,5 @@
+import { PaginatedResponse } from '../common/common.interface'
+
 export type ConversationType = 'DIRECT' | 'GROUP'
 export type ParticipantRole = 'ADMIN' | 'MEMBER'
 export type AttachmentType = 'image' | 'file'
@@ -73,15 +75,8 @@ export interface ConversationWithUnread extends Conversation {
     lastMessage?: Message
 }
 
-export interface ConversationListResponse {
-    items: ConversationWithUnread[]
-    meta: {
-        page: number
-        limit: number
-        total: number
-        totalPages: number
-    }
-}
+export interface ConversationListResponse extends PaginatedResponse<ConversationWithUnread> { }
+
 
 export interface MessageListResponse {
     messages: Message[]
