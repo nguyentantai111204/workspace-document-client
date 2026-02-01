@@ -10,13 +10,16 @@ import { ConversationList } from './components/conversation-list.component'
 import { MessageList } from './components/message-list.component'
 import { MessageInput } from './components/message-input.component'
 import { CreateConversationDialog } from './components/create-conversation-dialog.component'
+import { ChatHeader } from './components/chat-header.component'
 import { ConversationWithUnread } from '../../apis/chat/chat.interface'
 import { PAGE_LIMIT_DEFAULT } from '../../common/constant/page-take.constant'
+import { useAppSelector } from '../../redux/store.redux'
 
 export const WorkspaceChatPage = () => {
     const theme = useTheme()
     const isMobile = useMediaQuery(theme.breakpoints.down('md'))
     const { currentWorkspace } = useWorkspace()
+    const currentUserId = useAppSelector(state => state.account?.user?.id)
 
     const [selectedConversation, setSelectedConversation] = useState<ConversationWithUnread | null>(null)
     const [showConversationList, setShowConversationList] = useState(true)
@@ -24,7 +27,6 @@ export const WorkspaceChatPage = () => {
     const [search, setSearch] = useState('')
     const debouncedSearch = useDebounce(search, 300)
 
-    // Fetch conversations
     const { conversations, isLoading: conversationsLoading, mutate: mutateConversations } = useConversations(
         currentWorkspace?.id,
         {
@@ -56,26 +58,23 @@ export const WorkspaceChatPage = () => {
         getTypingUsers
     } = useChat()
 
-    // Handle conversation selection
     const handleSelectConversation = useCallback((conversation: ConversationWithUnread) => {
-        // Leave previous conversation
         if (selectedConversation) {
             leaveConversation(selectedConversation.id)
         }
-
-        // Select new conversation
         setSelectedConversation(conversation)
 
-        // On mobile, hide conversation list when selecting
         if (isMobile) {
             setShowConversationList(false)
         }
 
-        // Join new conversation room
         joinConversation(conversation.id)
     }, [selectedConversation, leaveConversation, joinConversation, isMobile])
 
-
+    const handleBackToConversations = useCallback(() => {
+        setShowConversationList(true)
+        setSelectedConversation(null)
+    }, [])
 
     // Handle message send
     const handleSendMessage = useCallback(async (content: string, attachments: any[]) => {
@@ -114,31 +113,40 @@ export const WorkspaceChatPage = () => {
         return cleanup
     }, [isConnected, onNewMessage, selectedConversation, addMessage, markAsRead, mutateConversations])
 
-    // Fetch workspace members for name lookup
     const { members } = useWorkspaceMembers(currentWorkspace?.id, { limit: 100 })
 
-    // Helper to get user name
     const getUserName = useCallback((userId: string) => {
         const member = members.find(m => m.userId === userId)
         return member?.fullName || member?.email || 'Người dùng ẩn danh'
     }, [members])
 
-    // Get typing users for current conversation with names
+    const getConversationTitle = useCallback((conversation: ConversationWithUnread) => {
+        if (conversation.type === 'GROUP' && conversation.name) {
+            return conversation.name
+        }
+
+        // For Direct messages, try to find the other participant
+        if (conversation.participants && currentUserId) {
+            const otherParticipant = conversation.participants.find(p => p.userId !== currentUserId)
+            if (otherParticipant) {
+                return getUserName(otherParticipant.userId)
+            }
+        }
+
+        return 'Tin nhắn trực tiếp'
+    }, [currentUserId, getUserName])
+
     const typingUserNames = selectedConversation
         ? getTypingUsers(selectedConversation.id).map(getUserName)
         : []
 
-    // Handle create conversation
     const handleCreateConversation = () => {
         setCreateDialogOpen(true)
     }
 
-    // Handle conversation created successfully
     const handleConversationCreated = useCallback(async (conversationId: string) => {
-        // Refresh conversations list and wait for new data
         const updatedData = await mutateConversations()
 
-        // Find and select the new conversation from updated data
         if (updatedData?.data) {
             const newConv = updatedData.data.find((c: ConversationWithUnread) => c.id === conversationId)
             if (newConv) {
@@ -147,7 +155,6 @@ export const WorkspaceChatPage = () => {
         }
     }, [mutateConversations, handleSelectConversation])
 
-    // Handle search change
     const handleSearchChange = useCallback((value: string) => {
         setSearch(value)
     }, [])
@@ -160,12 +167,10 @@ export const WorkspaceChatPage = () => {
         )
     }
 
-    // Mobile layout: show either list or chat
     if (isMobile) {
         return (
             <Box sx={{ height: '100%', display: 'flex', flexDirection: 'column' }}>
                 {showConversationList ? (
-                    // Conversation list
                     <ConversationList
                         conversations={conversations}
                         activeConversationId={selectedConversation?.id}
@@ -175,8 +180,18 @@ export const WorkspaceChatPage = () => {
                         onSearchChange={handleSearchChange}
                     />
                 ) : (
-                    // Chat view
                     <>
+                        {selectedConversation && (
+                            <ChatHeader
+                                conversation={{
+                                    ...selectedConversation,
+                                    name: getConversationTitle(selectedConversation)
+                                }}
+                                onBack={handleBackToConversations}
+                                isMobile={true}
+                                onInfoClick={() => console.log('Info clicked')}
+                            />
+                        )}
                         <MessageList
                             messages={messages}
                             isLoading={messagesLoading}
@@ -191,13 +206,15 @@ export const WorkspaceChatPage = () => {
                         />
                     </>
                 )}
+                <CreateConversationDialog
+                    open={createDialogOpen}
+                    onClose={() => setCreateDialogOpen(false)}
+                    onSuccess={handleConversationCreated}
+                />
             </Box>
         )
     }
 
-
-
-    // Desktop layout: split view
     return (
         <Box
             sx={{
@@ -206,7 +223,6 @@ export const WorkspaceChatPage = () => {
                 bgcolor: 'background.default'
             }}
         >
-            {/* Conversation List - 30% */}
             <Box
                 sx={{
                     width: '350px',
@@ -224,7 +240,6 @@ export const WorkspaceChatPage = () => {
                 />
             </Box>
 
-            {/* Chat View - 70% */}
             <Box
                 sx={{
                     flex: 1,
@@ -235,6 +250,14 @@ export const WorkspaceChatPage = () => {
             >
                 {selectedConversation ? (
                     <>
+                        <ChatHeader
+                            conversation={{
+                                ...selectedConversation,
+                                name: getConversationTitle(selectedConversation)
+                            }}
+                            isMobile={false}
+                            onInfoClick={() => console.log('Info clicked')}
+                        />
                         <MessageList
                             messages={messages}
                             isLoading={messagesLoading}
@@ -263,7 +286,6 @@ export const WorkspaceChatPage = () => {
                 )}
             </Box>
 
-            {/* Create Conversation Dialog */}
             <CreateConversationDialog
                 open={createDialogOpen}
                 onClose={() => setCreateDialogOpen(false)}
