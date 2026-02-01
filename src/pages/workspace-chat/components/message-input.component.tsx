@@ -23,7 +23,7 @@ export const MessageInput = ({
     const isMobile = useMediaQuery(theme.breakpoints.down('sm'))
     const [message, setMessage] = useState('')
     const [attachments, setAttachments] = useState<Attachment[]>([])
-    const typingTimer = useRef<NodeJS.Timeout>()
+    const typingTimer = useRef<ReturnType<typeof setTimeout> | undefined>(undefined)
 
     const handleTyping = () => {
         onTyping()
@@ -51,7 +51,6 @@ export const MessageInput = ({
     }
 
     const handleFileAttach = () => {
-        // TODO: Implement file upload with Cloudinary
         console.log('File attach clicked - implement Cloudinary upload')
     }
 

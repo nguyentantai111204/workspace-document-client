@@ -15,7 +15,7 @@ export const ConversationItem = ({
 }: ConversationItemProps) => {
     const theme = useTheme()
 
-    // Display name: group name or "Direct Message"
+    // Hiển thị tên: tên nhóm hoặc "Tin nhắn trực tiếp"
     const displayName = conversation.type === 'GROUP' && conversation.name
         ? conversation.name
         : 'Tin nhắn trực tiếp'
@@ -41,7 +41,6 @@ export const ConversationItem = ({
             }}
         >
             <Box sx={{ display: 'flex', alignItems: 'flex-start', gap: 1.5 }}>
-                {/* Avatar with unread badge */}
                 <Badge
                     badgeContent={conversation.unreadCount || 0}
                     color="error"
@@ -59,9 +58,7 @@ export const ConversationItem = ({
                     </Avatar>
                 </Badge>
 
-                {/* Content */}
                 <Box sx={{ flex: 1, minWidth: 0 }}>
-                    {/* Header: Name + Time */}
                     <Box
                         sx={{
                             display: 'flex',
@@ -100,7 +97,6 @@ export const ConversationItem = ({
                         )}
                     </Box>
 
-                    {/* Last message preview */}
                     {conversation.lastMessage && (
                         <Typography
                             variant="body2"

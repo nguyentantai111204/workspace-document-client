@@ -17,11 +17,11 @@ export const useConversations = (
         {
             keepPreviousData: true,
             revalidateOnFocus: false,
-            refreshInterval: 30000 // Refresh every 30s
+            refreshInterval: 30000 // làm mới mỗi 30s
         }
     )
 
-    // Optionally fetch unread counts for each conversation
+    // Lấy số lượng tin nhắn chưa đọc
     const fetchUnreadCounts = async (conversations: ConversationWithUnread[]) => {
         const promises = conversations.map(async (conv) => {
             try {

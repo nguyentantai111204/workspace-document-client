@@ -1,20 +1,12 @@
 import { useState } from 'react'
 import {
-    Dialog,
-    DialogTitle,
-    DialogContent,
-    DialogActions,
-    Button,
     Box,
-    TextField,
-    FormControl,
-    FormLabel,
-    RadioGroup,
-    FormControlLabel,
-    Radio,
     Chip,
     Typography,
-    Stack
+    Stack,
+    FormHelperText,
+    InputLabel,
+    DialogActions
 } from '@mui/material'
 import { useWorkspace } from '../../../contexts/workspace.context'
 import { useWorkspaceMembers } from '../../../hooks/use-workspace-member.hook'
@@ -24,12 +16,45 @@ import { useAppDispatch } from '../../../redux/store.redux'
 import { showSnackbar } from '../../../redux/system/system.slice'
 import { MemberResponse } from '../../../apis/workspace/workspace.interface'
 import { PAGE_LIMIT_DEFAULT } from '../../../common/constant/page-take.constant'
+import { Formik, Form, FormikHelpers } from 'formik'
+import * as Yup from 'yup'
+import { TextFieldComponent } from '../../../components/textfield/text-field.component'
+import { DialogComponent } from '../../../components/dialog/dialog.component'
+import { RadioGroupComponent } from '../../../components/radio-group/radio-group.component'
+import { ButtonComponent } from '../../../components/button/button.component'
 
 interface CreateConversationDialogProps {
     open: boolean
     onClose: () => void
     onSuccess?: (conversationId: string) => void
 }
+
+interface CreateConversationFormValues {
+    type: ConversationType
+    name: string
+    participantIds: string[]
+    selectedMembers: MemberResponse[] // Helper field for UI display
+}
+
+const validationSchema = Yup.object({
+    type: Yup.string().required(),
+    name: Yup.string().when('type', {
+        is: 'GROUP',
+        then: schema => schema.required('Vui lòng nhập tên nhóm')
+            .min(3, 'Tên nhóm phải có ít nhất 3 ký tự')
+            .max(50, 'Tên nhóm không được quá 50 ký tự'),
+        otherwise: schema => schema.optional()
+    }),
+    participantIds: Yup.array()
+        .min(1, 'Vui lòng chọn ít nhất một thành viên')
+        .test('max-participants', 'Tin nhắn trực tiếp chỉ có thể với 1 người', function (val) {
+            const type = this.parent.type
+            if (type === 'DIRECT' && val && val.length > 1) {
+                return false
+            }
+            return true
+        })
+})
 
 export const CreateConversationDialog = ({
     open,
@@ -38,11 +63,7 @@ export const CreateConversationDialog = ({
 }: CreateConversationDialogProps) => {
     const dispatch = useAppDispatch()
     const { currentWorkspace } = useWorkspace()
-    const [conversationType, setConversationType] = useState<ConversationType>('DIRECT')
-    const [groupName, setGroupName] = useState('')
-    const [selectedMembers, setSelectedMembers] = useState<MemberResponse[]>([])
     const [searchQuery, setSearchQuery] = useState('')
-    const [isSubmitting, setIsSubmitting] = useState(false)
 
     // Fetch workspace members
     const { members } = useWorkspaceMembers(currentWorkspace?.id, {
@@ -51,50 +72,24 @@ export const CreateConversationDialog = ({
         limit: PAGE_LIMIT_DEFAULT.limit
     })
 
-    const handleToggleMember = (member: MemberResponse) => {
-        setSelectedMembers(prev => {
-            const exists = prev.find(m => m.userId === member.userId)
-            if (exists) {
-                return prev.filter(m => m.userId !== member.userId)
-            }
-            return [...prev, member]
-        })
+    const initialValues: CreateConversationFormValues = {
+        type: 'DIRECT',
+        name: '',
+        participantIds: [],
+        selectedMembers: []
     }
 
-    const handleSubmit = async () => {
+    const handleSubmit = async (
+        values: CreateConversationFormValues,
+        { setSubmitting, resetForm }: FormikHelpers<CreateConversationFormValues>
+    ) => {
         if (!currentWorkspace) return
 
-        // Validation
-        if (conversationType === 'GROUP' && !groupName.trim()) {
-            dispatch(showSnackbar({
-                message: 'Vui lòng nhập tên nhóm',
-                severity: 'error'
-            }))
-            return
-        }
-
-        if (selectedMembers.length === 0) {
-            dispatch(showSnackbar({
-                message: 'Vui lòng chọn ít nhất một thành viên',
-                severity: 'error'
-            }))
-            return
-        }
-
-        if (conversationType === 'DIRECT' && selectedMembers.length > 1) {
-            dispatch(showSnackbar({
-                message: 'Tin nhắn trực tiếp chỉ có thể với 1 người',
-                severity: 'error'
-            }))
-            return
-        }
-
-        setIsSubmitting(true)
         try {
             const response = await createConversationApi(currentWorkspace.id, {
-                type: conversationType,
-                name: conversationType === 'GROUP' ? groupName : undefined,
-                participantIds: selectedMembers.map(m => m.userId)
+                type: values.type,
+                name: values.type === 'GROUP' ? values.name : undefined,
+                participantIds: values.participantIds
             })
 
             dispatch(showSnackbar({
@@ -102,12 +97,8 @@ export const CreateConversationDialog = ({
                 severity: 'success'
             }))
 
-            // Reset form
-            setGroupName('')
-            setSelectedMembers([])
-            setConversationType('DIRECT')
+            resetForm()
             setSearchQuery('')
-
             onSuccess?.(response.id)
             onClose()
         } catch (error: any) {
@@ -116,172 +107,223 @@ export const CreateConversationDialog = ({
                 severity: 'error'
             }))
         } finally {
-            setIsSubmitting(false)
+            setSubmitting(false)
         }
     }
 
-    const handleClose = () => {
-        if (!isSubmitting) {
-            setGroupName('')
-            setSelectedMembers([])
-            setConversationType('DIRECT')
-            setSearchQuery('')
-            onClose()
-        }
+    const handleClose = (resetForm: () => void) => {
+        resetForm()
+        setSearchQuery('')
+        onClose()
     }
 
     return (
-        <Dialog
+        <DialogComponent
             open={open}
-            onClose={handleClose}
-            maxWidth="sm"
-            fullWidth
-            PaperProps={{
-                sx: {
-                    borderRadius: 2
-                }
-            }}
+            onClose={onClose}
+            title="Tạo cuộc trò chuyện mới"
+            showActions={false}
         >
-            <DialogTitle>Tạo cuộc trò chuyện mới</DialogTitle>
+            <Formik
+                initialValues={initialValues}
+                validationSchema={validationSchema}
+                onSubmit={handleSubmit}
+            >
+                {({
+                    values,
+                    errors,
+                    touched,
+                    handleChange,
+                    handleBlur,
+                    setFieldValue,
+                    isSubmitting,
+                    resetForm
+                }) => {
+                    const handleToggleMember = (member: MemberResponse) => {
+                        const currentIds = values.participantIds
+                        const currentMembers = values.selectedMembers
+                        const exists = currentIds.includes(member.userId)
 
-            <DialogContent>
-                <Stack spacing={3} sx={{ mt: 1 }}>
-                    {/* Conversation Type */}
-                    <FormControl>
-                        <FormLabel>Loại cuộc trò chuyện</FormLabel>
-                        <RadioGroup
-                            row
-                            value={conversationType}
-                            onChange={(e) => {
-                                setConversationType(e.target.value as ConversationType)
-                                setSelectedMembers([]) // Reset selection when changing type
-                            }}
-                        >
-                            <FormControlLabel
-                                value="DIRECT"
-                                control={<Radio />}
-                                label="Trực tiếp (1-1)"
-                            />
-                            <FormControlLabel
-                                value="GROUP"
-                                control={<Radio />}
-                                label="Nhóm"
-                            />
-                        </RadioGroup>
-                    </FormControl>
+                        let newIds: string[]
+                        let newMembers: MemberResponse[]
 
-                    {/* Group Name (only for GROUP type) */}
-                    {conversationType === 'GROUP' && (
-                        <TextField
-                            label="Tên nhóm"
-                            value={groupName}
-                            onChange={(e) => setGroupName(e.target.value)}
-                            placeholder="Nhập tên nhóm..."
-                            required
-                            fullWidth
-                        />
-                    )}
+                        if (exists) {
+                            newIds = currentIds.filter(id => id !== member.userId)
+                            newMembers = currentMembers.filter(m => m.userId !== member.userId)
+                        } else {
+                            // If DIRECT, replace selection instead of adding
+                            if (values.type === 'DIRECT') {
+                                newIds = [member.userId]
+                                newMembers = [member]
+                            } else {
+                                newIds = [...currentIds, member.userId]
+                                newMembers = [...currentMembers, member]
+                            }
+                        }
 
-                    {/* Member Search */}
-                    <TextField
-                        label="Tìm thành viên"
-                        value={searchQuery}
-                        onChange={(e) => setSearchQuery(e.target.value)}
-                        placeholder="Nhập tên hoặc email..."
-                        fullWidth
-                        size="small"
-                    />
+                        setFieldValue('participantIds', newIds)
+                        setFieldValue('selectedMembers', newMembers)
+                    }
 
-                    {/* Selected Members */}
-                    {selectedMembers.length > 0 && (
-                        <Box>
-                            <Typography variant="caption" color="text.secondary" gutterBottom>
-                                Đã chọn ({selectedMembers.length})
-                            </Typography>
-                            <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 1, mt: 1 }}>
-                                {selectedMembers.map((member) => (
-                                    <Chip
-                                        key={member.userId}
-                                        label={member.fullName}
-                                        onDelete={() => handleToggleMember(member)}
-                                        size="small"
-                                        color="primary"
-                                        variant="outlined"
+                    const handleTypeChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+                        const newType = event.target.value as ConversationType
+                        setFieldValue('type', newType)
+
+                        setFieldValue('participantIds', [])
+                        setFieldValue('selectedMembers', [])
+                    }
+
+                    return (
+                        <Form>
+                            <Stack spacing={3} sx={{ mt: 1 }}>
+                                <RadioGroupComponent
+                                    label="Loại cuộc trò chuyện"
+                                    name="type"
+                                    value={values.type}
+                                    onChange={handleTypeChange}
+                                    options={[
+                                        { value: 'DIRECT', label: 'Trực tiếp (1-1)' },
+                                        { value: 'GROUP', label: 'Nhóm' }
+                                    ]}
+                                    error={Boolean(errors.type && touched.type)}
+                                    helperText={touched.type && errors.type ? errors.type : undefined}
+                                    direction="row"
+                                />
+
+                                {values.type === 'GROUP' && (
+                                    <Box>
+                                        <InputLabel sx={{ mb: 0.5, fontSize: 13, fontWeight: 600 }}>
+                                            Tên nhóm <span style={{ color: 'red' }}>*</span>
+                                        </InputLabel>
+                                        <TextFieldComponent
+                                            name="name"
+                                            placeholder="Nhập tên nhóm..."
+                                            value={values.name}
+                                            onChange={handleChange}
+                                            onBlur={handleBlur}
+                                            error={touched.name && Boolean(errors.name)}
+                                            errorMessage={touched.name ? errors.name : undefined}
+                                            sizeUI="sm"
+                                        />
+                                    </Box>
+                                )}
+
+                                <Box>
+                                    <TextFieldComponent
+                                        label="Tìm thành viên"
+                                        value={searchQuery}
+                                        onChange={(e) => setSearchQuery(e.target.value)}
+                                        placeholder="Nhập tên hoặc email..."
+                                        sizeUI="sm"
                                     />
-                                ))}
-                            </Box>
-                        </Box>
-                    )}
+                                </Box>
 
-                    {/* Member List */}
-                    <Box>
-                        <Typography variant="caption" color="text.secondary" gutterBottom>
-                            Thành viên trong workspace
-                        </Typography>
-                        <Box
-                            sx={{
-                                maxHeight: 300,
-                                overflow: 'auto',
-                                mt: 1,
-                                border: 1,
-                                borderColor: 'divider',
-                                borderRadius: 1,
-                                p: 1
-                            }}
-                        >
-                            {members.length === 0 ? (
-                                <Typography variant="body2" color="text.secondary" align="center" sx={{ py: 2 }}>
-                                    Không tìm thấy thành viên
-                                </Typography>
-                            ) : (
-                                <Stack spacing={0.5}>
-                                    {members.map((member) => {
-                                        const isSelected = selectedMembers.some(m => m.userId === member.userId)
-                                        const isDisabled = conversationType === 'DIRECT' && selectedMembers.length > 0 && !isSelected
+                                {values.selectedMembers.length > 0 && (
+                                    <Box>
+                                        <Typography variant="caption" color="text.secondary" gutterBottom>
+                                            Đã chọn ({values.selectedMembers.length})
+                                        </Typography>
+                                        <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 1, mt: 1 }}>
+                                            {values.selectedMembers.map((member) => (
+                                                <Chip
+                                                    key={member.userId}
+                                                    label={member.fullName}
+                                                    onDelete={() => handleToggleMember(member)}
+                                                    size="small"
+                                                    color="primary"
+                                                    variant="outlined"
+                                                />
+                                            ))}
+                                        </Box>
+                                        {touched.participantIds && errors.participantIds && (
+                                            <FormHelperText error sx={{ mt: 1 }}>
+                                                {errors.participantIds}
+                                            </FormHelperText>
+                                        )}
+                                    </Box>
+                                )}
 
-                                        return (
-                                            <Box
-                                                key={member.userId}
-                                                onClick={() => !isDisabled && handleToggleMember(member)}
-                                                sx={{
-                                                    p: 1.5,
-                                                    borderRadius: 1,
-                                                    cursor: isDisabled ? 'not-allowed' : 'pointer',
-                                                    bgcolor: isSelected ? 'action.selected' : 'transparent',
-                                                    opacity: isDisabled ? 0.5 : 1,
-                                                    '&:hover': {
-                                                        bgcolor: isDisabled ? 'transparent' : isSelected ? 'action.selected' : 'action.hover'
-                                                    }
-                                                }}
-                                            >
-                                                <Typography variant="body2" fontWeight={isSelected ? 600 : 400}>
-                                                    {member.fullName}
-                                                </Typography>
-                                                <Typography variant="caption" color="text.secondary">
-                                                    {member.email}
-                                                </Typography>
-                                            </Box>
-                                        )
-                                    })}
-                                </Stack>
-                            )}
-                        </Box>
-                    </Box>
-                </Stack>
-            </DialogContent>
+                                <Box>
+                                    <Typography variant="caption" color="text.secondary" gutterBottom>
+                                        Thành viên trong workspace
+                                    </Typography>
+                                    <Box
+                                        sx={{
+                                            maxHeight: 300,
+                                            overflow: 'auto',
+                                            mt: 1,
+                                            border: 1,
+                                            borderColor: 'divider',
+                                            borderRadius: 1,
+                                            p: 1
+                                        }}
+                                    >
+                                        {members.length === 0 ? (
+                                            <Typography variant="body2" color="text.secondary" align="center" sx={{ py: 2 }}>
+                                                Không tìm thấy thành viên
+                                            </Typography>
+                                        ) : (
+                                            <Stack spacing={0.5}>
+                                                {members.map((member) => {
+                                                    const isSelected = values.participantIds.includes(member.userId)
+                                                    // Disable if DIRECT mode and already selected another user
+                                                    const isDisabled = values.type === 'DIRECT'
+                                                        && values.participantIds.length > 0
+                                                        && !isSelected
 
-            <DialogActions sx={{ px: 3, pb: 2 }}>
-                <Button onClick={handleClose} disabled={isSubmitting}>
-                    Hủy
-                </Button>
-                <Button
-                    onClick={handleSubmit}
-                    variant="contained"
-                    disabled={isSubmitting || selectedMembers.length === 0}
-                >
-                    {isSubmitting ? 'Đang tạo...' : 'Tạo'}
-                </Button>
-            </DialogActions>
-        </Dialog>
+                                                    return (
+                                                        <Box
+                                                            key={member.userId}
+                                                            onClick={() => !isDisabled && handleToggleMember(member)}
+                                                            sx={{
+                                                                p: 1.5,
+                                                                borderRadius: 1,
+                                                                cursor: isDisabled ? 'not-allowed' : 'pointer',
+                                                                bgcolor: isSelected ? 'action.selected' : 'transparent',
+                                                                opacity: isDisabled ? 0.5 : 1,
+                                                                '&:hover': {
+                                                                    bgcolor: isDisabled ? 'transparent' : isSelected ? 'action.selected' : 'action.hover'
+                                                                }
+                                                            }}
+                                                        >
+                                                            <Typography variant="body2" fontWeight={isSelected ? 600 : 400}>
+                                                                {member.fullName}
+                                                            </Typography>
+                                                            <Typography variant="caption" color="text.secondary">
+                                                                {member.email}
+                                                            </Typography>
+                                                        </Box>
+                                                    )
+                                                })}
+                                            </Stack>
+                                        )}
+                                    </Box>
+                                </Box>
+                            </Stack>
+
+                            <DialogActions sx={{ px: 0, pt: 3 }}>
+                                <ButtonComponent
+                                    variant="ghost"
+                                    onClick={() => handleClose(resetForm)}
+                                    disabled={isSubmitting}
+                                    sizeUI="sm"
+                                >
+                                    Hủy
+                                </ButtonComponent>
+                                <ButtonComponent
+                                    variant="primary"
+                                    type="submit"
+                                    disabled={isSubmitting}
+                                    loading={isSubmitting}
+                                    sizeUI="sm"
+                                >
+                                    Tạo
+                                </ButtonComponent>
+                            </DialogActions>
+                        </Form>
+                    )
+                }}
+            </Formik>
+        </DialogComponent>
     )
 }

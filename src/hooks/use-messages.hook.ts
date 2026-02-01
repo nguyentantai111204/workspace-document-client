@@ -30,9 +30,9 @@ export const useMessages = (conversationId: string | null | undefined) => {
             onSuccess: (data) => {
                 // Prepend older messages when loading more
                 if (cursor) {
-                    setAllMessages(prev => [...data.messages, ...prev])
+                    setAllMessages(prev => [...(data?.messages || []), ...(prev || [])])
                 } else {
-                    setAllMessages(data.messages)
+                    setAllMessages(data?.messages || [])
                 }
             }
         }
@@ -43,7 +43,7 @@ export const useMessages = (conversationId: string | null | undefined) => {
             const message = await sendMessageApi(conversationId!, data)
 
             // Optimistic update: add message to list
-            setAllMessages(prev => [...prev, message])
+            setAllMessages(prev => [...(prev || []), message])
             await mutate()
 
             return message
@@ -79,7 +79,11 @@ export const useMessages = (conversationId: string | null | undefined) => {
     }, [data])
 
     const addMessage = useCallback((message: Message) => {
-        setAllMessages(prev => [...prev, message])
+        setAllMessages(prev => {
+            const safePrev = prev || []
+            if (safePrev.some(m => m.id === message.id)) return safePrev
+            return [...safePrev, message]
+        })
     }, [])
 
     return {

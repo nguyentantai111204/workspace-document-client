@@ -13,8 +13,7 @@ import {
     UnreadCountResponse
 } from './chat.interface'
 
-//Conversations
-
+// Trò chuyện
 export const listConversationsApi = async (
     workspaceId: string,
     query?: ConversationListQuery
@@ -79,8 +78,7 @@ export const addParticipantApi = async (
     return response.data
 }
 
-// Messagae
-
+// Tin nhắn
 export const getMessagesApi = async (
     conversationId: string,
     query?: MessageQuery
@@ -122,7 +120,7 @@ export const getUnreadCountApi = async (
     return response.data
 }
 
-// ==================== Search ====================
+// Tìm kiếm
 
 export const searchMessagesApi = async (
     workspaceId: string,

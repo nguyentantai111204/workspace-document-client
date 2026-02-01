@@ -20,7 +20,7 @@ export const useChat = () => {
     const [onlineUsers, setOnlineUsers] = useState<Map<string, OnlineUser>>(new Map())
     const [isConnected, setIsConnected] = useState(false)
 
-    // ==================== Socket Connection ====================
+    // ==================== Kết nối socket ====================
 
     useEffect(() => {
         if (!token) return
@@ -39,7 +39,7 @@ export const useChat = () => {
         }
     }, [token])
 
-    // ==================== Real-time Event Handlers ====================
+    // ==================== Xử lý sự kiện ====================
 
     const handleUserTyping = useCallback((data: { conversationId: string; userId: string }) => {
         setTypingUsers(prev => {
@@ -92,8 +92,6 @@ export const useChat = () => {
             chatSocketService.off('user-offline', handleUserOffline)
         }
     }, [isConnected, handleUserTyping, handleUserStopTyping, handleUserOnline, handleUserOffline])
-
-    // ==================== Helper Functions ====================
 
     const joinConversation = useCallback((conversationId: string) => {
         chatSocketService.joinConversation(conversationId, (response) => {

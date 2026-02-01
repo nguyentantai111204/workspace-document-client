@@ -79,8 +79,10 @@ export const WorkspaceChatPage = () => {
         // Send via socket for real-time
         sendSocketMessage(selectedConversation.id, content, attachments, (response) => {
             if (response.success && response.message) {
-                // Message will be added via socket event
+                // Message will be added via socket event, but we add it here too
+                // deduplication in addMessage will handle it
                 console.log('Message sent successfully')
+                addMessage(response.message)
             }
         })
     }, [selectedConversation, sendSocketMessage])

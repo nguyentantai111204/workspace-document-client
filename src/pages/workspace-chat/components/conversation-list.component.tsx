@@ -37,7 +37,6 @@ export const ConversationList = ({
                 bgcolor: 'background.paper'
             }}
         >
-            {/* Header */}
             <Box
                 sx={{
                     p: { xs: 1.5, sm: 2 },
@@ -72,7 +71,6 @@ export const ConversationList = ({
                 )}
             </Box>
 
-            {/* Search */}
             {onSearchChange && (
                 <Box sx={{ p: { xs: 1, sm: 2 }, pt: { xs: 1.5, sm: 2 } }}>
                     <TextFieldSearchComponent
@@ -82,7 +80,6 @@ export const ConversationList = ({
                 </Box>
             )}
 
-            {/* Conversation List */}
             <Box
                 sx={{
                     flex: 1,
