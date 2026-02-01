@@ -139,6 +139,11 @@ export const useChat = () => {
         return () => chatSocketService.off('message-read', callback)
     }, [])
 
+    const onConnect = useCallback((callback: () => void) => {
+        chatSocketService.onConnect(callback)
+        return () => chatSocketService.off('connect', callback)
+    }, [])
+
     const isUserTyping = useCallback((conversationId: string, userId: string): boolean => {
         return typingUsers.some(
             u => u.conversationId === conversationId && u.userId === userId
@@ -169,6 +174,7 @@ export const useChat = () => {
         markAsRead,
         onNewMessage,
         onMessageRead,
+        onConnect,
         isUserTyping,
         getTypingUsers,
         isUserOnline,

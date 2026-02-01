@@ -101,6 +101,17 @@ export const sendMessageApi = async (
     return response.data
 }
 
+export const syncMessagesApi = async (
+    conversationId: string,
+    lastMessageId: string
+): Promise<Message[]> => {
+    const response = await axiosInstance.get(
+        `/conversations/${conversationId}/messages/sync`,
+        { params: { lastMessageId } }
+    )
+    return response.data
+}
+
 export const markMessageAsReadApi = async (messageId: string): Promise<void> => {
     await axiosInstance.patch(`/messages/${messageId}/read`)
 }

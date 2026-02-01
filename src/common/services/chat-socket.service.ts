@@ -31,6 +31,8 @@ interface UserStatusData {
 class ChatSocketService {
     private socket: Socket | null = null
     private readonly namespace = '/chat'
+    private heartbeatInterval: ReturnType<typeof setInterval> | null = null
+    private readonly HEARTBEAT_INTERVAL = 30000 // 30s
 
     connect(token: string) {
         if (this.socket?.connected) {
@@ -53,10 +55,12 @@ class ChatSocketService {
 
         this.socket.on('connect', () => {
             console.log('[Chat Socket] Connected successfully')
+            this.startHeartbeat()
         })
 
         this.socket.on('disconnect', (reason) => {
             console.log('[Chat Socket] Disconnected:', reason)
+            this.stopHeartbeat()
         })
 
         this.socket.on('connect_error', (error) => {
@@ -67,8 +71,30 @@ class ChatSocketService {
     disconnect() {
         if (this.socket) {
             console.log('[Chat Socket] Disconnecting')
+            this.stopHeartbeat()
             this.socket.disconnect()
             this.socket = null
+        }
+    }
+
+    private startHeartbeat() {
+        this.stopHeartbeat() // Ensure no existing interval
+        console.log('[Chat Socket] Starting heartbeat')
+        // Initial heartbeat
+        this.socket?.emit('heartbeat')
+
+        this.heartbeatInterval = setInterval(() => {
+            if (this.socket?.connected) {
+                this.socket.emit('heartbeat')
+            }
+        }, this.HEARTBEAT_INTERVAL)
+    }
+
+    private stopHeartbeat() {
+        if (this.heartbeatInterval) {
+            console.log('[Chat Socket] Stopping heartbeat')
+            clearInterval(this.heartbeatInterval)
+            this.heartbeatInterval = null
         }
     }
 
@@ -156,6 +182,10 @@ class ChatSocketService {
 
     onUserOffline(callback: (data: UserStatusData) => void) {
         this.socket?.on('user-offline', callback)
+    }
+
+    onConnect(callback: () => void) {
+        this.socket?.on('connect', callback)
     }
 
     // ==================== Remove Listeners ====================

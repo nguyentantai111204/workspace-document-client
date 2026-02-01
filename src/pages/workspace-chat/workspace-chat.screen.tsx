@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from 'react'
+import { useState, useEffect, useCallback, useRef } from 'react'
 import { Box, useTheme, useMediaQuery } from '@mui/material'
 import { useWorkspace } from '../../contexts/workspace.context'
 import { useConversations } from '../../hooks/use-conversations.hook'
@@ -12,6 +12,7 @@ import { MessageInput } from './components/message-input.component'
 import { CreateConversationDialog } from './components/create-conversation-dialog.component'
 import { ChatHeader } from './components/chat-header.component'
 import { ConversationWithUnread } from '../../apis/chat/chat.interface'
+import { syncMessagesApi } from '../../apis/chat/chat.api'
 import { PAGE_LIMIT_DEFAULT } from '../../common/constant/page-take.constant'
 import { useAppSelector } from '../../redux/store.redux'
 
@@ -55,8 +56,40 @@ export const WorkspaceChatPage = () => {
         startTyping,
         stopTyping,
         onNewMessage,
-        getTypingUsers
+        getTypingUsers,
+        onConnect
     } = useChat()
+
+    const messagesRef = useRef(messages)
+    useEffect(() => {
+        messagesRef.current = messages
+    }, [messages])
+
+    // Sync messages on reconnect
+    useEffect(() => {
+        const cleanup = onConnect(async () => {
+            console.log('[WorkspaceChatPage] Socket reconnected, syncing messages...')
+            if (!selectedConversation) return
+
+            const currentMessages = messagesRef.current
+            const lastMessage = currentMessages[currentMessages.length - 1]
+
+            if (!lastMessage) return
+
+            try {
+                const syncedMessages = await syncMessagesApi(selectedConversation.id, lastMessage.id)
+                console.log(`[WorkspaceChatPage] Synced ${syncedMessages.length} messages`)
+
+                if (syncedMessages.length > 0) {
+                    syncedMessages.forEach(msg => addMessage(msg))
+                }
+            } catch (error) {
+                console.error('[WorkspaceChatPage] Failed to sync messages:', error)
+            }
+        })
+
+        return cleanup
+    }, [onConnect, selectedConversation, addMessage])
 
     const handleSelectConversation = useCallback((conversation: ConversationWithUnread) => {
         if (selectedConversation) {
