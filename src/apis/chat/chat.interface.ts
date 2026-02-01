@@ -1,4 +1,4 @@
-import { BaseEntity, PaginatedResponse } from '../common/common.interface'
+import { BaseEntity, PaginatedResponse, PaginationParams } from '../common/common.interface'
 
 export type ConversationType = 'DIRECT' | 'GROUP'
 export type ParticipantRole = 'ADMIN' | 'MEMBER'
@@ -38,10 +38,7 @@ export interface Participant extends BaseEntity {
     isMuted: boolean
 }
 
-export interface ConversationListQuery {
-    page?: number
-    limit?: number
-}
+export interface ConversationListQuery extends PaginationParams { }
 
 export interface MessageQuery {
     limit?: number

@@ -5,6 +5,7 @@ import { useConversations } from '../../hooks/use-conversations.hook'
 import { useMessages } from '../../hooks/use-messages.hook'
 import { useChat } from '../../hooks/use-chat.hook'
 import { useWorkspaceMembers } from '../../hooks/use-workspace-member.hook'
+import { useDebounce } from '../../hooks/use-debounce.hook'
 import { ConversationList } from './components/conversation-list.component'
 import { MessageList } from './components/message-list.component'
 import { MessageInput } from './components/message-input.component'
@@ -20,12 +21,16 @@ export const WorkspaceChatPage = () => {
     const [selectedConversation, setSelectedConversation] = useState<ConversationWithUnread | null>(null)
     const [showConversationList, setShowConversationList] = useState(true)
     const [createDialogOpen, setCreateDialogOpen] = useState(false)
+    const [search, setSearch] = useState('')
+    const debouncedSearch = useDebounce(search, 300)
 
+    // Fetch conversations
     const { conversations, isLoading: conversationsLoading, mutate: mutateConversations } = useConversations(
         currentWorkspace?.id,
         {
             page: 1,
-            limit: PAGE_LIMIT_DEFAULT.limit
+            limit: PAGE_LIMIT_DEFAULT.limit,
+            search: debouncedSearch
         }
     )
 
@@ -142,6 +147,11 @@ export const WorkspaceChatPage = () => {
         }
     }, [mutateConversations, handleSelectConversation])
 
+    // Handle search change
+    const handleSearchChange = useCallback((value: string) => {
+        setSearch(value)
+    }, [])
+
     if (!currentWorkspace) {
         return (
             <Box sx={{ p: 3 }}>
@@ -162,10 +172,7 @@ export const WorkspaceChatPage = () => {
                         onSelectConversation={handleSelectConversation}
                         onCreateConversation={handleCreateConversation}
                         isLoading={conversationsLoading}
-                        onSearchChange={(value) => {
-                            // TODO: Implement search
-                            console.log('Search:', value)
-                        }}
+                        onSearchChange={handleSearchChange}
                     />
                 ) : (
                     // Chat view
@@ -187,6 +194,8 @@ export const WorkspaceChatPage = () => {
             </Box>
         )
     }
+
+
 
     // Desktop layout: split view
     return (
@@ -211,10 +220,7 @@ export const WorkspaceChatPage = () => {
                     onSelectConversation={handleSelectConversation}
                     onCreateConversation={handleCreateConversation}
                     isLoading={conversationsLoading}
-                    onSearchChange={(value) => {
-                        // TODO: Implement search
-                        console.log('Search:', value)
-                    }}
+                    onSearchChange={handleSearchChange}
                 />
             </Box>
 
