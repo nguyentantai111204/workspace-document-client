@@ -79,7 +79,6 @@ export const MessageItem = ({
                             {message.content}
                         </Typography>
 
-                        {/* Attachments */}
                         {message.attachments && message.attachments.length > 0 && (
                             <Box sx={{ mt: 1, display: 'flex', flexDirection: 'column', gap: 0.5 }}>
                                 {message.attachments.map((attachment, idx) => (
@@ -117,7 +116,6 @@ export const MessageItem = ({
                         )}
                     </Box>
 
-                    {/* Timestamp */}
                     {!isConsecutive && (
                         <Box
                             sx={{

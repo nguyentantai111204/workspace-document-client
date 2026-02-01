@@ -61,7 +61,6 @@ export const MessageInput = ({
                 bgcolor: 'background.paper'
             }}
         >
-            {/* Attachments preview */}
             {attachments.length > 0 && (
                 <Box
                     sx={{

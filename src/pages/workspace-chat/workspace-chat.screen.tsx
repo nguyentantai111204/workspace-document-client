@@ -4,6 +4,7 @@ import { useWorkspace } from '../../contexts/workspace.context'
 import { useConversations } from '../../hooks/use-conversations.hook'
 import { useMessages } from '../../hooks/use-messages.hook'
 import { useChat } from '../../hooks/use-chat.hook'
+import { useWorkspaceMembers } from '../../hooks/use-workspace-member.hook'
 import { ConversationList } from './components/conversation-list.component'
 import { MessageList } from './components/message-list.component'
 import { MessageInput } from './components/message-input.component'
@@ -20,7 +21,6 @@ export const WorkspaceChatPage = () => {
     const [showConversationList, setShowConversationList] = useState(true)
     const [createDialogOpen, setCreateDialogOpen] = useState(false)
 
-    // Fetch conversations
     const { conversations, isLoading: conversationsLoading, mutate: mutateConversations } = useConversations(
         currentWorkspace?.id,
         {
@@ -29,7 +29,6 @@ export const WorkspaceChatPage = () => {
         }
     )
 
-    // Fetch messages for selected conversation
     const {
         messages,
         hasMore,
@@ -41,7 +40,6 @@ export const WorkspaceChatPage = () => {
 
     console.log('WorkspaceChatPage messages:', messages.length, selectedConversation?.id)
 
-    // Chat socket integration
     const {
         isConnected,
         joinConversation,
@@ -111,9 +109,18 @@ export const WorkspaceChatPage = () => {
         return cleanup
     }, [isConnected, onNewMessage, selectedConversation, addMessage, markAsRead, mutateConversations])
 
-    // Get typing users for current conversation
-    const typingUsers = selectedConversation
-        ? getTypingUsers(selectedConversation.id)
+    // Fetch workspace members for name lookup
+    const { members } = useWorkspaceMembers(currentWorkspace?.id, { limit: 100 })
+
+    // Helper to get user name
+    const getUserName = useCallback((userId: string) => {
+        const member = members.find(m => m.userId === userId)
+        return member?.fullName || member?.email || 'Người dùng ẩn danh'
+    }, [members])
+
+    // Get typing users for current conversation with names
+    const typingUserNames = selectedConversation
+        ? getTypingUsers(selectedConversation.id).map(getUserName)
         : []
 
     // Handle create conversation
@@ -168,7 +175,7 @@ export const WorkspaceChatPage = () => {
                             isLoading={messagesLoading}
                             hasMore={hasMore}
                             onLoadMore={loadMore}
-                            typingUsers={typingUsers}
+                            typingUsers={typingUserNames}
                         />
                         <MessageInput
                             onSend={handleSendMessage}
@@ -227,7 +234,7 @@ export const WorkspaceChatPage = () => {
                             isLoading={messagesLoading}
                             hasMore={hasMore}
                             onLoadMore={loadMore}
-                            typingUsers={typingUsers}
+                            typingUsers={typingUserNames}
                         />
                         <MessageInput
                             onSend={handleSendMessage}

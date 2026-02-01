@@ -71,7 +71,7 @@ export const MainLayout = () => {
                 display: 'flex',
                 flexDirection: 'column',
                 pb: 0,
-                pt: { xs: `${APP_BAR_MOBILE}px`, lg: `${APP_BAR_DESKTOP}px` } // Remove the +24
+                pt: { xs: `${APP_BAR_MOBILE}px`, lg: `${APP_BAR_DESKTOP}px` }
             } : {}}>
                 <Outlet />
             </MainStyle>

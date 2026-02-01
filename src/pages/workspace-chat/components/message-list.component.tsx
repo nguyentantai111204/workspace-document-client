@@ -26,7 +26,6 @@ export const MessageList = ({
     const messageListRef = useRef<HTMLDivElement>(null)
     const prevMessagesLengthRef = useRef(messages.length)
 
-    // Auto scroll to bottom on new message
     useEffect(() => {
         if (messages.length > prevMessagesLengthRef.current) {
             messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' })
@@ -34,7 +33,6 @@ export const MessageList = ({
         prevMessagesLengthRef.current = messages.length
     }, [messages])
 
-    // Initial scroll to bottom
     useEffect(() => {
         if (messages.length > 0 && messagesEndRef.current) {
             messagesEndRef.current.scrollIntoView()
@@ -69,7 +67,6 @@ export const MessageList = ({
                 }
             }}
         >
-            {/* Load More Button */}
             {hasMore && (
                 <Box sx={{ p: 2, textAlign: 'center' }}>
                     <Button
@@ -82,14 +79,12 @@ export const MessageList = ({
                 </Box>
             )}
 
-            {/* Loading */}
             {isLoading && messages.length === 0 && (
                 <Box sx={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
                     <LoadingComponent size="medium" />
                 </Box>
             )}
 
-            {/* Empty State */}
             {!isLoading && messages.length === 0 && (
                 <Box sx={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', p: 4 }}>
                     <EmptyComponent
@@ -99,7 +94,6 @@ export const MessageList = ({
                 </Box>
             )}
 
-            {/* Messages */}
             {messages.length > 0 && (
                 <Box sx={{ py: 2 }}>
                     {messages.map((message, index) => {
@@ -117,12 +111,10 @@ export const MessageList = ({
                 </Box>
             )}
 
-            {/* Typing Indicator */}
             {typingUsers.length > 0 && (
                 <TypingIndicator userNames={typingUsers} />
             )}
 
-            {/* Scroll anchor */}
             <div ref={messagesEndRef} />
         </Box>
     )
