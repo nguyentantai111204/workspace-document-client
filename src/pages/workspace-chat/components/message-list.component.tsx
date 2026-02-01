@@ -27,11 +27,14 @@ export const MessageList = ({
     const prevMessagesLengthRef = useRef(messages.length)
 
     useEffect(() => {
-        if (messages.length > prevMessagesLengthRef.current) {
-            messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' })
+        if (
+            messages.length > prevMessagesLengthRef.current ||
+            (typingUsers.length > 0 && messagesEndRef.current)
+        ) {
+            messagesEndRef.current?.scrollIntoView({ behavior: 'smooth', block: 'end' })
         }
         prevMessagesLengthRef.current = messages.length
-    }, [messages])
+    }, [messages.length, typingUsers.length])
 
     useEffect(() => {
         if (messages.length > 0 && messagesEndRef.current) {
