@@ -1,4 +1,4 @@
-import { useState, useCallback } from 'react'
+import { useState, useCallback, useEffect } from 'react'
 import useSWR from 'swr'
 import {
     getMessagesApi,
@@ -11,6 +11,12 @@ import { Message, MessageQuery, SendMessageRequest } from '../apis/chat/chat.int
 export const useMessages = (conversationId: string | null | undefined) => {
     const [cursor, setCursor] = useState<string | undefined>(undefined)
     const [allMessages, setAllMessages] = useState<Message[]>([])
+
+    // Reset state when conversationId changes
+    useEffect(() => {
+        setCursor(undefined)
+        setAllMessages([])
+    }, [conversationId])
 
     const query: MessageQuery = {
         limit: 50,
@@ -28,11 +34,12 @@ export const useMessages = (conversationId: string | null | undefined) => {
         {
             revalidateOnFocus: false,
             onSuccess: (data) => {
+                const messagesList = data?.data || []
                 // Prepend older messages when loading more
                 if (cursor) {
-                    setAllMessages(prev => [...(data?.messages || []), ...(prev || [])])
+                    setAllMessages(prev => [...messagesList, ...(prev || [])])
                 } else {
-                    setAllMessages(data?.messages || [])
+                    setAllMessages(messagesList)
                 }
             }
         }

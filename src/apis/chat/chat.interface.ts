@@ -74,9 +74,9 @@ export interface ConversationListResponse extends PaginatedResponse<Conversation
 
 
 export interface MessageListResponse {
-    messages: Message[]
-    hasMore: boolean
+    data: Message[]
     nextCursor?: string
+    hasMore: boolean
 }
 
 export interface UnreadCountResponse {

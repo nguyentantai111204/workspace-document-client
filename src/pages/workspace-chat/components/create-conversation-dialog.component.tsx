@@ -5,8 +5,7 @@ import {
     Typography,
     Stack,
     FormHelperText,
-    InputLabel,
-    DialogActions
+    InputLabel
 } from '@mui/material'
 import { useWorkspace } from '../../../contexts/workspace.context'
 import { useWorkspaceMembers } from '../../../hooks/use-workspace-member.hook'
@@ -21,7 +20,7 @@ import * as Yup from 'yup'
 import { TextFieldComponent } from '../../../components/textfield/text-field.component'
 import { DialogComponent } from '../../../components/dialog/dialog.component'
 import { RadioGroupComponent } from '../../../components/radio-group/radio-group.component'
-import { ButtonComponent } from '../../../components/button/button.component'
+import { UserItemComponent } from '../../../components/user/user-item.component'
 
 interface CreateConversationDialogProps {
     open: boolean
@@ -65,7 +64,6 @@ export const CreateConversationDialog = ({
     const { currentWorkspace } = useWorkspace()
     const [searchQuery, setSearchQuery] = useState('')
 
-    // Fetch workspace members
     const { members } = useWorkspaceMembers(currentWorkspace?.id, {
         search: searchQuery || undefined,
         page: 1,
@@ -118,62 +116,71 @@ export const CreateConversationDialog = ({
     }
 
     return (
-        <DialogComponent
-            open={open}
-            onClose={onClose}
-            title="Tạo cuộc trò chuyện mới"
-            showActions={false}
+        <Formik
+            initialValues={initialValues}
+            validationSchema={validationSchema}
+            onSubmit={handleSubmit}
+            enableReinitialize
         >
-            <Formik
-                initialValues={initialValues}
-                validationSchema={validationSchema}
-                onSubmit={handleSubmit}
-            >
-                {({
-                    values,
-                    errors,
-                    touched,
-                    handleChange,
-                    handleBlur,
-                    setFieldValue,
-                    isSubmitting,
-                    resetForm
-                }) => {
-                    const handleToggleMember = (member: MemberResponse) => {
-                        const currentIds = values.participantIds
-                        const currentMembers = values.selectedMembers
-                        const exists = currentIds.includes(member.userId)
+            {({
+                values,
+                errors,
+                touched,
+                handleChange,
+                handleBlur,
+                setFieldValue,
+                isSubmitting,
+                isValid,
+                dirty,
+                submitForm,
+                resetForm
+            }) => {
+                const handleToggleMember = (member: MemberResponse) => {
+                    const currentIds = values.participantIds
+                    const currentMembers = values.selectedMembers
+                    const exists = currentIds.includes(member.userId)
 
-                        let newIds: string[]
-                        let newMembers: MemberResponse[]
+                    let newIds: string[]
+                    let newMembers: MemberResponse[]
 
-                        if (exists) {
-                            newIds = currentIds.filter(id => id !== member.userId)
-                            newMembers = currentMembers.filter(m => m.userId !== member.userId)
+                    if (exists) {
+                        newIds = currentIds.filter(id => id !== member.userId)
+                        newMembers = currentMembers.filter(m => m.userId !== member.userId)
+                    } else {
+                        if (values.type === 'DIRECT') {
+                            newIds = [member.userId]
+                            newMembers = [member]
                         } else {
-                            // If DIRECT, replace selection instead of adding
-                            if (values.type === 'DIRECT') {
-                                newIds = [member.userId]
-                                newMembers = [member]
-                            } else {
-                                newIds = [...currentIds, member.userId]
-                                newMembers = [...currentMembers, member]
-                            }
+                            newIds = [...currentIds, member.userId]
+                            newMembers = [...currentMembers, member]
                         }
-
-                        setFieldValue('participantIds', newIds)
-                        setFieldValue('selectedMembers', newMembers)
                     }
 
-                    const handleTypeChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-                        const newType = event.target.value as ConversationType
-                        setFieldValue('type', newType)
+                    setFieldValue('participantIds', newIds)
+                    setFieldValue('selectedMembers', newMembers)
+                }
 
-                        setFieldValue('participantIds', [])
-                        setFieldValue('selectedMembers', [])
-                    }
+                const handleTypeChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+                    const newType = event.target.value as ConversationType
+                    setFieldValue('type', newType)
 
-                    return (
+                    setFieldValue('participantIds', [])
+                    setFieldValue('selectedMembers', [])
+                }
+
+                const isDisabled = !isValid || isSubmitting || (dirty && values.participantIds.length === 0)
+
+                return (
+                    <DialogComponent
+                        open={open}
+                        onClose={() => handleClose(resetForm)}
+                        title="Tạo cuộc trò chuyện mới"
+                        onConfirm={submitForm}
+                        confirmText="Tạo"
+                        cancelText="Hủy"
+                        loading={isSubmitting}
+                        disabled={isDisabled}
+                    >
                         <Form>
                             <Stack spacing={3} sx={{ mt: 1 }}>
                                 <RadioGroupComponent
@@ -266,18 +273,18 @@ export const CreateConversationDialog = ({
                                             <Stack spacing={0.5}>
                                                 {members.map((member) => {
                                                     const isSelected = values.participantIds.includes(member.userId)
-                                                    // Disable if DIRECT mode and already selected another user
                                                     const isDisabled = values.type === 'DIRECT'
                                                         && values.participantIds.length > 0
                                                         && !isSelected
 
                                                     return (
-                                                        <Box
+                                                        <UserItemComponent
                                                             key={member.userId}
-                                                            onClick={() => !isDisabled && handleToggleMember(member)}
+                                                            fullName={member.fullName}
+                                                            email={member.email}
+                                                            avatarUrl={member.avatarUrl}
+                                                            onClick={isDisabled ? undefined : () => handleToggleMember(member)}
                                                             sx={{
-                                                                p: 1.5,
-                                                                borderRadius: 1,
                                                                 cursor: isDisabled ? 'not-allowed' : 'pointer',
                                                                 bgcolor: isSelected ? 'action.selected' : 'transparent',
                                                                 opacity: isDisabled ? 0.5 : 1,
@@ -285,14 +292,7 @@ export const CreateConversationDialog = ({
                                                                     bgcolor: isDisabled ? 'transparent' : isSelected ? 'action.selected' : 'action.hover'
                                                                 }
                                                             }}
-                                                        >
-                                                            <Typography variant="body2" fontWeight={isSelected ? 600 : 400}>
-                                                                {member.fullName}
-                                                            </Typography>
-                                                            <Typography variant="caption" color="text.secondary">
-                                                                {member.email}
-                                                            </Typography>
-                                                        </Box>
+                                                        />
                                                     )
                                                 })}
                                             </Stack>
@@ -300,30 +300,10 @@ export const CreateConversationDialog = ({
                                     </Box>
                                 </Box>
                             </Stack>
-
-                            <DialogActions sx={{ px: 0, pt: 3 }}>
-                                <ButtonComponent
-                                    variant="ghost"
-                                    onClick={() => handleClose(resetForm)}
-                                    disabled={isSubmitting}
-                                    sizeUI="sm"
-                                >
-                                    Hủy
-                                </ButtonComponent>
-                                <ButtonComponent
-                                    variant="primary"
-                                    type="submit"
-                                    disabled={isSubmitting}
-                                    loading={isSubmitting}
-                                    sizeUI="sm"
-                                >
-                                    Tạo
-                                </ButtonComponent>
-                            </DialogActions>
                         </Form>
-                    )
-                }}
-            </Formik>
-        </DialogComponent>
+                    </DialogComponent>
+                )
+            }}
+        </Formik>
     )
 }

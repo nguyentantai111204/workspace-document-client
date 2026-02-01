@@ -49,6 +49,8 @@ export const MainLayout = () => {
     }, [location.pathname])
 
 
+    const isChatPage = location.pathname.includes('/chat')
+
     return (
         <Box sx={{
             display: 'flex',
@@ -63,7 +65,14 @@ export const MainLayout = () => {
                 breadcrumbs={breadcrumbs}
             />
             <SidebarLayout />
-            <MainStyle>
+            <MainStyle sx={isChatPage ? {
+                height: '100vh',
+                overflow: 'hidden',
+                display: 'flex',
+                flexDirection: 'column',
+                pb: 0,
+                pt: { xs: `${APP_BAR_MOBILE}px`, lg: `${APP_BAR_DESKTOP}px` } // Remove the +24
+            } : {}}>
                 <Outlet />
             </MainStyle>
         </Box>

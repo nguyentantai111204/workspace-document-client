@@ -39,6 +39,8 @@ export const WorkspaceChatPage = () => {
         markAsRead
     } = useMessages(selectedConversation?.id)
 
+    console.log('WorkspaceChatPage messages:', messages.length, selectedConversation?.id)
+
     // Chat socket integration
     const {
         isConnected,
