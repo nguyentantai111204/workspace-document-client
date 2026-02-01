@@ -1,4 +1,4 @@
-import { PaginatedResponse } from '../common/common.interface'
+import { BaseEntity, PaginatedResponse } from '../common/common.interface'
 
 export type ConversationType = 'DIRECT' | 'GROUP'
 export type ParticipantRole = 'ADMIN' | 'MEMBER'
@@ -12,28 +12,23 @@ export interface Attachment {
     mimeType: string
 }
 
-export interface Conversation {
-    id: string
+export interface Conversation extends BaseEntity {
     workspaceId: string
     type: ConversationType
     name?: string
     avatarUrl?: string
     lastMessageId?: string
     lastMessageAt?: string
-    createdAt: string
 }
 
-export interface Message {
-    id: string
+export interface Message extends BaseEntity {
     conversationId: string
     senderId: string
     content: string
     attachments: Attachment[]
-    createdAt: string
 }
 
-export interface Participant {
-    id: string
+export interface Participant extends BaseEntity {
     conversationId: string
     userId: string
     role: ParticipantRole

@@ -15,7 +15,7 @@ interface MessageListProps {
 }
 
 export const MessageList = ({
-    messages,
+    messages = [],
     isLoading,
     hasMore,
     onLoadMore,

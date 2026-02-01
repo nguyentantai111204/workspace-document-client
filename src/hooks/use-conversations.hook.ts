@@ -35,7 +35,7 @@ export const useConversations = (
     }
 
     return {
-        conversations: (data?.items || []) as ConversationWithUnread[],
+        conversations: (data?.data || []) as ConversationWithUnread[],
         meta: data?.meta,
         isLoading,
         error,
