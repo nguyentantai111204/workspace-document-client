@@ -12,6 +12,7 @@ interface MessageListProps {
     hasMore?: boolean
     onLoadMore?: () => void
     typingUsers?: string[]
+    lastReadAt?: string
 }
 
 export const MessageList = ({
@@ -19,7 +20,8 @@ export const MessageList = ({
     isLoading,
     hasMore,
     onLoadMore,
-    typingUsers = []
+    typingUsers = [],
+    lastReadAt
 }: MessageListProps) => {
     const theme = useTheme()
     const messagesEndRef = useRef<HTMLDivElement>(null)
@@ -108,6 +110,7 @@ export const MessageList = ({
                                 key={message.id}
                                 message={message}
                                 isConsecutive={isConsec}
+                                lastReadAt={lastReadAt}
                             />
                         )
                     })}

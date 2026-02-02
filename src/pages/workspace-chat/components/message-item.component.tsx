@@ -7,12 +7,14 @@ interface MessageItemProps {
     message: Message
     isConsecutive?: boolean
     showAvatar?: boolean
+    lastReadAt?: string
 }
 
 export const MessageItem = ({
     message,
     isConsecutive = false,
-    showAvatar = true
+    showAvatar = true,
+    lastReadAt
 }: MessageItemProps) => {
     const theme = useTheme()
     const currentUserId = useAppSelector(state => state.account?.user?.id)
@@ -132,7 +134,23 @@ export const MessageItem = ({
                             >
                                 <TimeAgoComponent value={message.createdAt} />
                             </Box>
+                            {isOwnMessage && (
+                                (message.reads && message.reads.length > 0) ||
+                                (lastReadAt && new Date(message.createdAt).getTime() <= new Date(lastReadAt).getTime())
+                            ) && (
+                                    <Box
+                                        component="span"
+                                        sx={{
+                                            fontSize: { xs: '0.7rem', sm: '0.75rem' },
+                                            color: 'text.disabled',
+                                            ml: 1
+                                        }}
+                                    >
+                                        • Đã xem
+                                    </Box>
+                                )}
                         </Box>
+
                     )}
                 </Box>
             </Box>

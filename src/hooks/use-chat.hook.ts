@@ -2,6 +2,7 @@ import { useEffect, useCallback, useState } from 'react'
 import { useAppSelector } from '../redux/store.redux'
 import { chatSocketService } from '../common/services/chat-socket.service'
 import { Message } from '../apis/chat/chat.interface'
+import { getOnlineUsersApi } from '../apis/chat/chat.api'
 
 interface TypingUser {
     userId: string
@@ -21,7 +22,6 @@ export const useChat = () => {
     const [isConnected, setIsConnected] = useState(false)
 
     // Kết nối socket
-
     useEffect(() => {
         if (!token) return
 
@@ -31,16 +31,14 @@ export const useChat = () => {
 
         const checkConnection = setInterval(() => {
             setIsConnected(chatSocketService.isConnected())
-        }, 1000)
+        }, 3000)
 
         return () => {
             clearInterval(checkConnection)
-            console.log('[useChat] Cleanup - not disconnecting socket (shared)')
         }
     }, [token])
 
     // Xử lý sự kiện
-
     const handleUserTyping = useCallback((data: { conversationId: string; userId: string }) => {
         setTypingUsers(prev => {
             const exists = prev.some(
@@ -58,6 +56,7 @@ export const useChat = () => {
     }, [])
 
     const handleUserOnline = useCallback((data: { userId: string }) => {
+        console.log('[useChat] User online:', data.userId)
         setOnlineUsers(prev => {
             const newMap = new Map(prev)
             newMap.set(data.userId, { userId: data.userId, isOnline: true })
@@ -66,6 +65,7 @@ export const useChat = () => {
     }, [])
 
     const handleUserOffline = useCallback((data: { userId: string; lastSeenAt?: string }) => {
+        console.log('[useChat] User offline:', data.userId)
         setOnlineUsers(prev => {
             const newMap = new Map(prev)
             newMap.set(data.userId, {
@@ -78,8 +78,7 @@ export const useChat = () => {
     }, [])
 
     useEffect(() => {
-        if (!isConnected) return
-
+        // Luôn lắng nghe sự kiện online/offline global
         chatSocketService.onUserTyping(handleUserTyping)
         chatSocketService.onUserStopTyping(handleUserStopTyping)
         chatSocketService.onUserOnline(handleUserOnline)
@@ -91,7 +90,7 @@ export const useChat = () => {
             chatSocketService.off('user-online', handleUserOnline)
             chatSocketService.off('user-offline', handleUserOffline)
         }
-    }, [isConnected, handleUserTyping, handleUserStopTyping, handleUserOnline, handleUserOffline])
+    }, [handleUserTyping, handleUserStopTyping, handleUserOnline, handleUserOffline])
 
     const joinConversation = useCallback((conversationId: string) => {
         chatSocketService.joinConversation(conversationId, (response) => {
@@ -164,6 +163,32 @@ export const useChat = () => {
         return onlineUsers.get(userId)?.lastSeenAt
     }, [onlineUsers])
 
+    const fetchOnlineUsers = useCallback(async (conversationId: string) => {
+        try {
+            const userIds = await getOnlineUsersApi(conversationId)
+            // Xử lý response linh hoạt (array hoặc wrapped object)
+            let ids: string[] = []
+            if (Array.isArray(userIds)) {
+                ids = userIds
+            } else if ((userIds as any)?.data && Array.isArray((userIds as any).data)) {
+                ids = (userIds as any).data
+            }
+
+            console.log('[useChat] Fetched online users:', ids)
+
+            setOnlineUsers(prev => {
+                const newMap = new Map(prev)
+                // Merge users mới vào map hiện tại
+                ids.forEach(id => {
+                    newMap.set(id, { userId: id, isOnline: true })
+                })
+                return newMap
+            })
+        } catch (error) {
+            console.error('[useChat] Failed to fetch online users:', error)
+        }
+    }, [])
+
     return {
         isConnected,
         joinConversation,
@@ -179,6 +204,7 @@ export const useChat = () => {
         getTypingUsers,
         isUserOnline,
         getUserLastSeen,
+        fetchOnlineUsers,
         typingUsers,
         onlineUsers
     }

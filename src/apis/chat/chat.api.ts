@@ -144,3 +144,16 @@ export const searchMessagesApi = async (
     )
     return response.data
 }
+
+export const getOnlineUsersApi = async (
+    conversationId: string
+): Promise<string[]> => {
+    const response = await axiosInstance.get(
+        `/conversations/${conversationId}/online`
+    )
+    // Handle both direct array and wrapped response (standard API format)
+    if (Array.isArray(response.data)) {
+        return response.data
+    }
+    return response.data?.data || []
+}

@@ -8,13 +8,15 @@ interface ChatHeaderProps {
     onBack?: () => void
     isMobile?: boolean
     onInfoClick?: () => void
+    isOnline?: boolean
 }
 
 export const ChatHeader = ({
     conversation,
     onBack,
     isMobile,
-    onInfoClick
+    onInfoClick,
+    isOnline = false
 }: ChatHeaderProps) => {
     const theme = useTheme()
 
@@ -70,7 +72,11 @@ export const ChatHeader = ({
                     noWrap
                     sx={{ display: 'block' }}
                 >
-                    Đang hoạt động
+                    {isOnline ? (
+                        <Box component="span" sx={{ color: 'success.main', fontWeight: 600 }}>Active now</Box>
+                    ) : (
+                        'Offline'
+                    )}
                 </Typography>
             </Box>
 

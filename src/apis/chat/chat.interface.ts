@@ -26,6 +26,7 @@ export interface Message extends BaseEntity {
     senderId: string
     content: string
     attachments: Attachment[]
+    reads?: MessageRead[]
 }
 
 export interface Participant extends BaseEntity {
@@ -36,6 +37,11 @@ export interface Participant extends BaseEntity {
     leftAt?: string
     lastReadAt?: string
     isMuted: boolean
+}
+
+export interface MessageRead {
+    userId: string
+    readAt: string
 }
 
 export interface ConversationListQuery extends PaginationParams { }

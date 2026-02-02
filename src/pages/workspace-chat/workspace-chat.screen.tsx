@@ -43,10 +43,10 @@ export const WorkspaceChatPage = () => {
         isLoading: messagesLoading,
         loadMore,
         addMessage,
-        markAsRead
+        markAsRead,
+        markAllAsRead
     } = useMessages(selectedConversation?.id)
 
-    console.log('WorkspaceChatPage messages:', messages.length, selectedConversation?.id)
 
     const {
         isConnected,
@@ -57,7 +57,9 @@ export const WorkspaceChatPage = () => {
         stopTyping,
         onNewMessage,
         getTypingUsers,
-        onConnect
+        onConnect,
+        fetchOnlineUsers,
+        isUserOnline
     } = useChat()
 
     const messagesRef = useRef(messages)
@@ -102,7 +104,8 @@ export const WorkspaceChatPage = () => {
         }
 
         joinConversation(conversation.id)
-    }, [selectedConversation, leaveConversation, joinConversation, isMobile])
+        fetchOnlineUsers(conversation.id)
+    }, [selectedConversation, leaveConversation, joinConversation, isMobile, fetchOnlineUsers])
 
     const handleBackToConversations = useCallback(() => {
         setShowConversationList(true)
@@ -146,6 +149,20 @@ export const WorkspaceChatPage = () => {
         return cleanup
     }, [isConnected, onNewMessage, selectedConversation, addMessage, markAsRead, mutateConversations])
 
+    // Load initial online users when conversation changes or socket connects
+    useEffect(() => {
+        if (selectedConversation && isConnected) {
+            fetchOnlineUsers(selectedConversation.id)
+        }
+    }, [selectedConversation, isConnected, fetchOnlineUsers])
+
+    // Mark all as read when conversation is selected and has unread messages
+    useEffect(() => {
+        if (selectedConversation && selectedConversation.unreadCount > 0) {
+            markAllAsRead()
+        }
+    }, [selectedConversation?.id, selectedConversation?.unreadCount])
+
     const { members } = useWorkspaceMembers(currentWorkspace?.id, { limit: 100 })
 
     const getUserName = useCallback((userId: string) => {
@@ -172,6 +189,25 @@ export const WorkspaceChatPage = () => {
     const typingUserNames = selectedConversation
         ? getTypingUsers(selectedConversation.id).map(getUserName)
         : []
+
+    const isCurrentConversationOnline = useCallback(() => {
+        if (!selectedConversation) return false
+
+        if (selectedConversation.type === 'DIRECT' && selectedConversation.participants) {
+            const otherParticipant = selectedConversation.participants.find(p => p.userId !== currentUserId)
+            if (otherParticipant) {
+                return isUserOnline(otherParticipant.userId)
+            }
+        }
+        return false // For groups, we might handle differently later
+    }, [selectedConversation, currentUserId, isUserOnline])
+
+    const getOtherUserLastReadAt = useCallback(() => {
+        if (!selectedConversation || selectedConversation.type !== 'DIRECT' || !selectedConversation.participants) return undefined
+
+        const otherParticipant = selectedConversation.participants.find(p => p.userId !== currentUserId)
+        return otherParticipant?.lastReadAt
+    }, [selectedConversation, currentUserId])
 
     const handleCreateConversation = () => {
         setCreateDialogOpen(true)
@@ -223,6 +259,7 @@ export const WorkspaceChatPage = () => {
                                 onBack={handleBackToConversations}
                                 isMobile={true}
                                 onInfoClick={() => console.log('Info clicked')}
+                                isOnline={isCurrentConversationOnline()}
                             />
                         )}
                         <MessageList
@@ -231,6 +268,7 @@ export const WorkspaceChatPage = () => {
                             hasMore={hasMore}
                             onLoadMore={loadMore}
                             typingUsers={typingUserNames}
+                            lastReadAt={getOtherUserLastReadAt()}
                         />
                         <MessageInput
                             onSend={handleSendMessage}
@@ -290,6 +328,7 @@ export const WorkspaceChatPage = () => {
                             }}
                             isMobile={false}
                             onInfoClick={() => console.log('Info clicked')}
+                            isOnline={isCurrentConversationOnline()}
                         />
                         <MessageList
                             messages={messages}
@@ -297,6 +336,7 @@ export const WorkspaceChatPage = () => {
                             hasMore={hasMore}
                             onLoadMore={loadMore}
                             typingUsers={typingUserNames}
+                            lastReadAt={getOtherUserLastReadAt()}
                         />
                         <MessageInput
                             onSend={handleSendMessage}

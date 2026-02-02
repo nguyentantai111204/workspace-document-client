@@ -12,7 +12,6 @@ export const useMessages = (conversationId: string | null | undefined) => {
     const [cursor, setCursor] = useState<string | undefined>(undefined)
     const [allMessages, setAllMessages] = useState<Message[]>([])
 
-    // Reset state when conversationId changes
     useEffect(() => {
         setCursor(undefined)
         setAllMessages([])
@@ -35,7 +34,6 @@ export const useMessages = (conversationId: string | null | undefined) => {
             revalidateOnFocus: false,
             onSuccess: (data) => {
                 const messagesList = data?.data || []
-                // Prepend older messages when loading more
                 if (cursor) {
                     setAllMessages(prev => [...messagesList, ...(prev || [])])
                 } else {
@@ -49,7 +47,6 @@ export const useMessages = (conversationId: string | null | undefined) => {
         try {
             const message = await sendMessageApi(conversationId!, data)
 
-            // Optimistic update: add message to list
             setAllMessages(prev => [...(prev || []), message])
             await mutate()
 
