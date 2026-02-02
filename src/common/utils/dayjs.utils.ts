@@ -5,7 +5,6 @@ import updateLocale from 'dayjs/plugin/updateLocale'
 dayjs.extend(relativeTime)
 dayjs.extend(updateLocale)
 
-// Optional: custom text
 dayjs.updateLocale('en', {
     relativeTime: {
         future: 'in %s',

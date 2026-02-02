@@ -64,7 +64,7 @@ export const CreateConversationDialog = ({
     const { currentWorkspace } = useWorkspace()
     const [searchQuery, setSearchQuery] = useState('')
 
-    const { members } = useWorkspaceMembers(currentWorkspace?.id, {
+    const { members } = useWorkspaceMembers(open && currentWorkspace ? currentWorkspace.id : null, {
         search: searchQuery || undefined,
         page: 1,
         limit: PAGE_LIMIT_DEFAULT.limit
