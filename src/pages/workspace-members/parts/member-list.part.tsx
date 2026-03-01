@@ -7,25 +7,35 @@ import { MemberResponse, WorkspaceRole } from '../../../apis/workspace/workspace
 import React, { useState } from 'react'
 import { MemberActionMenu } from '../components/member-action-menu.component'
 import { WORKSPACE_ROLE_CONFIG } from '../constants'
+import { getMemberPermissions } from '../utils/member-permissions.util'
 
 interface MemberListProps {
     members: MemberResponse[]
     onUpdateRole: (member: MemberResponse, role: WorkspaceRole) => void
     onDelete: (member: MemberResponse) => void
+    currentUserRole: WorkspaceRole | undefined
+    currentUserId: string | undefined
 }
-
 
 const MemberActionCell = ({
     member,
     onUpdateRole,
-    onDelete
+    onDelete,
+    currentUserRole,
+    currentUserId,
 }: {
     member: MemberResponse
     onUpdateRole: (member: MemberResponse, role: WorkspaceRole) => void
     onDelete: (member: MemberResponse) => void
+    currentUserRole: WorkspaceRole | undefined
+    currentUserId: string | undefined
 }) => {
     const theme = useTheme()
     const [menuAnchorEl, setMenuAnchorEl] = useState<HTMLElement | null>(null)
+
+    const permissions = getMemberPermissions(currentUserRole, member, currentUserId)
+
+    if (!permissions.canActOn) return null
 
     const handleOpenMenu = (event: React.MouseEvent<HTMLElement>) => {
         event.stopPropagation()
@@ -57,12 +67,19 @@ const MemberActionCell = ({
                 member={member}
                 onUpdateRole={onUpdateRole}
                 onDelete={onDelete}
+                permissions={permissions}
             />
         </React.Fragment>
     )
 }
 
-export const MemberList = ({ members, onUpdateRole, onDelete }: MemberListProps) => {
+export const MemberList = ({
+    members,
+    onUpdateRole,
+    onDelete,
+    currentUserRole,
+    currentUserId,
+}: MemberListProps) => {
     const theme = useTheme()
     const isMobile = useMediaQuery(theme.breakpoints.down('sm'))
 
@@ -119,6 +136,8 @@ export const MemberList = ({ members, onUpdateRole, onDelete }: MemberListProps)
                     member={member}
                     onUpdateRole={onUpdateRole}
                     onDelete={onDelete}
+                    currentUserRole={currentUserRole}
+                    currentUserId={currentUserId}
                 />
             )
         }
