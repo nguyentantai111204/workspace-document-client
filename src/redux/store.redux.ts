@@ -21,7 +21,7 @@ import type { AppDispatch, RootState } from './store.interface'
 const accountPersistConfig = {
     key: 'account',
     storage,
-    whitelist: ['user', 'token', 'refreshToken', 'isAuthenticated'],
+    whitelist: ['user', 'isAuthenticated'],
     blacklist: ['error', 'isLoading'],
 }
 

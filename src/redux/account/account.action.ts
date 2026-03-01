@@ -1,14 +1,10 @@
 import { createAction, createAsyncThunk } from '@reduxjs/toolkit'
-import type { LoginRequest, LoginResponse, UserProfile, RefreshTokenRequest, RefreshTokenResponse, RegisterRequest } from '../../apis/auth/auth.interface'
+import type { LoginRequest, LoginResponse, UserProfile, RefreshTokenResponse, RegisterRequest } from '../../apis/auth/auth.interface'
 import { getProfileApi, loginApi, logoutApi, refreshTokenApi, registerApi } from '../../apis/auth/auth.api'
 
-export const logout = createAsyncThunk('account/logout', async (_, { rejectWithValue, getState }) => {
+export const logout = createAsyncThunk('account/logout', async (_, { rejectWithValue }) => {
     try {
-        const state = getState() as any
-        const refreshToken = state.account.refreshToken
-        if (refreshToken) {
-            await logoutApi(refreshToken)
-        }
+        await logoutApi()
         return true
     } catch (error: any) {
         return rejectWithValue(error.response?.data?.message || error.message || 'Logout failed')
@@ -51,11 +47,11 @@ export const getProfile = createAsyncThunk<UserProfile>(
     }
 )
 
-export const refreshToken = createAsyncThunk<RefreshTokenResponse, RefreshTokenRequest>(
+export const refreshToken = createAsyncThunk<RefreshTokenResponse>(
     'account/refreshToken',
-    async (data, { rejectWithValue }) => {
+    async (_, { rejectWithValue }) => {
         try {
-            const response = await refreshTokenApi(data)
+            const response = await refreshTokenApi()
             return response
         } catch (error: any) {
             return rejectWithValue(error.response?.data?.message || error.message || 'Refresh token failed')

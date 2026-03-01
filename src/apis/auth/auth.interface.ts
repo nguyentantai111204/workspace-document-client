@@ -5,8 +5,6 @@ export interface LoginRequest {
 }
 
 export interface LoginResponse {
-    accessToken: string
-    refreshToken: string
     user: UserProfile
 }
 
@@ -18,14 +16,9 @@ export interface UserProfile {
     status?: string
 }
 
-export interface RefreshTokenRequest {
-    refreshToken: string;
-}
+export interface RefreshTokenRequest { }
 
-export interface RefreshTokenResponse {
-    accessToken: string
-    refreshToken: string
-}
+export interface RefreshTokenResponse { }
 
 export interface RegisterRequest {
     email: string
@@ -34,6 +27,4 @@ export interface RegisterRequest {
     deviceId?: string;
 }
 
-export interface LogoutRequest {
-    refreshToken: string
-}
+export interface LogoutRequest { }

@@ -4,6 +4,7 @@ import { logout } from '../../redux/account/account.action'
 
 const axiosInstance = axios.create({
   baseURL: import.meta.env.VITE_API_URL || 'http://localhost:3000/api',
+  withCredentials: true,
   headers: {
     'Content-Type': 'application/json',
     Accept: 'application/json',
@@ -12,21 +13,6 @@ const axiosInstance = axios.create({
 })
 
 // Request Interceptor
-axiosInstance.interceptors.request.use(
-  (config: InternalAxiosRequestConfig) => {
-    const state = store.getState()
-    const token = state.account.token
-
-    if (token && config.headers) {
-      config.headers.Authorization = `Bearer ${token}`
-    }
-
-    return config
-  },
-  (error) => {
-    return Promise.reject(error)
-  }
-)
 
 interface RetryQueueItem {
   resolve: (value?: unknown) => void
@@ -59,10 +45,7 @@ axiosInstance.interceptors.response.use(
         return new Promise(function (resolve, reject) {
           refreshQueue.push({ resolve, reject })
         })
-          .then((token) => {
-            if (originalRequest.headers) {
-              originalRequest.headers.Authorization = `Bearer ${token}`
-            }
+          .then(() => {
             return axiosInstance(originalRequest)
           })
           .catch((err) => {
@@ -74,31 +57,12 @@ axiosInstance.interceptors.response.use(
       isRefreshing = true
 
       try {
-        const state = store.getState()
-        const refreshToken = state.account.refreshToken
-
-        if (!refreshToken) {
-          // No refresh token available, logout
-          store.dispatch(logout())
-          isRefreshing = false
-          return Promise.reject(error)
-        }
-
         const { refreshTokenApi } = await import('../../apis/auth/auth.api')
-        const response = await refreshTokenApi({ refreshToken })
+        await refreshTokenApi()
 
-        const { setTokens } = await import('../../redux/account/account.slice')
-        store.dispatch(setTokens({
-          token: response.accessToken,
-          refreshToken: response.refreshToken
-        }))
-
-        processQueue(null, response.accessToken)
+        processQueue(null)
         isRefreshing = false
 
-        if (originalRequest.headers) {
-          originalRequest.headers.Authorization = `Bearer ${response.accessToken}`
-        }
         return axiosInstance(originalRequest)
 
       } catch (refreshError) {

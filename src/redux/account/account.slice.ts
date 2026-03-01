@@ -4,8 +4,6 @@ import { getProfile, login, logout, refreshToken, signup, updateProfile } from '
 
 const initialState: AccountState = {
     user: null,
-    token: null,
-    refreshToken: null,
     isAuthenticated: false,
     isLoading: false,
     error: null,
@@ -17,10 +15,6 @@ export const accountSlice = createSlice({
     reducers: {
         clearAccountError: (state) => {
             state.error = null
-        },
-        setTokens: (state, action: { payload: { token: string; refreshToken: string } }) => {
-            state.token = action.payload.token
-            state.refreshToken = action.payload.refreshToken
         }
     },
     extraReducers: (builder) => {
@@ -28,8 +22,6 @@ export const accountSlice = createSlice({
             // Logout
             .addCase(logout.fulfilled, (state) => {
                 state.user = null
-                state.token = null
-                state.refreshToken = null
                 state.isAuthenticated = false
                 state.isLoading = false
                 state.error = null
@@ -44,15 +36,11 @@ export const accountSlice = createSlice({
                 state.isLoading = false
                 state.isAuthenticated = true
                 state.user = action.payload.user
-                state.token = action.payload.accessToken
-                state.refreshToken = action.payload.refreshToken
             })
             .addCase(login.rejected, (state, action) => {
                 state.isLoading = false
                 state.isAuthenticated = false
                 state.user = null
-                state.token = null
-                state.refreshToken = null
                 if (typeof action.payload === 'string') {
                     state.error = action.payload
                 } else if (typeof action.payload === 'object' && action.payload !== null && 'message' in action.payload) {
@@ -102,9 +90,8 @@ export const accountSlice = createSlice({
             })
 
             // Refresh Token
-            .addCase(refreshToken.fulfilled, (state, action) => {
-                state.token = action.payload.accessToken
-                state.refreshToken = action.payload.refreshToken
+            .addCase(refreshToken.fulfilled, () => {
+                // No token to update, just success
             })
             .addCase(refreshToken.rejected, (state, action) => {
                 if (typeof action.payload === 'string') {
@@ -124,5 +111,5 @@ export const accountSlice = createSlice({
     },
 })
 
-export const { clearAccountError, setTokens } = accountSlice.actions
+export const { clearAccountError } = accountSlice.actions
 export default accountSlice.reducer
