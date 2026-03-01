@@ -34,7 +34,7 @@ class ChatSocketService {
     private heartbeatInterval: ReturnType<typeof setInterval> | null = null
     private readonly HEARTBEAT_INTERVAL = 30000 // 30s
 
-    connect(token: string) {
+    connect() {
         if (this.socket?.connected) {
             console.log('[Chat Socket] Already connected')
             return
@@ -45,7 +45,7 @@ class ChatSocketService {
         console.log('[Chat Socket] Connecting to:', `${BACKEND_URL}${this.namespace}`)
 
         this.socket = io(`${BACKEND_URL}${this.namespace}`, {
-            auth: { token },
+            withCredentials: true,
             transports: ['websocket', 'polling'],
             reconnection: true,
             reconnectionDelay: 1000,

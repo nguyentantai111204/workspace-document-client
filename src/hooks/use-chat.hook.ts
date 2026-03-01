@@ -16,17 +16,17 @@ interface OnlineUser {
 }
 
 export const useChat = () => {
-    const token = useAppSelector(state => state.account?.token)
+    const isAuthenticated = useAppSelector(state => state.account?.isAuthenticated)
     const [typingUsers, setTypingUsers] = useState<TypingUser[]>([])
     const [onlineUsers, setOnlineUsers] = useState<Map<string, OnlineUser>>(new Map())
     const [isConnected, setIsConnected] = useState(false)
 
     // Kết nối socket
     useEffect(() => {
-        if (!token) return
+        if (!isAuthenticated) return
 
         console.log('[useChat] Connecting to chat socket')
-        chatSocketService.connect(token)
+        chatSocketService.connect()
         setIsConnected(chatSocketService.isConnected())
 
         const checkConnection = setInterval(() => {
@@ -36,7 +36,7 @@ export const useChat = () => {
         return () => {
             clearInterval(checkConnection)
         }
-    }, [token])
+    }, [isAuthenticated])
 
     // Xử lý sự kiện
     const handleUserTyping = useCallback((data: { conversationId: string; userId: string }) => {

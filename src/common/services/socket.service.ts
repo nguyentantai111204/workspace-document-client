@@ -5,19 +5,17 @@ class SocketService {
     private socket: Socket | null = null
     private readonly namespace = '/notifications'
 
-    connect(token: string) {
+    connect() {
         if (this.socket?.connected) {
             return
         }
 
-        const BACKEND_URL = 'http://localhost:3000'
+        const BACKEND_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:3000'
 
         console.log('[Socket] Connecting to:', `${BACKEND_URL}${this.namespace}`)
 
         this.socket = io(`${BACKEND_URL}${this.namespace}`, {
-            auth: {
-                token
-            },
+            withCredentials: true,
             transports: ['websocket', 'polling'],
             reconnection: true,
             reconnectionDelay: 1000,

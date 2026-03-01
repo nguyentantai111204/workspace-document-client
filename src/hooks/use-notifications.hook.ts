@@ -22,7 +22,7 @@ import { PAGE_LIMIT_DEFAULT } from '../common/constant/page-take.constant'
 export const useNotifications = () => {
     const dispatch = useAppDispatch()
     const { notifications, unreadCount, page, total, totalPages, loading } = useAppSelector(state => state.notification)
-    const token = useAppSelector(state => state.account?.token)
+    const isAuthenticated = useAppSelector(state => state.account?.isAuthenticated)
 
     const fetchUnreadCount = useCallback(async () => {
         try {
@@ -104,9 +104,9 @@ export const useNotifications = () => {
     }, [dispatch])
 
     useEffect(() => {
-        if (!token) return
+        if (!isAuthenticated) return
 
-        socketService.connect(token)
+        socketService.connect()
 
         socketService.onNewNotification(handleNewNotification)
         socketService.onUnreadCountUpdate(handleUnreadCountUpdate)
@@ -117,7 +117,7 @@ export const useNotifications = () => {
             socketService.offNewNotification(handleNewNotification)
             socketService.offUnreadCountUpdate(handleUnreadCountUpdate)
         }
-    }, [token, handleNewNotification, handleUnreadCountUpdate, fetchUnreadCount])
+    }, [isAuthenticated, handleNewNotification, handleUnreadCountUpdate, fetchUnreadCount])
 
     return {
         notifications,
