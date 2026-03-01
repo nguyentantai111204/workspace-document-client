@@ -1,5 +1,7 @@
-import { Box, Stack, Typography, alpha, useTheme, SxProps, Theme, BoxProps } from '@mui/material'
+import { Box, Typography, alpha, useTheme, SxProps, Theme, BoxProps } from '@mui/material'
 import React from 'react'
+import { useAppSelector } from '../../redux'
+import { StackRowAlignCenter } from '../mui-custom/stack/stack.mui-custom'
 
 interface UserItemComponentProps extends BoxProps {
     avatarUrl?: string | null
@@ -20,6 +22,7 @@ export const UserItemComponent = ({
     ...rest
 }: UserItemComponentProps) => {
     const theme = useTheme()
+    const { user } = useAppSelector(state => state.account)
 
     return (
         <Box
@@ -40,7 +43,7 @@ export const UserItemComponent = ({
                 ...sx
             }}
         >
-            <Stack direction="row" spacing={{ xs: 1, sm: 1.5 }} alignItems="center" sx={{ flex: 1, minWidth: 0 }}>
+            <StackRowAlignCenter gap={{ xs: 1, sm: 1.5 }} sx={{ flex: 1, minWidth: 0 }}>
                 {avatarUrl ? (
                     <Box
                         component="img"
@@ -79,7 +82,7 @@ export const UserItemComponent = ({
                             lineHeight: 1.2
                         }}
                     >
-                        {fullName}
+                        {fullName} {user?.email === email ? '(Bạn)' : ''}
                     </Typography>
                     <Typography
                         variant="caption"
@@ -93,7 +96,7 @@ export const UserItemComponent = ({
                         {email}
                     </Typography>
                 </Box>
-            </Stack>
+            </StackRowAlignCenter>
             {action && (
                 <Box sx={{ ml: 1, flexShrink: 0 }}>
                     {action}

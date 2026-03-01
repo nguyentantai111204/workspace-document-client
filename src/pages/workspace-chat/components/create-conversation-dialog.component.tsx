@@ -11,7 +11,7 @@ import { useWorkspace } from '../../../contexts/workspace.context'
 import { useWorkspaceMembers } from '../../../hooks/use-workspace-member.hook'
 import { createConversationApi } from '../../../apis/chat/chat.api'
 import { ConversationType } from '../../../apis/chat/chat.interface'
-import { useAppDispatch } from '../../../redux/store.redux'
+import { useAppDispatch, useAppSelector } from '../../../redux/store.redux'
 import { showSnackbar } from '../../../redux/system/system.slice'
 import { MemberResponse } from '../../../apis/workspace/workspace.interface'
 import { PAGE_LIMIT_DEFAULT } from '../../../common/constant/page-take.constant'
@@ -21,6 +21,7 @@ import { TextFieldComponent } from '../../../components/textfield/text-field.com
 import { DialogComponent } from '../../../components/dialog/dialog.component'
 import { RadioGroupComponent } from '../../../components/radio-group/radio-group.component'
 import { UserItemComponent } from '../../../components/user/user-item.component'
+import { useSnackbar } from '../../../hooks/use-snackbar.hook'
 
 interface CreateConversationDialogProps {
     open: boolean
@@ -31,8 +32,7 @@ interface CreateConversationDialogProps {
 interface CreateConversationFormValues {
     type: ConversationType
     name: string
-    participantIds: string[]
-    selectedMembers: MemberResponse[] // Helper field for UI display
+    participants: MemberResponse[]
 }
 
 const validationSchema = Yup.object({
@@ -44,7 +44,7 @@ const validationSchema = Yup.object({
             .max(50, 'Tên nhóm không được quá 50 ký tự'),
         otherwise: schema => schema.optional()
     }),
-    participantIds: Yup.array()
+    participants: Yup.array()
         .min(1, 'Vui lòng chọn ít nhất một thành viên')
         .test('max-participants', 'Tin nhắn trực tiếp chỉ có thể với 1 người', function (val) {
             const type = this.parent.type
@@ -61,6 +61,8 @@ export const CreateConversationDialog = ({
     onSuccess
 }: CreateConversationDialogProps) => {
     const dispatch = useAppDispatch()
+    const { showError } = useSnackbar()
+    const { user } = useAppSelector(state => state.account)
     const { currentWorkspace } = useWorkspace()
     const [searchQuery, setSearchQuery] = useState('')
 
@@ -73,8 +75,7 @@ export const CreateConversationDialog = ({
     const initialValues: CreateConversationFormValues = {
         type: 'DIRECT',
         name: '',
-        participantIds: [],
-        selectedMembers: []
+        participants: []
     }
 
     const handleSubmit = async (
@@ -87,7 +88,7 @@ export const CreateConversationDialog = ({
             const response = await createConversationApi(currentWorkspace.id, {
                 type: values.type,
                 name: values.type === 'GROUP' ? values.name : undefined,
-                participantIds: values.participantIds
+                participantIds: values.participants.map(p => p.userId)
             })
 
             dispatch(showSnackbar({
@@ -136,39 +137,32 @@ export const CreateConversationDialog = ({
                 resetForm
             }) => {
                 const handleToggleMember = (member: MemberResponse) => {
-                    const currentIds = values.participantIds
-                    const currentMembers = values.selectedMembers
-                    const exists = currentIds.includes(member.userId)
-
-                    let newIds: string[]
-                    let newMembers: MemberResponse[]
-
-                    if (exists) {
-                        newIds = currentIds.filter(id => id !== member.userId)
-                        newMembers = currentMembers.filter(m => m.userId !== member.userId)
-                    } else {
-                        if (values.type === 'DIRECT') {
-                            newIds = [member.userId]
-                            newMembers = [member]
-                        } else {
-                            newIds = [...currentIds, member.userId]
-                            newMembers = [...currentMembers, member]
-                        }
+                    if (member.userId === user?.id) {
+                        showError('Không thể chọn chính mình')
+                        return
                     }
 
-                    setFieldValue('participantIds', newIds)
-                    setFieldValue('selectedMembers', newMembers)
+                    const isExists = values.participants.some(p => p.userId === member.userId)
+
+                    if (isExists) {
+                        setFieldValue('participants', values.participants.filter(p => p.userId !== member.userId))
+                        return
+                    }
+
+                    if (values.type === 'DIRECT') {
+                        setFieldValue('participants', [member])
+                    } else {
+                        setFieldValue('participants', [...values.participants, member])
+                    }
                 }
 
                 const handleTypeChange = (event: React.ChangeEvent<HTMLInputElement>) => {
                     const newType = event.target.value as ConversationType
                     setFieldValue('type', newType)
-
-                    setFieldValue('participantIds', [])
-                    setFieldValue('selectedMembers', [])
+                    setFieldValue('participants', [])
                 }
 
-                const isDisabled = !isValid || isSubmitting || (dirty && values.participantIds.length === 0)
+                const isDisabled = !isValid || isSubmitting || (dirty && values.participants.length === 0)
 
                 return (
                     <DialogComponent
@@ -225,13 +219,13 @@ export const CreateConversationDialog = ({
                                     />
                                 </Box>
 
-                                {values.selectedMembers.length > 0 && (
+                                {values.participants.length > 0 && (
                                     <Box>
                                         <Typography variant="caption" color="text.secondary" gutterBottom>
-                                            Đã chọn ({values.selectedMembers.length})
+                                            Đã chọn ({values.participants.length})
                                         </Typography>
                                         <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 1, mt: 1 }}>
-                                            {values.selectedMembers.map((member) => (
+                                            {values.participants.map((member) => (
                                                 <Chip
                                                     key={member.userId}
                                                     label={member.fullName}
@@ -242,9 +236,9 @@ export const CreateConversationDialog = ({
                                                 />
                                             ))}
                                         </Box>
-                                        {touched.participantIds && errors.participantIds && (
+                                        {touched.participants && (errors.participants as string) && (
                                             <FormHelperText error sx={{ mt: 1 }}>
-                                                {errors.participantIds}
+                                                {errors.participants as string}
                                             </FormHelperText>
                                         )}
                                     </Box>
@@ -272,9 +266,9 @@ export const CreateConversationDialog = ({
                                         ) : (
                                             <Stack spacing={0.5}>
                                                 {members.map((member) => {
-                                                    const isSelected = values.participantIds.includes(member.userId)
+                                                    const isSelected = values.participants.some(p => p.userId === member.userId)
                                                     const isDisabled = values.type === 'DIRECT'
-                                                        && values.participantIds.length > 0
+                                                        && values.participants.length > 0
                                                         && !isSelected
 
                                                     return (
