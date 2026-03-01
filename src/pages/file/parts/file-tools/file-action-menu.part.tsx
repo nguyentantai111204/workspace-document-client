@@ -2,24 +2,24 @@ import { Menu, MenuItem, ListItemIcon, ListItemText, useTheme, alpha, useMediaQu
 import EditIcon from '@mui/icons-material/Edit'
 import DeleteIcon from '@mui/icons-material/Delete'
 import ShareIcon from '@mui/icons-material/Share'
-// import PushPinIcon from '@mui/icons-material/PushPin'
+import { FilePermissions } from '../../utils/file-permissions.util'
 
 interface FileActionMenuProps {
     anchorEl: HTMLElement | null
     onClose: () => void
+    permissions: FilePermissions
     onEdit?: () => void
     onDelete?: () => void
     onShare?: () => void
-    onPin?: () => void
 }
 
 export const FileActionMenu = ({
     anchorEl,
     onClose,
+    permissions,
     onEdit,
     onDelete,
     onShare,
-    // onPin
 }: FileActionMenuProps) => {
     const theme = useTheme()
     const isMobile = useMediaQuery(theme.breakpoints.down('sm'))
@@ -30,7 +30,9 @@ export const FileActionMenu = ({
         onClose()
     }
 
-    const iconSize = isMobile ? "small" : "small"
+    const hasAnyAction = permissions.canEdit || permissions.canDelete || permissions.canShare
+    if (!hasAnyAction) return null
+
     const iconSx = {
         minWidth: isMobile ? 28 : 36,
         '& .MuiSvgIcon-root': {
@@ -75,34 +77,40 @@ export const FileActionMenu = ({
                 },
             }}
         >
-            <MenuItem onClick={() => handleAction(onEdit)}>
-                <ListItemIcon sx={iconSx}>
-                    <EditIcon fontSize={iconSize} color="action" />
-                </ListItemIcon>
-                <ListItemText {...textProps}>Chỉnh sửa</ListItemText>
-            </MenuItem>
+            {permissions.canEdit && (
+                <MenuItem onClick={() => handleAction(onEdit)}>
+                    <ListItemIcon sx={iconSx}>
+                        <EditIcon fontSize="small" color="action" />
+                    </ListItemIcon>
+                    <ListItemText {...textProps}>Chỉnh sửa</ListItemText>
+                </MenuItem>
+            )}
 
-            <MenuItem onClick={() => handleAction(onShare)}>
-                <ListItemIcon sx={iconSx}>
-                    <ShareIcon fontSize={iconSize} color="action" />
-                </ListItemIcon>
-                <ListItemText {...textProps}>Chia sẻ</ListItemText>
-            </MenuItem>
+            {permissions.canShare && (
+                <MenuItem onClick={() => handleAction(onShare)}>
+                    <ListItemIcon sx={iconSx}>
+                        <ShareIcon fontSize="small" color="action" />
+                    </ListItemIcon>
+                    <ListItemText {...textProps}>Chia sẻ</ListItemText>
+                </MenuItem>
+            )}
 
-            <MenuItem
-                onClick={() => handleAction(onDelete)}
-                sx={{
-                    color: 'error.main',
-                    '&:hover': {
-                        bgcolor: alpha(theme.palette.error.main, 0.08) + '!important',
-                    }
-                }}
-            >
-                <ListItemIcon sx={iconSx}>
-                    <DeleteIcon fontSize={iconSize} color="error" />
-                </ListItemIcon>
-                <ListItemText {...textProps}>Xóa</ListItemText>
-            </MenuItem>
+            {permissions.canDelete && (
+                <MenuItem
+                    onClick={() => handleAction(onDelete)}
+                    sx={{
+                        color: 'error.main',
+                        '&:hover': {
+                            bgcolor: alpha(theme.palette.error.main, 0.08) + '!important',
+                        }
+                    }}
+                >
+                    <ListItemIcon sx={iconSx}>
+                        <DeleteIcon fontSize="small" color="error" />
+                    </ListItemIcon>
+                    <ListItemText {...textProps}>Xóa</ListItemText>
+                </MenuItem>
+            )}
         </Menu>
     )
 }

@@ -16,13 +16,15 @@ import { PAGE_LIMIT_DEFAULT } from '../../../common/constant/page-take.constant'
 import { StackColumn, StackRow } from '../../../components/mui-custom/stack/stack.mui-custom'
 import { usePagination } from '../../../hooks/use-pagination.hook'
 import { PaginationComponent } from '../../../components/pagination/pagination.component'
+import { getFilePermissions } from '../utils/file-permissions.util'
 
 
 export const FileExplorerComponent = () => {
     const theme = useTheme()
     const isMobile = useMediaQuery(theme.breakpoints.down('sm'))
     const isTablet = useMediaQuery(theme.breakpoints.between('sm', 'lg'))
-    const { currentWorkspace } = useWorkspace()
+    const { currentWorkspace, currentMember } = useWorkspace()
+    const permissions = getFilePermissions(currentMember?.role)
 
     const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid')
     const [selectedItem, setSelectedItem] = useState<FileResponse | null>(null)
@@ -156,6 +158,7 @@ export const FileExplorerComponent = () => {
                     <FileGrid
                         files={files}
                         selectedItem={selectedItem}
+                        permissions={permissions}
                         onSelect={handleSelect}
                         onEdit={(file) => {
                             setSelectedItem(file)
@@ -170,6 +173,7 @@ export const FileExplorerComponent = () => {
         return (
             <FileList
                 files={files}
+                permissions={permissions}
                 onSelect={handleSelect}
                 selectedIds={selectedIds}
                 onToggleCheck={handleToggleCheck}

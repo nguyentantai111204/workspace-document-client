@@ -1,12 +1,15 @@
-import React, { createContext, useContext, useEffect } from 'react'
+import React, { createContext, useContext, useEffect, useMemo } from 'react'
 import { useLocation, useNavigate, useParams } from 'react-router-dom'
 import { createWorkspaceApi, updateWorkspaceApi } from '../apis/workspace/workspace.api'
-import { CreateWorkspaceRequest, UpdateWorkSpaceRequest, WorkspaceResponse } from '../apis/workspace/workspace.interface'
+import { CreateWorkspaceRequest, MemberResponse, UpdateWorkSpaceRequest, WorkspaceResponse } from '../apis/workspace/workspace.interface'
 import { useWorkspaces } from '../hooks/use-workspace.hook'
+import { useWorkspaceMembers } from '../hooks/use-workspace-member.hook'
+import { useAppSelector } from '../redux/store.redux'
 
 interface WorkspaceContextType {
     workspaces: WorkspaceResponse[]
     currentWorkspace: WorkspaceResponse | null
+    currentMember: MemberResponse | null
     setCurrentWorkspace: (workspace: WorkspaceResponse) => void
     createWorkspace: (data: CreateWorkspaceRequest) => Promise<void>
     updateWorkspace: (workspaceId: string, data: UpdateWorkSpaceRequest) => Promise<void>
@@ -20,11 +23,19 @@ export const WorkspaceProvider: React.FC<{ children: React.ReactNode }> = ({ chi
     const navigate = useNavigate()
     const { workspaceId } = useParams()
     const location = useLocation()
+    const currentUser = useAppSelector((state) => state.account.user)
 
-    const currentWorkspace = React.useMemo(() => {
+    const currentWorkspace = useMemo(() => {
         if (!workspaceId || !workspaces.length) return null
         return workspaces.find((ws) => ws.id === workspaceId) || null
     }, [workspaces, workspaceId])
+
+    const { members } = useWorkspaceMembers(currentWorkspace?.id)
+
+    const currentMember = useMemo(() => {
+        if (!currentUser || !members.length) return null
+        return members.find((m) => m.userId === currentUser.id) || null
+    }, [members, currentUser])
 
     const setCurrentWorkspace = (workspace: WorkspaceResponse) => {
         localStorage.setItem('lastWorkspaceId', workspace.id)
@@ -36,7 +47,6 @@ export const WorkspaceProvider: React.FC<{ children: React.ReactNode }> = ({ chi
 
         const isWorkspaceRoute = location.pathname.startsWith('/workspace')
 
-        // precise match for /workspace or /workspace/ (root of workspace feature)
         if (isWorkspaceRoute) {
             if (!workspaceId) {
                 const lastId = localStorage.getItem('lastWorkspaceId')
@@ -75,7 +85,7 @@ export const WorkspaceProvider: React.FC<{ children: React.ReactNode }> = ({ chi
     }
 
     return (
-        <WorkspaceContext.Provider value={{ workspaces, currentWorkspace, setCurrentWorkspace, createWorkspace, updateWorkspace, isLoading }}>
+        <WorkspaceContext.Provider value={{ workspaces, currentWorkspace, currentMember, setCurrentWorkspace, createWorkspace, updateWorkspace, isLoading }}>
             {children}
         </WorkspaceContext.Provider>
     )

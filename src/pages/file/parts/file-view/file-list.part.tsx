@@ -7,9 +7,11 @@ import { FileResponse } from '../../../../apis/file/file.interface'
 import { TableColumn } from '../../../../components/table/table.interface'
 import { formatDateFile, formatFileSize } from '../../../../common/utils/file.utils'
 import { TableComponent } from '../../../../components/table/table.component'
+import { FilePermissions } from '../../utils/file-permissions.util'
 
 interface FileListProps {
     files: FileResponse[]
+    permissions: FilePermissions
     onSelect: (file: FileResponse) => void
     selectedIds: string[]
     onToggleCheck: (id: string) => void
@@ -20,10 +22,12 @@ interface FileListProps {
 
 const FileActionCell = ({
     file,
+    permissions,
     onEdit,
     onDelete
 }: {
     file: FileResponse,
+    permissions: FilePermissions,
     onEdit: (file: FileResponse) => void
     onDelete: (file: FileResponse) => void
 }) => {
@@ -38,6 +42,9 @@ const FileActionCell = ({
         setMenuAnchorEl(null)
     }
 
+    const hasAnyAction = permissions.canEdit || permissions.canDelete || permissions.canShare
+    if (!hasAnyAction) return null
+
     return (
         <React.Fragment>
             <IconButton size="small" onClick={handleOpenMenu}>
@@ -46,9 +53,9 @@ const FileActionCell = ({
             <FileActionMenu
                 anchorEl={menuAnchorEl}
                 onClose={handleCloseMenu}
+                permissions={permissions}
                 onEdit={() => onEdit(file)}
                 onDelete={() => onDelete(file)}
-                onPin={() => console.log('Pin', file.name)}
                 onShare={() => console.log('Share', file.name)}
             />
         </React.Fragment>
@@ -57,6 +64,7 @@ const FileActionCell = ({
 
 export const FileList = ({
     files,
+    permissions,
     onSelect,
     selectedIds,
     onToggleCheck,
@@ -103,7 +111,7 @@ export const FileList = ({
             id: 'actions',
             label: '',
             align: 'right',
-            render: (file) => <FileActionCell file={file} onEdit={onEdit} onDelete={onDelete} />
+            render: (file) => <FileActionCell file={file} permissions={permissions} onEdit={onEdit} onDelete={onDelete} />
         }
     ]
 
@@ -120,4 +128,3 @@ export const FileList = ({
         />
     )
 }
-

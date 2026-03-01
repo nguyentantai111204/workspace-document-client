@@ -5,16 +5,18 @@ import { FileActionMenu } from '../file-tools/file-action-menu.part'
 import { FileResponse } from '../../../../apis/file/file.interface'
 import { formatDateFile } from '../../../../common/utils/file.utils'
 import { getFileIcon } from '../../utils/file-icon.util'
+import { FilePermissions } from '../../utils/file-permissions.util'
 
 interface FileCardProps {
     file: FileResponse
     selected?: boolean
+    permissions: FilePermissions
     onSelect?: (file: FileResponse) => void
     onEdit?: (file: FileResponse) => void
     onDelete?: (file: FileResponse) => void
 }
 
-export const FileCard = ({ file, selected, onSelect, onEdit, onDelete }: FileCardProps) => {
+export const FileCard = ({ file, selected, permissions, onSelect, onEdit, onDelete }: FileCardProps) => {
     const theme = useTheme()
     const [menuAnchorEl, setMenuAnchorEl] = useState<HTMLElement | null>(null)
 
@@ -26,6 +28,8 @@ export const FileCard = ({ file, selected, onSelect, onEdit, onDelete }: FileCar
     const handleCloseMenu = () => {
         setMenuAnchorEl(null)
     }
+
+    const hasAnyAction = permissions.canEdit || permissions.canDelete || permissions.canShare
 
     return (
         <Paper
@@ -54,24 +58,26 @@ export const FileCard = ({ file, selected, onSelect, onEdit, onDelete }: FileCar
                 alignItems: 'center',
             }}
         >
-            <IconButton
-                className="more-btn"
-                size="small"
-                onClick={handleOpenMenu}
-                sx={{
-                    position: 'absolute',
-                    top: 8,
-                    right: 8,
-                    opacity: menuAnchorEl ? 1 : 0,
-                    transition: 'opacity 0.2s',
-                    bgcolor: 'background.paper',
-                    '&:hover': {
-                        bgcolor: 'action.hover',
-                    }
-                }}
-            >
-                <MoreVertIcon fontSize="small" />
-            </IconButton>
+            {hasAnyAction && (
+                <IconButton
+                    className="more-btn"
+                    size="small"
+                    onClick={handleOpenMenu}
+                    sx={{
+                        position: 'absolute',
+                        top: 8,
+                        right: 8,
+                        opacity: menuAnchorEl ? 1 : 0,
+                        transition: 'opacity 0.2s',
+                        bgcolor: 'background.paper',
+                        '&:hover': {
+                            bgcolor: 'action.hover',
+                        }
+                    }}
+                >
+                    <MoreVertIcon fontSize="small" />
+                </IconButton>
+            )}
 
             <Box
                 sx={{
@@ -109,9 +115,9 @@ export const FileCard = ({ file, selected, onSelect, onEdit, onDelete }: FileCar
             <FileActionMenu
                 anchorEl={menuAnchorEl}
                 onClose={handleCloseMenu}
+                permissions={permissions}
                 onEdit={() => onEdit?.(file)}
                 onDelete={() => onDelete?.(file)}
-                onPin={() => console.log('Pin', file.name)}
                 onShare={() => console.log('Share', file.name)}
             />
         </Paper>
