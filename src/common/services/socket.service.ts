@@ -10,7 +10,6 @@ class SocketService {
             return
         }
 
-        // Backend WebSocket server runs on port 3000, not the Vite dev server port
         const BACKEND_URL = 'http://localhost:3000'
 
         console.log('[Socket] Connecting to:', `${BACKEND_URL}${this.namespace}`)

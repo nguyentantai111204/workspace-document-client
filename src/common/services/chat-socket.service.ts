@@ -98,7 +98,7 @@ class ChatSocketService {
         }
     }
 
-    // ==================== Room Management ====================
+    // Room Management
 
     joinConversation(
         conversationId: string,
@@ -118,7 +118,7 @@ class ChatSocketService {
         this.socket.emit('leave-conversation', { conversationId })
     }
 
-    // ==================== Messaging ====================
+    // Messaging
 
     sendMessage(
         conversationId: string,
@@ -139,7 +139,7 @@ class ChatSocketService {
         }, callback)
     }
 
-    // ==================== Typing Indicators ====================
+    // Typing Indicators
 
     startTyping(conversationId: string) {
         if (!this.socket) return
@@ -151,14 +151,14 @@ class ChatSocketService {
         this.socket.emit('typing-stop', { conversationId })
     }
 
-    // ==================== Read Receipts ====================
+    // Read Receipts
 
     markAsRead(messageId: string, callback?: () => void) {
         if (!this.socket) return
         this.socket.emit('mark-read', { messageId }, callback)
     }
 
-    // ==================== Event Listeners ====================
+    // Event Listeners
 
     onNewMessage(callback: (message: Message) => void) {
         this.socket?.on('new-message', callback)
@@ -188,7 +188,7 @@ class ChatSocketService {
         this.socket?.on('connect', callback)
     }
 
-    // ==================== Remove Listeners ====================
+    // Remove Listeners
 
     off(event: string, callback?: (...args: any[]) => void) {
         if (callback) {
@@ -198,7 +198,7 @@ class ChatSocketService {
         }
     }
 
-    // ==================== Status ====================
+    // Status
 
     isConnected(): boolean {
         return this.socket?.connected || false
