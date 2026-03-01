@@ -16,12 +16,7 @@ import accountReducer from './account/account.slice'
 import notificationReducer from './notification/notification.slice'
 import type { AppDispatch, RootState } from './store.interface'
 
-const systemPersistConfig = {
-    key: 'system',
-    storage,
-    whitelist: ['mode'],
-    blacklist: ['snackbar'],
-}
+
 
 const accountPersistConfig = {
     key: 'account',
@@ -31,7 +26,7 @@ const accountPersistConfig = {
 }
 
 const rootReducer = combineReducers({
-    system: persistReducer(systemPersistConfig, systemReducer),
+    system: systemReducer,
     account: persistReducer(accountPersistConfig, accountReducer),
     notification: notificationReducer,
 })
