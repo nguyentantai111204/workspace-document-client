@@ -48,7 +48,7 @@ export const MessageList = ({
         if (!prevMsg) return false
         return (
             prevMsg.senderId === currentMsg.senderId &&
-            new Date(currentMsg.createdAt).getTime() - new Date(prevMsg.createdAt).getTime() < 60000 // Within 1 minute
+            new Date(currentMsg.createdAt).getTime() - new Date(prevMsg.createdAt).getTime() < 60000
         )
     }
 

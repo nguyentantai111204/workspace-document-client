@@ -64,7 +64,10 @@ export const getParticipantsApi = async (
     const response = await axiosInstance.get(
         `/conversations/${conversationId}/participants`
     )
-    return response.data
+    if (Array.isArray(response.data)) {
+        return response.data
+    }
+    return response.data?.data || []
 }
 
 export const addParticipantApi = async (

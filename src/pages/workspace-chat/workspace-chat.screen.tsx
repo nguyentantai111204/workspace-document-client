@@ -1,5 +1,5 @@
-import { useState, useEffect, useCallback, useRef } from 'react'
-import { Box, useTheme, useMediaQuery } from '@mui/material'
+import { useState, useEffect, useCallback, useRef, useMemo } from 'react'
+import { Box, useTheme, useMediaQuery, Typography } from '@mui/material'
 import { useWorkspace } from '../../contexts/workspace.context'
 import { useConversations } from '../../hooks/use-conversations.hook'
 import { useMessages } from '../../hooks/use-messages.hook'
@@ -12,9 +12,10 @@ import { MessageInput } from './components/message-input.component'
 import { CreateConversationDialog } from './components/create-conversation-dialog.component'
 import { ChatHeader } from './components/chat-header.component'
 import { ConversationWithUnread } from '../../apis/chat/chat.interface'
-import { syncMessagesApi } from '../../apis/chat/chat.api'
+import { syncMessagesApi, getParticipantsApi } from '../../apis/chat/chat.api'
 import { PAGE_LIMIT_DEFAULT } from '../../common/constant/page-take.constant'
 import { useAppSelector } from '../../redux/store.redux'
+import { StackColumn, StackRowAlignCenterJustCenter } from '../../components/mui-custom/stack/stack.mui-custom'
 
 export const WorkspaceChatPage = () => {
     const theme = useTheme()
@@ -30,11 +31,7 @@ export const WorkspaceChatPage = () => {
 
     const { conversations, isLoading: conversationsLoading, mutate: mutateConversations } = useConversations(
         currentWorkspace?.id,
-        {
-            page: 1,
-            limit: PAGE_LIMIT_DEFAULT.limit,
-            search: debouncedSearch
-        }
+        { page: 1, limit: PAGE_LIMIT_DEFAULT.limit, search: debouncedSearch }
     )
 
     const {
@@ -46,7 +43,6 @@ export const WorkspaceChatPage = () => {
         markAsRead,
         markAllAsRead
     } = useMessages(selectedConversation?.id)
-
 
     const {
         isConnected,
@@ -67,37 +63,33 @@ export const WorkspaceChatPage = () => {
         messagesRef.current = messages
     }, [messages])
 
-    // Sync messages on reconnect
     useEffect(() => {
         const cleanup = onConnect(async () => {
-            console.log('[WorkspaceChatPage] Socket reconnected, syncing messages...')
             if (!selectedConversation) return
-
-            const currentMessages = messagesRef.current
-            const lastMessage = currentMessages[currentMessages.length - 1]
-
+            const lastMessage = messagesRef.current[messagesRef.current.length - 1]
             if (!lastMessage) return
-
             try {
-                const syncedMessages = await syncMessagesApi(selectedConversation.id, lastMessage.id)
-                console.log(`[WorkspaceChatPage] Synced ${syncedMessages.length} messages`)
-
-                if (syncedMessages.length > 0) {
-                    syncedMessages.forEach(msg => addMessage(msg))
-                }
+                const synced = await syncMessagesApi(selectedConversation.id, lastMessage.id)
+                synced.forEach(msg => addMessage(msg))
             } catch (error) {
                 console.error('[WorkspaceChatPage] Failed to sync messages:', error)
             }
         })
-
         return cleanup
     }, [onConnect, selectedConversation, addMessage])
 
-    const handleSelectConversation = useCallback((conversation: ConversationWithUnread) => {
+    const handleSelectConversation = useCallback(async (conversation: ConversationWithUnread) => {
         if (selectedConversation) {
             leaveConversation(selectedConversation.id)
         }
-        setSelectedConversation(conversation)
+
+        let conv = conversation
+        if (!conversation.participants || conversation.participants.length === 0) {
+            const participants = await getParticipantsApi(conversation.id)
+            conv = { ...conversation, participants }
+        }
+
+        setSelectedConversation(conv)
 
         if (isMobile) {
             setShowConversationList(false)
@@ -112,51 +104,33 @@ export const WorkspaceChatPage = () => {
         setSelectedConversation(null)
     }, [])
 
-    // Handle message send
     const handleSendMessage = useCallback(async (content: string, attachments: any[]) => {
         if (!selectedConversation) return
-
-        // Send via socket for real-time
         sendSocketMessage(selectedConversation.id, content, attachments, (response) => {
             if (response.success && response.message) {
-                // Message will be added via socket event, but we add it here too
-                // deduplication in addMessage will handle it
-                console.log('Message sent successfully')
                 addMessage(response.message)
             }
         })
-    }, [selectedConversation, sendSocketMessage])
+    }, [selectedConversation, sendSocketMessage, addMessage])
 
-    // Listen to new messages
     useEffect(() => {
         if (!isConnected) return
-
         const cleanup = onNewMessage((message) => {
-            console.log('New message received:', message)
-
-            // Add message to current conversation if it matches
             if (selectedConversation && message.conversationId === selectedConversation.id) {
                 addMessage(message)
-
-                // Mark as read
                 markAsRead(message.id)
             }
-
-            // Refresh conversations list to update last message
             mutateConversations()
         })
-
         return cleanup
     }, [isConnected, onNewMessage, selectedConversation, addMessage, markAsRead, mutateConversations])
 
-    // Load initial online users when conversation changes or socket connects
     useEffect(() => {
         if (selectedConversation && isConnected) {
             fetchOnlineUsers(selectedConversation.id)
         }
     }, [selectedConversation, isConnected, fetchOnlineUsers])
 
-    // Mark all as read when conversation is selected and has unread messages
     useEffect(() => {
         if (selectedConversation && selectedConversation.unreadCount > 0) {
             markAllAsRead()
@@ -174,15 +148,10 @@ export const WorkspaceChatPage = () => {
         if (conversation.type === 'GROUP' && conversation.name) {
             return conversation.name
         }
-
-        // For Direct messages, try to find the other participant
         if (conversation.participants && currentUserId) {
-            const otherParticipant = conversation.participants.find(p => p.userId !== currentUserId)
-            if (otherParticipant) {
-                return getUserName(otherParticipant.userId)
-            }
+            const other = conversation.participants.find(p => p.userId !== currentUserId)
+            if (other) return getUserName(other.userId)
         }
-
         return 'Tin nhắn trực tiếp'
     }, [currentUserId, getUserName])
 
@@ -190,37 +159,29 @@ export const WorkspaceChatPage = () => {
         ? getTypingUsers(selectedConversation.id).map(getUserName)
         : []
 
-    const isCurrentConversationOnline = useCallback(() => {
-        if (!selectedConversation) return false
-
-        if (selectedConversation.type === 'DIRECT' && selectedConversation.participants) {
-            const otherParticipant = selectedConversation.participants.find(p => p.userId !== currentUserId)
-            if (otherParticipant) {
-                return isUserOnline(otherParticipant.userId)
-            }
+    const isCurrentConversationOnline = useMemo(() => {
+        if (!selectedConversation || !currentUserId) return false
+        if (selectedConversation.type === 'DIRECT') {
+            if (!selectedConversation.participants || selectedConversation.participants.length === 0) return false
+            const other = selectedConversation.participants.find(p => p.userId !== currentUserId)
+            if (other) return isUserOnline(other.userId)
         }
-        return false // For groups, we might handle differently later
+        return false
     }, [selectedConversation, currentUserId, isUserOnline])
 
     const getOtherUserLastReadAt = useCallback(() => {
         if (!selectedConversation || selectedConversation.type !== 'DIRECT' || !selectedConversation.participants) return undefined
-
-        const otherParticipant = selectedConversation.participants.find(p => p.userId !== currentUserId)
-        return otherParticipant?.lastReadAt
+        const other = selectedConversation.participants.find(p => p.userId !== currentUserId)
+        return other?.lastReadAt
     }, [selectedConversation, currentUserId])
 
-    const handleCreateConversation = () => {
-        setCreateDialogOpen(true)
-    }
+    const handleCreateConversation = () => setCreateDialogOpen(true)
 
     const handleConversationCreated = useCallback(async (conversationId: string) => {
         const updatedData = await mutateConversations()
-
         if (updatedData?.data) {
             const newConv = updatedData.data.find((c: ConversationWithUnread) => c.id === conversationId)
-            if (newConv) {
-                handleSelectConversation(newConv)
-            }
+            if (newConv) handleSelectConversation(newConv)
         }
     }, [mutateConversations, handleSelectConversation])
 
@@ -228,17 +189,24 @@ export const WorkspaceChatPage = () => {
         setSearch(value)
     }, [])
 
+    const chatHeaderProps = (conv: ConversationWithUnread, extra?: { onBack?: () => void; isMobile?: boolean }) => ({
+        conversation: { ...conv, name: getConversationTitle(conv) },
+        isOnline: isCurrentConversationOnline,
+        onInfoClick: () => console.log('Info clicked'),
+        ...extra
+    })
+
     if (!currentWorkspace) {
         return (
             <Box sx={{ p: 3 }}>
-                <p>Không tìm thấy workspace</p>
+                <Typography>Không tìm thấy workspace</Typography>
             </Box>
         )
     }
 
     if (isMobile) {
         return (
-            <Box sx={{ height: '100%', display: 'flex', flexDirection: 'column' }}>
+            <StackColumn sx={{ height: '100%' }}>
                 {showConversationList ? (
                     <ConversationList
                         conversations={conversations}
@@ -251,16 +219,10 @@ export const WorkspaceChatPage = () => {
                 ) : (
                     <>
                         {selectedConversation && (
-                            <ChatHeader
-                                conversation={{
-                                    ...selectedConversation,
-                                    name: getConversationTitle(selectedConversation)
-                                }}
-                                onBack={handleBackToConversations}
-                                isMobile={true}
-                                onInfoClick={() => console.log('Info clicked')}
-                                isOnline={isCurrentConversationOnline()}
-                            />
+                            <ChatHeader {...chatHeaderProps(selectedConversation, {
+                                onBack: handleBackToConversations,
+                                isMobile: true
+                            })} />
                         )}
                         <MessageList
                             messages={messages}
@@ -282,25 +244,13 @@ export const WorkspaceChatPage = () => {
                     onClose={() => setCreateDialogOpen(false)}
                     onSuccess={handleConversationCreated}
                 />
-            </Box>
+            </StackColumn>
         )
     }
 
     return (
-        <Box
-            sx={{
-                height: '100%',
-                display: 'flex',
-                bgcolor: 'background.default'
-            }}
-        >
-            <Box
-                sx={{
-                    width: '350px',
-                    flexShrink: 0,
-                    borderRight: `1px solid ${theme.palette.divider}`
-                }}
-            >
+        <Box sx={{ height: '100%', display: 'flex', bgcolor: 'background.default' }}>
+            <Box sx={{ width: '350px', flexShrink: 0, borderRight: `1px solid ${theme.palette.divider}` }}>
                 <ConversationList
                     conversations={conversations}
                     activeConversationId={selectedConversation?.id}
@@ -311,25 +261,10 @@ export const WorkspaceChatPage = () => {
                 />
             </Box>
 
-            <Box
-                sx={{
-                    flex: 1,
-                    display: 'flex',
-                    flexDirection: 'column',
-                    overflow: 'hidden'
-                }}
-            >
+            <StackColumn sx={{ flex: 1, overflow: 'hidden' }}>
                 {selectedConversation ? (
                     <>
-                        <ChatHeader
-                            conversation={{
-                                ...selectedConversation,
-                                name: getConversationTitle(selectedConversation)
-                            }}
-                            isMobile={false}
-                            onInfoClick={() => console.log('Info clicked')}
-                            isOnline={isCurrentConversationOnline()}
-                        />
+                        <ChatHeader {...chatHeaderProps(selectedConversation, { isMobile: false })} />
                         <MessageList
                             messages={messages}
                             isLoading={messagesLoading}
@@ -345,19 +280,11 @@ export const WorkspaceChatPage = () => {
                         />
                     </>
                 ) : (
-                    <Box
-                        sx={{
-                            flex: 1,
-                            display: 'flex',
-                            alignItems: 'center',
-                            justifyContent: 'center',
-                            color: 'text.secondary'
-                        }}
-                    >
+                    <StackRowAlignCenterJustCenter sx={{ flex: 1, color: 'text.secondary' }}>
                         Chọn một cuộc trò chuyện để bắt đầu
-                    </Box>
+                    </StackRowAlignCenterJustCenter>
                 )}
-            </Box>
+            </StackColumn>
 
             <CreateConversationDialog
                 open={createDialogOpen}

@@ -72,11 +72,7 @@ export const ChatHeader = ({
                     noWrap
                     sx={{ display: 'block' }}
                 >
-                    {isOnline ? (
-                        <Box component="span" sx={{ color: 'success.main', fontWeight: 600 }}>Active now</Box>
-                    ) : (
-                        'Offline'
-                    )}
+                    {isOnline ? 'Đang hoạt động' : 'Tạm vắng'}
                 </Typography>
             </Box>
 
