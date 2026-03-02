@@ -1,5 +1,5 @@
 import useSWR from 'swr'
-import { listConversationsApi, getUnreadCountApi } from '../apis/chat/chat.api'
+import { listConversationsApi } from '../apis/chat/chat.api'
 import { ConversationListQuery, ConversationWithUnread } from '../apis/chat/chat.interface'
 
 export const useConversations = (
@@ -17,29 +17,15 @@ export const useConversations = (
         {
             keepPreviousData: true,
             revalidateOnFocus: false,
-            refreshInterval: 30000 // làm mới mỗi 30s
+            refreshInterval: 30000
         }
     )
-
-    // Lấy số lượng tin nhắn chưa đọc
-    const fetchUnreadCounts = async (conversations: ConversationWithUnread[]) => {
-        const promises = conversations.map(async (conv) => {
-            try {
-                const { unreadCount } = await getUnreadCountApi(conv.id)
-                return { ...conv, unreadCount }
-            } catch {
-                return conv
-            }
-        })
-        return Promise.all(promises)
-    }
 
     return {
         conversations: (data?.data || []) as ConversationWithUnread[],
         meta: data?.meta,
         isLoading,
         error,
-        mutate,
-        fetchUnreadCounts
+        mutate
     }
 }

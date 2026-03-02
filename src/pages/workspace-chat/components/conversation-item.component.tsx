@@ -16,6 +16,7 @@ export const ConversationItem = ({
     const theme = useTheme()
 
     const displayName = conversation.name || 'Tin nhắn trực tiếp'
+    const hasUnread = (conversation.unreadCount ?? 0) > 0 && !isActive
 
     return (
         <Box
@@ -26,8 +27,7 @@ export const ConversationItem = ({
                 bgcolor: isActive
                     ? alpha(theme.palette.primary.main, 0.08)
                     : 'transparent',
-                borderLeft: `3px solid ${isActive ? theme.palette.primary.main : 'transparent'
-                    }`,
+                borderLeft: `3px solid ${isActive ? theme.palette.primary.main : 'transparent'}`,
                 '&:hover': {
                     bgcolor: isActive
                         ? alpha(theme.palette.primary.main, 0.12)
@@ -41,7 +41,7 @@ export const ConversationItem = ({
                 <Badge
                     badgeContent={conversation.unreadCount || 0}
                     color="error"
-                    invisible={!conversation.unreadCount}
+                    invisible={!hasUnread}
                     max={99}
                 >
                     <Avatar
@@ -67,7 +67,7 @@ export const ConversationItem = ({
                     >
                         <Typography
                             variant="subtitle2"
-                            fontWeight={conversation.unreadCount ? 700 : 600}
+                            fontWeight={hasUnread ? 700 : 500}
                             sx={{
                                 overflow: 'hidden',
                                 textOverflow: 'ellipsis',
@@ -84,9 +84,9 @@ export const ConversationItem = ({
                                 component="span"
                                 sx={{
                                     fontSize: { xs: '0.7rem', sm: '0.75rem' },
-                                    fontWeight: conversation.unreadCount ? 600 : 400,
+                                    fontWeight: hasUnread ? 600 : 400,
                                     flexShrink: 0,
-                                    color: conversation.unreadCount ? 'primary.main' : 'text.secondary'
+                                    color: hasUnread ? 'primary.main' : 'text.secondary'
                                 }}
                             >
                                 <TimeAgoComponent value={conversation.lastMessageAt} />
@@ -97,13 +97,13 @@ export const ConversationItem = ({
                     {conversation.lastMessage && (
                         <Typography
                             variant="body2"
-                            color="text.secondary"
                             sx={{
                                 overflow: 'hidden',
                                 textOverflow: 'ellipsis',
                                 whiteSpace: 'nowrap',
-                                fontWeight: conversation.unreadCount ? 600 : 400,
-                                fontSize: { xs: '0.8rem', sm: '0.875rem' }
+                                fontWeight: hasUnread ? 600 : 400,
+                                fontSize: { xs: '0.8rem', sm: '0.875rem' },
+                                color: hasUnread ? 'text.primary' : 'text.secondary'
                             }}
                         >
                             {conversation.lastMessage.content || '📎 Tệp đính kèm'}

@@ -12,7 +12,7 @@ import { MessageInput } from './components/message-input.component'
 import { CreateConversationDialog } from './components/create-conversation-dialog.component'
 import { ChatHeader } from './components/chat-header.component'
 import { ConversationWithUnread } from '../../apis/chat/chat.interface'
-import { syncMessagesApi, getParticipantsApi } from '../../apis/chat/chat.api'
+import { syncMessagesApi, getParticipantsApi, markAllAsReadApi } from '../../apis/chat/chat.api'
 import { PAGE_LIMIT_DEFAULT } from '../../common/constant/page-take.constant'
 import { useAppSelector } from '../../redux/store.redux'
 import { StackColumn, StackRowAlignCenterJustCenter } from '../../components/mui-custom/stack/stack.mui-custom'
@@ -34,14 +34,39 @@ export const WorkspaceChatPage = () => {
         { page: 1, limit: PAGE_LIMIT_DEFAULT.limit, search: debouncedSearch }
     )
 
+    // unreadCount tách riêng khỏi SWR cache → tránh race condition khi nhiều tin đến nhanh
+    const [unreadMap, setUnreadMap] = useState<Map<string, number>>(new Map())
+
+    // Khi server trả về conversations (load lần đầu hoặc search), đồng bộ unreadMap
+    useEffect(() => {
+        setUnreadMap(prev => {
+            const next = new Map(prev)
+            conversations.forEach(conv => {
+                // Chỉ set nếu chưa có trong local → tránh ghi đè optimistic count
+                if (!next.has(conv.id)) {
+                    next.set(conv.id, conv.unreadCount ?? 0)
+                }
+            })
+            return next
+        })
+    }, [conversations])
+
+    // Merge unreadMap vào conversations để pass xuống UI
+    const conversationsWithUnread = useMemo(() =>
+        conversations.map(c => ({
+            ...c,
+            unreadCount: unreadMap.get(c.id) ?? c.unreadCount ?? 0
+        })),
+        [conversations, unreadMap]
+    )
+
     const {
         messages,
         hasMore,
         isLoading: messagesLoading,
         loadMore,
         addMessage,
-        markAsRead,
-        markAllAsRead
+        markAsRead
     } = useMessages(selectedConversation?.id)
 
     const {
@@ -62,6 +87,25 @@ export const WorkspaceChatPage = () => {
     useEffect(() => {
         messagesRef.current = messages
     }, [messages])
+
+    const joinedRoomsRef = useRef<Set<string>>(new Set())
+
+    useEffect(() => {
+        if (!isConnected || conversations.length === 0) return
+        conversations.forEach(conv => {
+            if (!joinedRoomsRef.current.has(conv.id)) {
+                joinConversation(conv.id)
+                joinedRoomsRef.current.add(conv.id)
+            }
+        })
+    }, [isConnected, conversations, joinConversation])
+
+    // Reset khi mất kết nối → re-join khi connect lại
+    useEffect(() => {
+        if (!isConnected) {
+            joinedRoomsRef.current.clear()
+        }
+    }, [isConnected])
 
     useEffect(() => {
         const cleanup = onConnect(async () => {
@@ -95,9 +139,19 @@ export const WorkspaceChatPage = () => {
             setShowConversationList(false)
         }
 
+        // Optimistic: reset unread ngay lập tức
+        if ((unreadMap.get(conversation.id) ?? 0) > 0) {
+            setUnreadMap(prev => {
+                const next = new Map(prev)
+                next.set(conversation.id, 0)
+                return next
+            })
+            markAllAsReadApi(conversation.id).catch(console.error)
+        }
+
         joinConversation(conversation.id)
         fetchOnlineUsers(conversation.id)
-    }, [selectedConversation, leaveConversation, joinConversation, isMobile, fetchOnlineUsers])
+    }, [selectedConversation, leaveConversation, joinConversation, isMobile, fetchOnlineUsers, unreadMap])
 
     const handleBackToConversations = useCallback(() => {
         setShowConversationList(true)
@@ -108,19 +162,67 @@ export const WorkspaceChatPage = () => {
         if (!selectedConversation) return
         sendSocketMessage(selectedConversation.id, content, attachments, (response) => {
             if (response.success && response.message) {
-                addMessage(response.message)
+                const message = response.message
+                addMessage(message)
+
+                // Cập nhật conversation list ngay sau khi gửi thành công
+                mutateConversations(
+                    (current) => {
+                        if (!current) return current
+                        const updated = current.data?.map((c: ConversationWithUnread) => {
+                            if (c.id !== selectedConversation.id) return c
+                            return {
+                                ...c,
+                                lastMessage: message,
+                                lastMessageAt: message.createdAt,
+                                unreadCount: 0
+                            }
+                        })
+                        const sorted = [...(updated ?? [])].sort((a, b) =>
+                            new Date(b.lastMessageAt ?? 0).getTime() -
+                            new Date(a.lastMessageAt ?? 0).getTime()
+                        )
+                        return { ...current, data: sorted }
+                    },
+                    false
+                )
             }
         })
-    }, [selectedConversation, sendSocketMessage, addMessage])
+    }, [selectedConversation, sendSocketMessage, addMessage, mutateConversations])
 
     useEffect(() => {
         if (!isConnected) return
         const cleanup = onNewMessage((message) => {
-            if (selectedConversation && message.conversationId === selectedConversation.id) {
+            const isActiveConversation = selectedConversation?.id === message.conversationId
+
+            // Cập nhật lastMessage + sort trong SWR cache (không đụng unreadCount)
+            mutateConversations(
+                (current) => {
+                    if (!current) return current
+                    const updated = current.data?.map((c: ConversationWithUnread) => {
+                        if (c.id !== message.conversationId) return c
+                        return { ...c, lastMessage: message, lastMessageAt: message.createdAt }
+                    })
+                    const sorted = [...(updated ?? [])].sort((a, b) =>
+                        new Date(b.lastMessageAt ?? 0).getTime() -
+                        new Date(a.lastMessageAt ?? 0).getTime()
+                    )
+                    return { ...current, data: sorted }
+                },
+                false
+            )
+
+            if (isActiveConversation) {
                 addMessage(message)
                 markAsRead(message.id)
+            } else {
+                // Tăng unread qua state riêng → atomic, không race condition
+                setUnreadMap(prev => {
+                    const next = new Map(prev)
+                    next.set(message.conversationId, (next.get(message.conversationId) ?? 0) + 1)
+                    return next
+                })
             }
-            mutateConversations()
         })
         return cleanup
     }, [isConnected, onNewMessage, selectedConversation, addMessage, markAsRead, mutateConversations])
@@ -131,11 +233,6 @@ export const WorkspaceChatPage = () => {
         }
     }, [selectedConversation, isConnected, fetchOnlineUsers])
 
-    useEffect(() => {
-        if (selectedConversation && selectedConversation.unreadCount > 0) {
-            markAllAsRead()
-        }
-    }, [selectedConversation?.id, selectedConversation?.unreadCount])
 
     const { members } = useWorkspaceMembers(currentWorkspace?.id, { limit: 100 })
 
@@ -145,7 +242,6 @@ export const WorkspaceChatPage = () => {
     }, [members])
 
     const getConversationTitle = useCallback((conversation: ConversationWithUnread) => {
-        // Ưu tiên dùng tên cuộc trò chuyện nếu đã được đặt
         if (conversation.name) {
             return conversation.name
         }
@@ -212,7 +308,7 @@ export const WorkspaceChatPage = () => {
             <StackColumn sx={{ height: '100%' }}>
                 {showConversationList ? (
                     <ConversationList
-                        conversations={conversations}
+                        conversations={conversationsWithUnread}
                         activeConversationId={selectedConversation?.id}
                         onSelectConversation={handleSelectConversation}
                         onCreateConversation={handleCreateConversation}
@@ -255,7 +351,7 @@ export const WorkspaceChatPage = () => {
         <Box sx={{ height: '100%', display: 'flex', bgcolor: 'background.default' }}>
             <Box sx={{ width: '350px', flexShrink: 0, borderRight: `1px solid ${theme.palette.divider}` }}>
                 <ConversationList
-                    conversations={conversations}
+                    conversations={conversationsWithUnread}
                     activeConversationId={selectedConversation?.id}
                     onSelectConversation={handleSelectConversation}
                     onCreateConversation={handleCreateConversation}

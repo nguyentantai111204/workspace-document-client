@@ -13,7 +13,6 @@ import {
     UnreadCountResponse
 } from './chat.interface'
 
-// Trò chuyện
 export const listConversationsApi = async (
     workspaceId: string,
     query?: ConversationListQuery
@@ -56,8 +55,6 @@ export const leaveConversationApi = async (id: string): Promise<void> => {
     await axiosInstance.delete(`/conversations/${id}/leave`)
 }
 
-//Participants
-
 export const getParticipantsApi = async (
     conversationId: string
 ): Promise<Participant[]> => {
@@ -81,7 +78,6 @@ export const addParticipantApi = async (
     return response.data
 }
 
-// Tin nhắn
 export const getMessagesApi = async (
     conversationId: string,
     query?: MessageQuery
@@ -134,7 +130,6 @@ export const getUnreadCountApi = async (
     return response.data
 }
 
-// Tìm kiếm
 
 export const searchMessagesApi = async (
     workspaceId: string,
@@ -154,7 +149,6 @@ export const getOnlineUsersApi = async (
     const response = await axiosInstance.get(
         `/conversations/${conversationId}/online`
     )
-    // Handle both direct array and wrapped response (standard API format)
     if (Array.isArray(response.data)) {
         return response.data
     }
