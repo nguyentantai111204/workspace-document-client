@@ -145,13 +145,16 @@ export const WorkspaceChatPage = () => {
     }, [members])
 
     const getConversationTitle = useCallback((conversation: ConversationWithUnread) => {
-        if (conversation.type === 'GROUP' && conversation.name) {
+        // Ưu tiên dùng tên cuộc trò chuyện nếu đã được đặt
+        if (conversation.name) {
             return conversation.name
         }
+
         if (conversation.participants && currentUserId) {
             const other = conversation.participants.find(p => p.userId !== currentUserId)
             if (other) return getUserName(other.userId)
         }
+
         return 'Tin nhắn trực tiếp'
     }, [currentUserId, getUserName])
 

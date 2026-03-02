@@ -15,10 +15,7 @@ export const ConversationItem = ({
 }: ConversationItemProps) => {
     const theme = useTheme()
 
-    // Hiển thị tên: tên nhóm hoặc "Tin nhắn trực tiếp"
-    const displayName = conversation.type === 'GROUP' && conversation.name
-        ? conversation.name
-        : 'Tin nhắn trực tiếp'
+    const displayName = conversation.name || 'Tin nhắn trực tiếp'
 
     return (
         <Box

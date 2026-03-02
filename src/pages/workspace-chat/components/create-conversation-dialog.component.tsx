@@ -37,13 +37,10 @@ interface CreateConversationFormValues {
 
 const validationSchema = Yup.object({
     type: Yup.string().required(),
-    name: Yup.string().when('type', {
-        is: 'GROUP',
-        then: schema => schema.required('Vui lòng nhập tên nhóm')
-            .min(3, 'Tên nhóm phải có ít nhất 3 ký tự')
-            .max(50, 'Tên nhóm không được quá 50 ký tự'),
-        otherwise: schema => schema.optional()
-    }),
+    name: Yup.string()
+        .required('Vui lòng nhập tên cuộc trò chuyện')
+        .min(3, 'Tên phải có ít nhất 3 ký tự')
+        .max(50, 'Tên không được quá 50 ký tự'),
     participants: Yup.array()
         .min(1, 'Vui lòng chọn ít nhất một thành viên')
         .test('max-participants', 'Tin nhắn trực tiếp chỉ có thể với 1 người', function (val) {
@@ -87,7 +84,7 @@ export const CreateConversationDialog = ({
         try {
             const response = await createConversationApi(currentWorkspace.id, {
                 type: values.type,
-                name: values.type === 'GROUP' ? values.name : undefined,
+                name: values.name,
                 participantIds: values.participants.map(p => p.userId)
             })
 
@@ -191,23 +188,21 @@ export const CreateConversationDialog = ({
                                     direction="row"
                                 />
 
-                                {values.type === 'GROUP' && (
-                                    <Box>
-                                        <InputLabel sx={{ mb: 0.5, fontSize: 13, fontWeight: 600 }}>
-                                            Tên nhóm <span style={{ color: 'red' }}>*</span>
-                                        </InputLabel>
-                                        <TextFieldComponent
-                                            name="name"
-                                            placeholder="Nhập tên nhóm..."
-                                            value={values.name}
-                                            onChange={handleChange}
-                                            onBlur={handleBlur}
-                                            error={touched.name && Boolean(errors.name)}
-                                            errorMessage={touched.name ? errors.name : undefined}
-                                            sizeUI="sm"
-                                        />
-                                    </Box>
-                                )}
+                                <Box>
+                                    <InputLabel sx={{ mb: 0.5, fontSize: 13, fontWeight: 600 }}>
+                                        Tên cuộc trò chuyện <Typography component="span" sx={{ color: 'red' }}>*</Typography>
+                                    </InputLabel>
+                                    <TextFieldComponent
+                                        name="name"
+                                        placeholder="Nhập tên..."
+                                        value={values.name}
+                                        onChange={handleChange}
+                                        onBlur={handleBlur}
+                                        error={touched.name && Boolean(errors.name)}
+                                        errorMessage={touched.name ? errors.name : undefined}
+                                        sizeUI="sm"
+                                    />
+                                </Box>
 
                                 <Box>
                                     <TextFieldComponent
