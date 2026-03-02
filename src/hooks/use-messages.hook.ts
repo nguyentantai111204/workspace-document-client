@@ -43,38 +43,29 @@ export const useMessages = (conversationId: string | null | undefined) => {
         }
     )
 
-    const sendMessage = async (data: SendMessageRequest): Promise<Message> => {
-        try {
-            const message = await sendMessageApi(conversationId!, data)
+    const sendMessage = useCallback(async (data: SendMessageRequest): Promise<Message> => {
+        const message = await sendMessageApi(conversationId!, data)
+        setAllMessages(prev => [...(prev || []), message])
+        await mutate()
+        return message
+    }, [conversationId, mutate])
 
-            setAllMessages(prev => [...(prev || []), message])
-            await mutate()
-
-            return message
-        } catch (error) {
-            throw error
-        }
-    }
-
-    const markAsRead = async (messageId: string) => {
+    const markAsRead = useCallback(async (messageId: string) => {
         try {
             await markMessageAsReadApi(messageId)
-            await mutate()
         } catch (error) {
             console.error('Failed to mark message as read:', error)
         }
-    }
+    }, [])
 
-    const markAllAsRead = async () => {
+    const markAllAsRead = useCallback(async () => {
         if (!conversationId) return
-
         try {
             await markAllAsReadApi(conversationId)
-            await mutate()
         } catch (error) {
             console.error('Failed to mark all as read:', error)
         }
-    }
+    }, [conversationId])
 
     const loadMore = useCallback(() => {
         if (data?.hasMore && data?.nextCursor) {
