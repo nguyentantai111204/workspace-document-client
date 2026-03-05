@@ -1,6 +1,8 @@
 import { createAction, createAsyncThunk } from '@reduxjs/toolkit'
 import type { LoginRequest, LoginResponse, UserProfile, RefreshTokenResponse, RegisterRequest } from '../../apis/auth/auth.interface'
 import { getProfileApi, loginApi, logoutApi, refreshTokenApi, registerApi } from '../../apis/auth/auth.api'
+import { UpdateProfileRequest } from '../../apis/user/user.interface'
+import { updateProfileApi } from '../../apis/user/user.api'
 
 export const logout = createAsyncThunk('account/logout', async (_, { rejectWithValue }) => {
     try {
@@ -60,3 +62,15 @@ export const refreshToken = createAsyncThunk<RefreshTokenResponse>(
 )
 
 export const updateProfile = createAction<Partial<UserProfile>>('account/updateProfile')
+
+export const updateProfileThunk = createAsyncThunk<UserProfile, UpdateProfileRequest>(
+    'account/updateProfileThunk',
+    async (data, { rejectWithValue }) => {
+        try {
+            const updated = await updateProfileApi(data)
+            return updated
+        } catch (error: any) {
+            return rejectWithValue(error.response?.data?.message || error.message || 'Cập nhật thất bại')
+        }
+    }
+)

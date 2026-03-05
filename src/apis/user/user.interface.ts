@@ -6,6 +6,13 @@ export interface ChangePasswordRequest {
     confirmPassword: string;
 }
 
+export interface UpdateProfileRequest {
+    fullName?: string;
+    phoneNumber?: string;
+    address?: string;
+    avatar?: File;
+}
+
 export interface UserSearchQuery {
     email?: string;
     page?: number;
@@ -17,5 +24,7 @@ export interface UserResponse extends BaseEntity {
     email: string;
     fullName: string;
     avatarUrl: string | null;
+    phoneNumber?: string;
+    address?: string;
 }
 

@@ -1,7 +1,6 @@
 import { createSelector } from '@reduxjs/toolkit'
 import { RootState } from '../store.interface'
 
-// Base selector
 const selectAccountState = (state: RootState) => state.account
 
 export const selectCurrentUser = createSelector(
@@ -9,10 +8,6 @@ export const selectCurrentUser = createSelector(
     (account) => account.user
 )
 
-export const selectAuthToken = createSelector(
-    selectAccountState,
-    (account) => account.token
-)
 
 export const selectIsAuthenticated = createSelector(
     selectAccountState,

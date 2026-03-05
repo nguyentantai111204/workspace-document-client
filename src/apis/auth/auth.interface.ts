@@ -13,6 +13,8 @@ export interface UserProfile {
     email: string
     fullName: string
     avatarUrl?: string
+    phoneNumber?: string
+    address?: string
     status?: string
 }
 

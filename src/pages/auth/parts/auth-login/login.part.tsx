@@ -39,7 +39,6 @@ export const LoginForm = () => {
     ) => {
         try {
             const deviceId = getDeviceId()
-            // Exclude 'remember' because it's not in LoginRequest (API)
             const { remember, ...loginData } = values
             const result = await dispatch(login({ ...loginData, deviceId }))
             if (login.fulfilled.match(result)) {

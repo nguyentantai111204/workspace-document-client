@@ -1,6 +1,6 @@
 import { createSlice } from '@reduxjs/toolkit'
 import type { AccountState } from './account.interface'
-import { getProfile, login, logout, refreshToken, signup, updateProfile } from './account.action'
+import { getProfile, login, logout, refreshToken, signup, updateProfile, updateProfileThunk } from './account.action'
 
 const initialState: AccountState = {
     user: null,
@@ -106,6 +106,26 @@ export const accountSlice = createSlice({
             .addCase(updateProfile, (state, action) => {
                 if (state.user) {
                     state.user = { ...state.user, ...action.payload }
+                }
+            })
+
+            // Update Profile Thunk
+            .addCase(updateProfileThunk.pending, (state) => {
+                state.isLoading = true
+                state.error = null
+            })
+            .addCase(updateProfileThunk.fulfilled, (state, action) => {
+                state.isLoading = false
+                if (state.user) {
+                    state.user = { ...state.user, ...action.payload }
+                }
+            })
+            .addCase(updateProfileThunk.rejected, (state, action) => {
+                state.isLoading = false
+                if (typeof action.payload === 'string') {
+                    state.error = action.payload
+                } else {
+                    state.error = 'Cập nhật thất bại'
                 }
             })
     },

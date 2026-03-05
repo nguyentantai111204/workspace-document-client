@@ -9,36 +9,131 @@ import {
     Alert,
     useTheme,
     useMediaQuery,
+    CircularProgress,
+    List,
+    ListItem,
+    ListItemText,
 } from '@mui/material'
 import Grid from '@mui/material/Grid'
 import { Formik, Form, FormikHelpers } from 'formik'
+import * as Yup from 'yup'
 import EmailIcon from '@mui/icons-material/Email'
 import PersonIcon from '@mui/icons-material/Person'
 import PhoneIcon from '@mui/icons-material/Phone'
 import PlaceIcon from '@mui/icons-material/Place'
 import PhotoCameraIcon from '@mui/icons-material/PhotoCamera'
-import { useAppSelector } from '../../redux/store.redux'
+import { useRef, useState } from 'react'
+import { useAppDispatch, useAppSelector } from '../../redux/store.redux'
 import { useSnackbar } from '../../hooks/use-snackbar.hook'
 import { ChangePasswordRequest } from '../../apis/user/user.interface'
 import { changePasswordApi } from '../../apis/user/user.api'
 import { TextFieldComponent } from '../../components/textfield/text-field.component'
 import { TextFieldPasswordComponent } from '../../components/textfield/text-field-password.component'
-import { validationSchema } from './user-profile.constant'
 import { ButtonComponent } from '../../components/button/button.component'
+import { updateProfileThunk } from '../../redux/account/account.action'
+
+const passwordValidationSchema = Yup.object({
+    currentPassword: Yup.string().required('Vui lòng nhập mật khẩu hiện tại'),
+    newPassword: Yup.string()
+        .min(6, 'Mật khẩu mới phải có ít nhất 6 ký tự')
+        .required('Vui lòng nhập mật khẩu mới'),
+    confirmPassword: Yup.string()
+        .oneOf([Yup.ref('newPassword')], 'Mật khẩu xác nhận không khớp')
+        .required('Vui lòng xác nhận mật khẩu mới'),
+})
+
+interface ProfileFormValues {
+    fullName: string
+    phoneNumber: string
+    address: string
+}
 
 export const ProfilePage = () => {
+    const dispatch = useAppDispatch()
     const { user } = useAppSelector(state => state.account)
     const { showSuccess, showError } = useSnackbar()
     const theme = useTheme()
     const isMobile = useMediaQuery(theme.breakpoints.down('sm'))
 
-    const initialValues: ChangePasswordRequest = {
+    const fileInputRef = useRef<HTMLInputElement>(null)
+    const [avatarPreview, setAvatarPreview] = useState<string | null>(null)
+    const [avatarFile, setAvatarFile] = useState<File | null>(null)
+    const [isUploadingAvatar, setIsUploadingAvatar] = useState(false)
+
+    const handleAvatarClick = () => {
+        fileInputRef.current?.click()
+    }
+
+    const handleAvatarChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const file = e.target.files?.[0]
+        if (!file) return
+
+        if (file.size > 5 * 1024 * 1024) {
+            showError('Ảnh không được vượt quá 5MB')
+            return
+        }
+        if (!['image/jpeg', 'image/png', 'image/gif', 'image/webp'].includes(file.type)) {
+            showError('Chỉ chấp nhận định dạng JPG, PNG, GIF hoặc WebP')
+            return
+        }
+
+        setAvatarFile(file)
+        setAvatarPreview(URL.createObjectURL(file))
+        e.target.value = ''
+    }
+
+    const handleUploadAvatar = async () => {
+        if (!avatarFile) return
+        setIsUploadingAvatar(true)
+        try {
+            await dispatch(updateProfileThunk({ avatar: avatarFile })).unwrap()
+            showSuccess('Cập nhật ảnh đại diện thành công!')
+            setAvatarFile(null)
+        } catch (error: any) {
+            const message = Array.isArray(error) ? error[0] : error
+            showError(message || 'Cập nhật ảnh thất bại')
+        } finally {
+            setIsUploadingAvatar(false)
+        }
+    }
+
+    const handleRemoveAvatar = () => {
+        setAvatarPreview(null)
+        setAvatarFile(null)
+    }
+
+    const profileInitialValues: ProfileFormValues = {
+        fullName: user?.fullName || '',
+        phoneNumber: user?.phoneNumber || '',
+        address: user?.address || '',
+    }
+
+    const handleProfileSubmit = async (
+        values: ProfileFormValues,
+        { setSubmitting }: FormikHelpers<ProfileFormValues>
+    ) => {
+        try {
+            await dispatch(updateProfileThunk({
+                fullName: values.fullName,
+                phoneNumber: values.phoneNumber,
+                address: values.address,
+            })).unwrap()
+            showSuccess('Cập nhật thông tin thành công!')
+        } catch (error: any) {
+            const message = Array.isArray(error) ? error[0] : error
+            showError(message || 'Cập nhật thất bại')
+        } finally {
+            setSubmitting(false)
+        }
+    }
+
+    const passwordInitialValues: ChangePasswordRequest = {
         currentPassword: '',
         newPassword: '',
         confirmPassword: '',
     }
 
-    const handleSubmit = async (
+    const handlePasswordSubmit = async (
         values: ChangePasswordRequest,
         { setSubmitting, resetForm }: FormikHelpers<ChangePasswordRequest>
     ) => {
@@ -47,179 +142,220 @@ export const ProfilePage = () => {
             showSuccess('Đổi mật khẩu thành công!')
             resetForm()
         } catch (error: any) {
-            const message =
-                error.response?.data?.message || 'Đổi mật khẩu thất bại'
+            const message = error.response?.data?.message || 'Đổi mật khẩu thất bại'
             showError(Array.isArray(message) ? message[0] : message)
         } finally {
             setSubmitting(false)
         }
     }
 
+    const currentAvatarSrc = avatarPreview || user?.avatarUrl || '/assets/images/avatar/avatar-25.webp'
+
     return (
         <Box sx={{ p: 3, maxWidth: 1000, mx: 'auto' }}>
             <Paper sx={{ p: 4, mb: 4, borderRadius: 2 }}>
                 <Typography variant={isMobile ? 'subtitle1' : 'h6'} fontWeight="bold" mb={3}>
-                    Thông tin cá nhân
+                    Ảnh đại diện
                 </Typography>
 
-                <Grid container spacing={4} alignItems="center" mb={4}>
-                    <Grid>
-                        <Box position="relative">
-                            <Avatar
-                                src={
-                                    user?.avatarUrl ||
-                                    '/assets/images/avatar/avatar-25.webp'
-                                }
-                                sx={{
-                                    width: 100,
-                                    height: 100,
-                                    border: '4px solid #fff',
-                                    boxShadow: 1,
-                                }}
-                            />
-                            <Box
-                                sx={{
-                                    position: 'absolute',
-                                    bottom: 0,
-                                    right: 0,
-                                    bgcolor: 'primary.main',
-                                    color: 'white',
-                                    borderRadius: '50%',
-                                    width: 32,
-                                    height: 32,
-                                    display: 'flex',
-                                    alignItems: 'center',
-                                    justifyContent: 'center',
-                                    border: '2px solid white',
-                                }}
-                            >
-                                <PhotoCameraIcon sx={{ fontSize: 18 }} />
-                            </Box>
-                        </Box>
-                    </Grid>
-
-                    <Grid size={{ xs: 12, md: 6 }}>
-                        <Stack direction="row" spacing={2} mb={1}>
-                            <Typography
-                                variant="subtitle1"
-                                fontWeight="bold"
-                            >
-                                Ảnh đại diện
-                            </Typography>
-                        </Stack>
-                        <Typography
-                            variant="body2"
-                            color="text.secondary"
-                            mb={2}
+                <Stack direction={isMobile ? 'column' : 'row'} spacing={3} alignItems={isMobile ? 'flex-start' : 'center'}>
+                    <Box position="relative" sx={{ flexShrink: 0 }}>
+                        <Avatar
+                            src={currentAvatarSrc}
+                            sx={{
+                                width: 100,
+                                height: 100,
+                                border: '4px solid #fff',
+                                boxShadow: 1,
+                                cursor: 'pointer',
+                            }}
+                            onClick={handleAvatarClick}
+                        />
+                        <Box
+                            onClick={handleAvatarClick}
+                            sx={{
+                                position: 'absolute',
+                                bottom: 0,
+                                right: 0,
+                                bgcolor: 'primary.main',
+                                color: 'white',
+                                borderRadius: '50%',
+                                width: 32,
+                                height: 32,
+                                display: 'flex',
+                                alignItems: 'center',
+                                justifyContent: 'center',
+                                border: '2px solid white',
+                                cursor: 'pointer',
+                            }}
                         >
-                            Chấp nhận định dạng JPG, PNG hoặc GIF. Tối đa 5MB.
+                            <PhotoCameraIcon sx={{ fontSize: 18 }} />
+                        </Box>
+                        <input
+                            type="file"
+                            ref={fileInputRef}
+                            style={{ display: 'none' }}
+                            accept="image/jpeg,image/png,image/gif,image/webp"
+                            onChange={handleAvatarChange}
+                        />
+                    </Box>
+
+                    <Box>
+                        <Typography variant="body2" color="text.secondary" mb={2}>
+                            Chấp nhận định dạng JPG, PNG, GIF hoặc WebP. Tối đa 5MB.
                         </Typography>
                         <Stack direction="row" spacing={2}>
                             <Button
                                 variant="outlined"
                                 size="small"
-                                disabled
+                                onClick={handleAvatarClick}
+                                disabled={isUploadingAvatar}
                             >
-                                Tải ảnh lên
+                                Chọn ảnh
                             </Button>
-                            <Button
-                                color="error"
-                                size="small"
-                                disabled
-                            >
-                                Xóa ảnh
-                            </Button>
+                            {avatarFile && (
+                                <>
+                                    <Button
+                                        variant="contained"
+                                        size="small"
+                                        onClick={handleUploadAvatar}
+                                        disabled={isUploadingAvatar}
+                                        startIcon={isUploadingAvatar ? <CircularProgress size={14} color="inherit" /> : undefined}
+                                    >
+                                        {isUploadingAvatar ? 'Đang tải...' : 'Tải lên'}
+                                    </Button>
+                                    <Button
+                                        color="error"
+                                        size="small"
+                                        onClick={handleRemoveAvatar}
+                                        disabled={isUploadingAvatar}
+                                    >
+                                        Hủy
+                                    </Button>
+                                </>
+                            )}
                         </Stack>
-                    </Grid>
-                </Grid>
+                    </Box>
+                </Stack>
+            </Paper>
 
-                <Grid container spacing={3}>
-                    <Grid size={{ xs: 12, md: 6 }}>
-                        <TextFieldComponent
-                            label="Họ và tên"
-                            value={user?.fullName || ''}
-                            disabled
-                            fullWidth
-                            sizeUI={isMobile ? 'sm' : 'md'}
-                            InputProps={{
-                                startAdornment: (
-                                    <PersonIcon
-                                        sx={{
-                                            color: 'text.secondary',
-                                            mr: 1,
-                                            fontSize: isMobile ? 20 : 24
+            <Paper sx={{ p: 4, mb: 4, borderRadius: 2 }}>
+                <Typography variant={isMobile ? 'subtitle1' : 'h6'} fontWeight="bold" mb={3}>
+                    Thông tin cá nhân
+                </Typography>
+
+                <Formik
+                    initialValues={profileInitialValues}
+                    enableReinitialize
+                    onSubmit={handleProfileSubmit}
+                >
+                    {({ values, handleChange, handleBlur, isSubmitting }) => (
+                        <Form>
+                            <Grid container spacing={3}>
+                                <Grid size={{ xs: 12, md: 6 }}>
+                                    <TextFieldComponent
+                                        label="Họ và tên"
+                                        name="fullName"
+                                        value={values.fullName}
+                                        onChange={handleChange}
+                                        onBlur={handleBlur}
+                                        fullWidth
+                                        sizeUI={isMobile ? 'sm' : 'md'}
+                                        InputProps={{
+                                            startAdornment: (
+                                                <PersonIcon
+                                                    sx={{
+                                                        color: 'text.secondary',
+                                                        mr: 1,
+                                                        fontSize: isMobile ? 20 : 24
+                                                    }}
+                                                />
+                                            ),
                                         }}
                                     />
-                                ),
-                            }}
-                        />
-                    </Grid>
+                                </Grid>
 
-                    <Grid size={{ xs: 12, md: 6 }}>
-                        <TextFieldComponent
-                            label="Email"
-                            value={user?.email || ''}
-                            disabled
-                            fullWidth
-                            sizeUI={isMobile ? 'sm' : 'md'}
-                            InputProps={{
-                                startAdornment: (
-                                    <EmailIcon
-                                        sx={{
-                                            color: 'text.secondary',
-                                            mr: 1,
-                                            fontSize: isMobile ? 20 : 24
+                                <Grid size={{ xs: 12, md: 6 }}>
+                                    <TextFieldComponent
+                                        label="Email"
+                                        value={user?.email || ''}
+                                        disabled
+                                        fullWidth
+                                        sizeUI={isMobile ? 'sm' : 'md'}
+                                        InputProps={{
+                                            startAdornment: (
+                                                <EmailIcon
+                                                    sx={{
+                                                        color: 'text.secondary',
+                                                        mr: 1,
+                                                        fontSize: isMobile ? 20 : 24
+                                                    }}
+                                                />
+                                            ),
                                         }}
                                     />
-                                ),
-                            }}
-                        />
-                    </Grid>
+                                </Grid>
 
-                    <Grid size={{ xs: 12, md: 6 }}>
-                        <TextFieldComponent
-                            label="Số điện thoại"
-                            value=""
-                            placeholder="Chưa cập nhật"
-                            disabled
-                            fullWidth
-                            sizeUI={isMobile ? 'sm' : 'md'}
-                            InputProps={{
-                                startAdornment: (
-                                    <PhoneIcon
-                                        sx={{
-                                            color: 'text.secondary',
-                                            mr: 1,
-                                            fontSize: isMobile ? 20 : 24
+                                <Grid size={{ xs: 12, md: 6 }}>
+                                    <TextFieldComponent
+                                        label="Số điện thoại"
+                                        name="phoneNumber"
+                                        value={values.phoneNumber}
+                                        onChange={handleChange}
+                                        onBlur={handleBlur}
+                                        placeholder="Chưa cập nhật"
+                                        fullWidth
+                                        sizeUI={isMobile ? 'sm' : 'md'}
+                                        InputProps={{
+                                            startAdornment: (
+                                                <PhoneIcon
+                                                    sx={{
+                                                        color: 'text.secondary',
+                                                        mr: 1,
+                                                        fontSize: isMobile ? 20 : 24
+                                                    }}
+                                                />
+                                            ),
                                         }}
                                     />
-                                ),
-                            }}
-                        />
-                    </Grid>
+                                </Grid>
 
-                    <Grid size={{ xs: 12, md: 6 }}>
-                        <TextFieldComponent
-                            label="Địa chỉ"
-                            value=""
-                            placeholder="Chưa cập nhật"
-                            disabled
-                            fullWidth
-                            sizeUI={isMobile ? 'sm' : 'md'}
-                            InputProps={{
-                                startAdornment: (
-                                    <PlaceIcon
-                                        sx={{
-                                            color: 'text.secondary',
-                                            mr: 1,
-                                            fontSize: isMobile ? 20 : 24
+                                <Grid size={{ xs: 12, md: 6 }}>
+                                    <TextFieldComponent
+                                        label="Địa chỉ"
+                                        name="address"
+                                        value={values.address}
+                                        onChange={handleChange}
+                                        onBlur={handleBlur}
+                                        placeholder="Chưa cập nhật"
+                                        fullWidth
+                                        sizeUI={isMobile ? 'sm' : 'md'}
+                                        InputProps={{
+                                            startAdornment: (
+                                                <PlaceIcon
+                                                    sx={{
+                                                        color: 'text.secondary',
+                                                        mr: 1,
+                                                        fontSize: isMobile ? 20 : 24
+                                                    }}
+                                                />
+                                            ),
                                         }}
                                     />
-                                ),
-                            }}
-                        />
-                    </Grid>
-                </Grid>
+                                </Grid>
+                            </Grid>
+
+                            <Box display="flex" justifyContent="flex-end" mt={3}>
+                                <ButtonComponent
+                                    type="submit"
+                                    loading={isSubmitting}
+                                >
+                                    Lưu thay đổi
+                                </ButtonComponent>
+                            </Box>
+                        </Form>
+                    )}
+                </Formik>
             </Paper>
 
             <Paper sx={{ p: 4, borderRadius: 2 }}>
@@ -229,9 +365,9 @@ export const ProfilePage = () => {
                 <Divider sx={{ mb: 3 }} />
 
                 <Formik
-                    initialValues={initialValues}
-                    validationSchema={validationSchema}
-                    onSubmit={handleSubmit}
+                    initialValues={passwordInitialValues}
+                    validationSchema={passwordValidationSchema}
+                    onSubmit={handlePasswordSubmit}
                 >
                     {({
                         values,
@@ -250,14 +386,8 @@ export const ProfilePage = () => {
                                     onChange={handleChange}
                                     onBlur={handleBlur}
                                     sizeUI={isMobile ? 'sm' : 'md'}
-                                    error={
-                                        touched.currentPassword &&
-                                        !!errors.currentPassword
-                                    }
-                                    helperText={
-                                        touched.currentPassword &&
-                                        errors.currentPassword
-                                    }
+                                    error={touched.currentPassword && !!errors.currentPassword}
+                                    helperText={touched.currentPassword && errors.currentPassword}
                                     fullWidth
                                     placeholder="Nhập mật khẩu hiện tại"
                                 />
@@ -271,14 +401,8 @@ export const ProfilePage = () => {
                                     onChange={handleChange}
                                     onBlur={handleBlur}
                                     sizeUI={isMobile ? 'sm' : 'md'}
-                                    error={
-                                        touched.newPassword &&
-                                        !!errors.newPassword
-                                    }
-                                    helperText={
-                                        touched.newPassword &&
-                                        errors.newPassword
-                                    }
+                                    error={touched.newPassword && !!errors.newPassword}
+                                    helperText={touched.newPassword && errors.newPassword}
                                     fullWidth
                                     placeholder="Nhập mật khẩu mới"
                                 />
@@ -292,50 +416,35 @@ export const ProfilePage = () => {
                                     onChange={handleChange}
                                     onBlur={handleBlur}
                                     sizeUI={isMobile ? 'sm' : 'md'}
-                                    error={
-                                        touched.confirmPassword &&
-                                        !!errors.confirmPassword
-                                    }
-                                    helperText={
-                                        touched.confirmPassword &&
-                                        errors.confirmPassword
-                                    }
+                                    error={touched.confirmPassword && !!errors.confirmPassword}
+                                    helperText={touched.confirmPassword && errors.confirmPassword}
                                     fullWidth
                                     placeholder="Nhập lại mật khẩu mới"
                                 />
                             </Box>
 
                             <Alert severity="info" sx={{ mb: 3 }}>
-                                <Typography
-                                    variant="subtitle2"
-                                    fontWeight="bold"
-                                >
+                                <Typography variant="subtitle2" fontWeight="bold">
                                     Yêu cầu mật khẩu:
                                 </Typography>
-                                <ul style={{ margin: 0, paddingLeft: 20 }}>
-                                    <li>
-                                        <Typography variant="caption">
-                                            Tối thiểu 6 ký tự
-                                        </Typography>
-                                    </li>
-                                    <li>
-                                        <Typography variant="caption">
-                                            Bao gồm chữ hoa và ký tự đặc biệt
-                                            (Khuyến nghị)
-                                        </Typography>
-                                    </li>
-                                </ul>
+                                <List dense disablePadding sx={{ mt: 0.5 }}>
+                                    {['Tối thiểu 6 ký tự', 'Bao gồm chữ hoa và ký tự đặc biệt (Khuyến nghị)'].map((text) => (
+                                        <ListItem key={text} disableGutters sx={{ py: 0 }}>
+                                            <ListItemText
+                                                primary={text}
+                                                primaryTypographyProps={{ variant: 'caption' }}
+                                            />
+                                        </ListItem>
+                                    ))}
+                                </List>
                             </Alert>
 
-                            <Box
-                                display="flex"
-                                justifyContent="flex-end"
-                            >
+                            <Box display="flex" justifyContent="flex-end">
                                 <ButtonComponent
                                     type="submit"
                                     loading={isSubmitting}
                                 >
-                                    Lưu thay đổi
+                                    Đổi mật khẩu
                                 </ButtonComponent>
                             </Box>
                         </Form>
