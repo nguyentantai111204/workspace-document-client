@@ -37,7 +37,6 @@ export const MessageItem = ({
                     flexDirection: isOwnMessage ? 'row-reverse' : 'row'
                 }}
             >
-                {/* Avatar (only show for first message in sequence) */}
                 {!isConsecutive && showAvatar && !isOwnMessage ? (
                     <Avatar
                         sx={{
@@ -53,7 +52,6 @@ export const MessageItem = ({
                 ) : null}
 
                 <Box sx={{ flex: 1 }}>
-                    {/* Message bubble */}
                     <Box
                         sx={{
                             bgcolor: isOwnMessage

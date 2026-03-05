@@ -21,7 +21,6 @@ export const useChat = () => {
     const [onlineUsers, setOnlineUsers] = useState<Map<string, OnlineUser>>(new Map())
     const [isConnected, setIsConnected] = useState(false)
 
-    // Kết nối socket
     useEffect(() => {
         if (!isAuthenticated) return
 
@@ -38,7 +37,6 @@ export const useChat = () => {
         }
     }, [isAuthenticated])
 
-    // Xử lý sự kiện
     const handleUserTyping = useCallback((data: { conversationId: string; userId: string }) => {
         setTypingUsers(prev => {
             const exists = prev.some(

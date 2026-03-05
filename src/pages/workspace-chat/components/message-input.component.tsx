@@ -90,7 +90,6 @@ export const MessageInput = ({
                 </Box>
             )}
 
-            {/* Input Container */}
             <Box
                 component="div"
                 sx={{
