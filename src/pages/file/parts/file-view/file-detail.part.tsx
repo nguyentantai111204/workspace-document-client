@@ -1,4 +1,5 @@
-import { Box, Typography, IconButton, Stack, Divider, useTheme, alpha, Fade } from '@mui/material'
+import { Box, Typography, IconButton, Divider, useTheme, alpha, Fade } from '@mui/material'
+import { StackRow, StackRowAlignCenter, StackRowAlignCenterJustBetween } from '../../../../components/mui-custom/stack/stack.mui-custom'
 import CloseIcon from '@mui/icons-material/Close'
 import VisibilityIcon from '@mui/icons-material/Visibility'
 import DownloadIcon from '@mui/icons-material/Download'
@@ -37,15 +38,12 @@ export const FileDetailSidebar = ({ file, onClose }: FileDetailSidebarProps) => 
                 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
                 'application/vnd.ms-powerpoint',
                 'application/vnd.openxmlformats-officedocument.presentationml.presentation',
-                // Legacy Word
                 'application/msword'
             ]
 
             if (msOfficeTypes.includes(file.mimeType)) {
-                // Try Microsoft Viewer first for these complex types
                 window.open(`https://view.officeapps.live.com/op/view.aspx?src=${encodeURIComponent(file.url)}`, '_blank')
             } else {
-                // If not supported for preview, force a proper download
                 handleDownloadFile()
             }
         }
@@ -83,17 +81,17 @@ export const FileDetailSidebar = ({ file, onClose }: FileDetailSidebarProps) => 
                     transition: theme.transitions.create(['background-color', 'border-color']),
                 }}
             >
-                <Box sx={{ p: 2, display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-                    <Stack direction="row" spacing={1} alignItems="center">
+                <StackRowAlignCenterJustBetween sx={{ p: 2 }}>
+                    <StackRowAlignCenter spacing={1}>
                         <InfoOutlinedIcon color="primary" fontSize="small" />
                         <Typography variant="subtitle2" fontWeight={600}>
                             Chi tiết
                         </Typography>
-                    </Stack>
+                    </StackRowAlignCenter>
                     <IconButton size="small" onClick={onClose}>
                         <CloseIcon fontSize="small" />
                     </IconButton>
-                </Box>
+                </StackRowAlignCenterJustBetween>
 
                 <Divider />
 
@@ -111,7 +109,7 @@ export const FileDetailSidebar = ({ file, onClose }: FileDetailSidebarProps) => 
                         {getFileIcon(file.mimeType, { sx: { fontSize: 80 } })}
                     </Box>
 
-                    <Typography variant="subtitle1" fontWeight={600} align="center" gutterBottom>
+                    <Typography variant="subtitle1" fontWeight={600} align="center" gutterBottom sx={{ wordBreak: 'break-all' }}>
                         {file.name}
                     </Typography>
                     <Typography noWrap variant="body2" color="text.secondary" align="center" sx={{ mb: 4, textTransform: 'uppercase', fontSize: 12, letterSpacing: 1, maxWidth: SIDEBAR_WIDTH }}>
@@ -122,30 +120,30 @@ export const FileDetailSidebar = ({ file, onClose }: FileDetailSidebarProps) => 
                         THÔNG TIN
                     </Typography>
 
-                    <Stack spacing={2} sx={{ mb: 4 }}>
-                        <Stack direction="row" justifyContent="space-between">
+                    <StackRow spacing={2} sx={{ mb: 4, flexDirection: 'column' }}>
+                        <StackRowAlignCenterJustBetween>
                             <Typography variant="body2" color="text.secondary">Loại</Typography>
                             <Typography variant="body2" fontWeight={500}>
                                 {file.mimeType === 'folder' ? 'Thư mục' : 'File'}
                             </Typography>
-                        </Stack>
-                        <Stack direction="row" justifyContent="space-between">
+                        </StackRowAlignCenterJustBetween>
+                        <StackRowAlignCenterJustBetween>
                             <Typography variant="body2" color="text.secondary">Kích thước</Typography>
                             <Typography variant="body2" fontWeight={500}>
                                 {file.mimeType === 'folder' ? '-' : formatFileSize(file.size)}
                             </Typography>
-                        </Stack>
-                        <Stack direction="row" justifyContent="space-between">
+                        </StackRowAlignCenterJustBetween>
+                        <StackRowAlignCenterJustBetween>
                             <Typography variant="body2" color="text.secondary">Ngày tạo</Typography>
                             <Typography variant="body2" fontWeight={500}>
                                 {formatDateFile(file.createdAt)}
                             </Typography>
-                        </Stack>
-                    </Stack>
+                        </StackRowAlignCenterJustBetween>
+                    </StackRow>
                 </Box>
 
                 <Box sx={{ p: 2, borderTop: `1px solid ${theme.palette.divider}` }}>
-                    <Stack direction="row" spacing={1}>
+                    <StackRow spacing={1}>
                         <ButtonComponent
                             variant="secondary"
                             icon={<VisibilityIcon fontSize="small" />}
@@ -162,7 +160,7 @@ export const FileDetailSidebar = ({ file, onClose }: FileDetailSidebarProps) => 
                         >
                             Tải về
                         </ButtonComponent>
-                    </Stack>
+                    </StackRow>
                 </Box>
 
                 <FilePreviewDialog
