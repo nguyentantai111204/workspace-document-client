@@ -1,4 +1,4 @@
-import { useCallback, useEffect } from 'react'
+import { useCallback, useEffect, useRef } from 'react'
 import { useAppDispatch, useAppSelector } from '../redux/store.redux'
 import {
     setNotifications,
@@ -24,6 +24,10 @@ export const useNotifications = () => {
     const { notifications, unreadCount, page, total, totalPages, loading } = useAppSelector(state => state.notification)
     const isAuthenticated = useAppSelector(state => state.account?.isAuthenticated)
 
+    // Keep latest dispatch in a ref so socket callbacks are always fresh without causing effect re-runs
+    const dispatchRef = useRef(dispatch)
+    useEffect(() => { dispatchRef.current = dispatch }, [dispatch])
+
     const fetchUnreadCount = useCallback(async () => {
         try {
             const response = await getUnreadCountApi()
@@ -37,24 +41,16 @@ export const useNotifications = () => {
         try {
             dispatch(setLoading(true))
             const response = await listNotificationsApi({ page: pageNum, limit: PAGE_LIMIT_DEFAULT.limit })
-            console.log('[Notification Hook] Fetched notifications:', response)
-
-            console.log('[Notification Hook] Setting notifications:', {
-                notifications: response.data,
-                total: response.meta.total
-            })
             dispatch(setNotifications({
                 notifications: response.data,
                 total: response.meta.total,
-                unreadCount: unreadCount // Keep existing unread count
             }))
         } catch (err) {
             console.error('Failed to fetch notifications:', err)
             dispatch(setLoading(false))
         }
-    }, [dispatch, unreadCount])
+    }, [dispatch])
 
-    // Mark as read
     const markAsRead = useCallback(async (id: string) => {
         try {
             await markAsReadApi(id)
@@ -93,31 +89,30 @@ export const useNotifications = () => {
         await markAsRead(notificationId)
     }, [markAsRead])
 
-    const handleNewNotification = useCallback((notification: any) => {
-        console.log('[Notification] New notification received:', notification)
-        dispatch(addNotification(notification))
-    }, [dispatch])
-
-    const handleUnreadCountUpdate = useCallback((data: { unreadCount: number }) => {
-        console.log('[Notification] Unread count updated:', data.unreadCount)
-        dispatch(setUnreadCount(data.unreadCount))
-    }, [dispatch])
-
     useEffect(() => {
         if (!isAuthenticated) return
 
         socketService.connect()
+        fetchUnreadCount()
+
+        const handleNewNotification = (notification: any) => {
+            console.log('[Notification] New notification received:', notification)
+            dispatchRef.current(addNotification(notification))
+        }
+
+        const handleUnreadCountUpdate = (data: { unreadCount: number }) => {
+            console.log('[Notification] Unread count updated:', data.unreadCount)
+            dispatchRef.current(setUnreadCount(data.unreadCount))
+        }
 
         socketService.onNewNotification(handleNewNotification)
         socketService.onUnreadCountUpdate(handleUnreadCountUpdate)
-
-        fetchUnreadCount()
 
         return () => {
             socketService.offNewNotification(handleNewNotification)
             socketService.offUnreadCountUpdate(handleUnreadCountUpdate)
         }
-    }, [isAuthenticated, handleNewNotification, handleUnreadCountUpdate, fetchUnreadCount])
+    }, [isAuthenticated])
 
     return {
         notifications,

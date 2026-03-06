@@ -25,9 +25,8 @@ const notificationSlice = createSlice({
     name: 'notification',
     initialState,
     reducers: {
-        setNotifications: (state, action: PayloadAction<{ notifications: Notification[], total: number, unreadCount: number }>) => {
+        setNotifications: (state, action: PayloadAction<{ notifications: Notification[], total: number }>) => {
             state.notifications = action.payload.notifications
-            state.unreadCount = action.payload.unreadCount
             state.total = action.payload.total
             state.totalPages = Math.ceil(action.payload.total / state.limit)
             state.loading = false
