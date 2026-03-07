@@ -7,11 +7,15 @@ import { CalendarEvent } from '../../components/calendar/calendar.interface'
 import { useMemo, useState } from 'react'
 import { getWorkspaceAppointmentsApi } from '../../apis/appointment/appointment.api'
 import { StackColumn } from '../../components/mui-custom/stack/stack.mui-custom'
+import { AppointmentCreatePart } from './parts/appointment-create/appointment-create.part'
 
 export const WorkspaceAppointmentPage = () => {
     const { workspaceId } = useParams()
     const [currentMonth, setCurrentMonth] = useState(dayjs())
     const theme = useTheme()
+
+    const [isCreateModalOpen, setIsCreateModalOpen] = useState(false)
+    const [selectedDateForCreation, setSelectedDateForCreation] = useState<dayjs.Dayjs | null>(null)
 
     const startDate = currentMonth.startOf('month').startOf('week').format('YYYY-MM-DD')
     const endDate = currentMonth.endOf('month').endOf('week').format('YYYY-MM-DD')
@@ -39,6 +43,11 @@ export const WorkspaceAppointmentPage = () => {
         )
     }, [appointmentRes, theme.palette.primary.main])
 
+    const handleAddEventClick = (date: dayjs.Dayjs) => {
+        setSelectedDateForCreation(date)
+        setIsCreateModalOpen(true)
+    }
+
     return (
         <StackColumn sx={{ p: { xs: 2, md: 4 }, flex: 1, height: '100%' }}>
             <Box sx={{ mb: 4 }}>
@@ -61,9 +70,19 @@ export const WorkspaceAppointmentPage = () => {
                         currentMonth={currentMonth}
                         onMonthChange={setCurrentMonth}
                         onEventClick={(event) => console.log('Clicked event', event)}
+                        onAddEventClick={handleAddEventClick}
                     />
                 )}
             </Box>
+
+            {workspaceId && (
+                <AppointmentCreatePart
+                    open={isCreateModalOpen}
+                    onClose={() => setIsCreateModalOpen(false)}
+                    workspaceId={workspaceId}
+                    selectedDate={selectedDateForCreation}
+                />
+            )}
         </StackColumn>
     )
 }

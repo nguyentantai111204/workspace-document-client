@@ -30,6 +30,11 @@ export const TextFieldComponent = ({
                         minHeight: 40,
                         fontSize: 13,
                     },
+                    '& .MuiInputBase-input': {
+                        fontSize: 13,
+                        fontWeight: 400,
+                        padding: '8.5px 14px',
+                    },
                     '& .MuiInputLabel-root': {
                         fontSize: 13,
                     },

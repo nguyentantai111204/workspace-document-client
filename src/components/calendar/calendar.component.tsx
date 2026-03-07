@@ -2,6 +2,7 @@ import React, { useMemo, useState } from 'react'
 import { Box, Typography, IconButton, Stack, alpha, useTheme } from '@mui/material'
 import ChevronLeftIcon from '@mui/icons-material/ChevronLeft'
 import ChevronRightIcon from '@mui/icons-material/ChevronRight'
+import AddIcon from '@mui/icons-material/Add'
 import dayjs from 'dayjs'
 import 'dayjs/locale/vi'
 import { StackColumn, StackRowAlignCenterJustBetween } from '../mui-custom/stack/stack.mui-custom'
@@ -15,7 +16,8 @@ export const CalendarComponent: React.FC<CalendarProps> = ({
     onEventClick,
     onDateClick,
     currentMonth: externalCurrentMonth,
-    onMonthChange
+    onMonthChange,
+    onAddEventClick
 }) => {
     const theme = useTheme()
     const [internalCurrentMonth, setInternalCurrentMonth] = useState(dayjs())
@@ -94,26 +96,49 @@ export const CalendarComponent: React.FC<CalendarProps> = ({
                                                 cursor: onDateClick ? 'pointer' : 'default',
                                                 '&:hover': {
                                                     bgcolor: alpha(theme.palette.action.hover, 0.1)
+                                                },
+                                                '&:hover .add-event-btn': {
+                                                    opacity: 1
                                                 }
                                             }}
                                         >
-                                            <Typography
-                                                variant="body2"
-                                                sx={{
-                                                    mb: 1,
-                                                    display: 'inline-flex',
-                                                    alignItems: 'center',
-                                                    justifyContent: 'center',
-                                                    width: 28,
-                                                    height: 28,
-                                                    borderRadius: '50%',
-                                                    color: isToday ? 'primary.contrastText' : (isCurrentMonth ? 'text.primary' : 'text.disabled'),
-                                                    bgcolor: isToday ? 'primary.main' : 'transparent',
-                                                    fontWeight: isToday ? 'bold' : 'normal'
-                                                }}
-                                            >
-                                                {day.date()}
-                                            </Typography>
+                                            <StackRowAlignCenterJustBetween sx={{ mb: 1 }}>
+                                                <Typography
+                                                    variant="body2"
+                                                    sx={{
+                                                        display: 'inline-flex',
+                                                        alignItems: 'center',
+                                                        justifyContent: 'center',
+                                                        width: 28,
+                                                        height: 28,
+                                                        borderRadius: '50%',
+                                                        color: isToday ? 'primary.contrastText' : (isCurrentMonth ? 'text.primary' : 'text.disabled'),
+                                                        bgcolor: isToday ? 'primary.main' : 'transparent',
+                                                        fontWeight: isToday ? 'bold' : 'normal'
+                                                    }}
+                                                >
+                                                    {day.date()}
+                                                </Typography>
+                                                {onAddEventClick && (
+                                                    <IconButton
+                                                        className="add-event-btn"
+                                                        size="small"
+                                                        sx={{
+                                                            opacity: 0,
+                                                            transition: 'opacity 0.2s',
+                                                            color: 'text.secondary',
+                                                            p: 0.5,
+                                                            '&:hover': { color: 'primary.main' }
+                                                        }}
+                                                        onClick={(e) => {
+                                                            e.stopPropagation()
+                                                            onAddEventClick(day)
+                                                        }}
+                                                    >
+                                                        <AddIcon fontSize="small" />
+                                                    </IconButton>
+                                                )}
+                                            </StackRowAlignCenterJustBetween>
 
                                             <Stack spacing={0.5}>
                                                 {dayEvents.slice(0, 3).map(event => (

@@ -16,4 +16,5 @@ export interface CalendarProps {
     onDateClick?: (date: dayjs.Dayjs) => void
     currentMonth?: dayjs.Dayjs
     onMonthChange?: (date: dayjs.Dayjs) => void
+    onAddEventClick?: (date: dayjs.Dayjs) => void
 }

@@ -24,3 +24,11 @@ export interface AppointmentQuery {
     endDate?: string
 }
 
+export interface CreateAppointmentDto {
+    title: string
+    description?: string
+    url?: string
+    startTime: string // ISO string
+    endTime: string // ISO string
+    participants: { userId: string }[]
+}
