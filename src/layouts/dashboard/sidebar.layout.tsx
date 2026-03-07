@@ -22,6 +22,7 @@ import { useThemeMode } from '../../contexts/theme-mode.context'
 import { useWorkspace } from '../../contexts/workspace.context'
 import PeopleIcon from '@mui/icons-material/People'
 import ChatIcon from '@mui/icons-material/Chat'
+import CalendarMonthIcon from '@mui/icons-material/CalendarMonth'
 
 
 import { mainRoutes } from '../../router/main.routes'
@@ -75,6 +76,11 @@ const SidebarContent = ({ onItemClick }: { onItemClick?: () => void }) => {
             text: 'Trò chuyện',
             icon: <ChatIcon />,
             path: `/workspace/${workspaceId}/chat`
+        },
+        {
+            text: 'Lịch hẹn',
+            icon: <CalendarMonthIcon />,
+            path: `/workspace/${workspaceId}/appointments`
         }
     ] : []
 
