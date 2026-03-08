@@ -11,6 +11,7 @@ import InsertDriveFileIcon from '@mui/icons-material/InsertDriveFile'
 import InfoIcon from '@mui/icons-material/Info'
 import FavoriteIcon from '@mui/icons-material/Favorite'
 import CommentIcon from '@mui/icons-material/Comment'
+import EventIcon from '@mui/icons-material/Event'
 import { TimeAgoComponent } from '../time/time-ago.component'
 import { Notification, NotificationType } from '../../apis/notification/notification.interface'
 import { useState } from 'react'
@@ -20,13 +21,17 @@ interface NotificationItemProps {
     onMarkAsRead: (id: string) => void
     onAcceptInvite?: (inviteToken: string, notificationId: string) => Promise<void>
     onDeclineInvite?: (notificationId: string) => Promise<void>
+    onAcceptAppointment?: (workspaceId: string, appointmentId: string, notificationId: string) => Promise<void>
+    onDeclineAppointment?: (workspaceId: string, appointmentId: string, notificationId: string) => Promise<void>
 }
 
 export const NotificationItemComponent = ({
     notification,
     onMarkAsRead,
     onAcceptInvite,
-    onDeclineInvite
+    onDeclineInvite,
+    onAcceptAppointment,
+    onDeclineAppointment
 }: NotificationItemProps) => {
     const [isAccepting, setIsAccepting] = useState(false)
     const [isDeclining, setIsDeclining] = useState(false)
@@ -65,6 +70,44 @@ export const NotificationItemComponent = ({
         }
     }
 
+    const handleAcceptAppointment = async (e: React.MouseEvent) => {
+        e.stopPropagation()
+        if (!onAcceptAppointment) return
+
+        if (!notification.data?.workspaceId || !notification.data?.appointmentId) {
+            alert('Thông báo này được tạo từ phiên bản cũ không có chứa ID Thư mục (Workspace) nên không thể thực hiện phản hồi nhanh. Vui lòng tạo một cuộc hẹn mới để thử lại.')
+            return
+        }
+
+        setIsAccepting(true)
+        try {
+            await onAcceptAppointment(notification.data.workspaceId, notification.data.appointmentId, notification.id)
+        } catch (error) {
+            console.error('Failed to accept appointment:', error)
+        } finally {
+            setIsAccepting(false)
+        }
+    }
+
+    const handleDeclineAppointment = async (e: React.MouseEvent) => {
+        e.stopPropagation()
+        if (!onDeclineAppointment) return
+
+        if (!notification.data?.workspaceId || !notification.data?.appointmentId) {
+            alert('Thông báo này được tạo từ phiên bản cũ không có chứa ID Thư mục (Workspace) nên không thể thực hiện phản hồi nhanh. Vui lòng tạo một cuộc hẹn mới để thử lại.')
+            return
+        }
+
+        setIsDeclining(true)
+        try {
+            await onDeclineAppointment(notification.data.workspaceId, notification.data.appointmentId, notification.id)
+        } catch (error) {
+            console.error('Failed to decline appointment:', error)
+        } finally {
+            setIsDeclining(false)
+        }
+    }
+
     const getNotificationIcon = () => {
         switch (notification.type) {
             case NotificationType.INVITE:
@@ -73,6 +116,8 @@ export const NotificationItemComponent = ({
                 return <WorkspacesIcon sx={{ fontSize: 30, color: 'info.main' }} />
             case NotificationType.FILE:
                 return <InsertDriveFileIcon sx={{ fontSize: 30, color: 'success.main' }} />
+            case NotificationType.APPOINTMENT:
+                return <EventIcon sx={{ fontSize: 30, color: 'warning.main' }} />
             case NotificationType.SYSTEM:
                 return <InfoIcon sx={{ fontSize: 30, color: 'text.secondary' }} />
             default:
@@ -149,7 +194,7 @@ export const NotificationItemComponent = ({
                     {getActionIcon()}
                 </Typography>
 
-                {notification.type === NotificationType.INVITE && !notification.isRead && (
+                {notification.type === NotificationType.INVITE && !notification.isRead && !notification.data?.appointmentId && (
                     <Stack direction="row" spacing={1} sx={{ mt: 1.5 }}>
                         <Button
                             variant="contained"
@@ -164,6 +209,28 @@ export const NotificationItemComponent = ({
                             variant="outlined"
                             size="small"
                             onClick={handleDeclineInvite}
+                            disabled={isAccepting || isDeclining}
+                        >
+                            {isDeclining ? <CircularProgress size={16} /> : 'Từ chối'}
+                        </Button>
+                    </Stack>
+                )}
+
+                {notification.type === NotificationType.APPOINTMENT && !notification.isRead && !notification.data?.event && (
+                    <Stack direction="row" spacing={1} sx={{ mt: 1.5 }}>
+                        <Button
+                            variant="contained"
+                            size="small"
+                            onClick={handleAcceptAppointment}
+                            disabled={isAccepting || isDeclining}
+                            sx={{ minWidth: 100 }}
+                        >
+                            {isAccepting ? <CircularProgress size={16} /> : 'Chấp nhận'}
+                        </Button>
+                        <Button
+                            variant="outlined"
+                            size="small"
+                            onClick={handleDeclineAppointment}
                             disabled={isAccepting || isDeclining}
                         >
                             {isDeclining ? <CircularProgress size={16} /> : 'Từ chối'}

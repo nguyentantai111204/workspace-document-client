@@ -15,6 +15,7 @@ import { AppointmentEditPart } from './parts/appointment-update/appointment-upda
 import { useSnackbar } from '../../hooks/use-snackbar.hook'
 import { DialogComponent } from '../../components/dialog/dialog.component'
 import { UserItemComponent } from '../../components/user/user-item.component'
+import { useAppSelector } from '../../redux/store.redux'
 
 const getStatusIcon = (status: string) => {
     switch (status) {
@@ -40,6 +41,8 @@ export const AppointmentDetailPage = () => {
     const [isEditModalOpen, setIsEditModalOpen] = useState(false)
     const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false)
     const [isDeleting, setIsDeleting] = useState(false)
+
+    const currentUser = useAppSelector(state => state.account.user)
 
     const { data: appointment, isLoading: loadingAppointment, error } = useSWR(
         workspaceId && appointmentId ? ['appointmentDetail', workspaceId, appointmentId] : null,
@@ -187,7 +190,7 @@ export const AppointmentDetailPage = () => {
                                 return 0;
                             }).map((participant) => {
                                 const participantAction = (
-                                    <StackRowAlignCenter gap={1}>
+                                    <StackRowAlignCenter gap={0.5}>
                                         {getStatusIcon(participant.responseStatus)}
                                         <Typography variant="caption" sx={{ display: { xs: 'none', sm: 'block' } }}>
                                             {getStatusLabel(participant.responseStatus)}
@@ -223,24 +226,26 @@ export const AppointmentDetailPage = () => {
                     </Box>
                 </Stack>
 
-                <Box sx={{ mt: 5, display: 'flex', gap: 2, pt: 3, borderTop: 1, borderColor: 'divider' }}>
-                    <Button
-                        variant="contained"
-                        color="primary"
-                        startIcon={<EditIcon />}
-                        onClick={() => setIsEditModalOpen(true)}
-                    >
-                        Chỉnh sửa
-                    </Button>
-                    <Button
-                        variant="outlined"
-                        color="error"
-                        startIcon={<DeleteIcon />}
-                        onClick={() => setIsDeleteDialogOpen(true)}
-                    >
-                        Xóa lịch hẹn
-                    </Button>
-                </Box>
+                {currentUser && appointment.createdBy === currentUser.id && (
+                    <Box sx={{ mt: 5, display: 'flex', gap: 2, pt: 3, borderTop: 1, borderColor: 'divider' }}>
+                        <Button
+                            variant="contained"
+                            color="primary"
+                            startIcon={<EditIcon />}
+                            onClick={() => setIsEditModalOpen(true)}
+                        >
+                            Chỉnh sửa
+                        </Button>
+                        <Button
+                            variant="outlined"
+                            color="error"
+                            startIcon={<DeleteIcon />}
+                            onClick={() => setIsDeleteDialogOpen(true)}
+                        >
+                            Xóa lịch hẹn
+                        </Button>
+                    </Box>
+                )}
             </Paper>
 
             {workspaceId && appointment && (

@@ -1,5 +1,5 @@
 import React, { useMemo } from 'react'
-import { Stack, Box, InputLabel, Autocomplete, Chip, Avatar } from '@mui/material'
+import { Stack, Box, InputLabel } from '@mui/material'
 import { Formik, Form, FormikHelpers } from 'formik'
 import dayjs from 'dayjs'
 import useSWR, { mutate } from 'swr'
@@ -8,6 +8,7 @@ import { listMembersApi } from '../../../../apis/workspace/workspace.api'
 import { DialogComponent } from '../../../../components/dialog/dialog.component'
 import { TextFieldComponent } from '../../../../components/textfield/text-field.component'
 import { TextFieldDateTimeComponent } from '../../../../components/textfield/text-field-date-time.component'
+import { MembersAutocompleteComponent } from '../../../../components/autocomplete/members-autocomplete.component'
 import { validationSchema } from '../../constants/appointment-create.constant'
 
 interface AppointmentCreatePartProps {
@@ -191,60 +192,13 @@ export const AppointmentCreatePart: React.FC<AppointmentCreatePartProps> = ({
                                     <InputLabel sx={FIELD_LABEL_SX}>
                                         Người tham gia
                                     </InputLabel>
-                                    <Autocomplete
-                                        multiple
-                                        size="small"
-                                        options={members}
+                                    <MembersAutocompleteComponent
+                                        members={members}
                                         loading={loadingMembers}
-                                        getOptionLabel={(option) => option.fullName || option.email}
-                                        isOptionEqualToValue={(option, value) => option.userId === value.userId}
-                                        value={members.filter((m: any) => values.participants.includes(m.userId))}
-                                        onChange={(_, newValue) => {
-                                            setFieldValue('participants', newValue.map(v => v.userId))
-                                        }}
-                                        renderOption={(props, option) => {
-                                            const { key, ...liProps } = props as any
-                                            return (
-                                                <Box component="li" key={key} {...liProps}>
-                                                    <Stack direction="row" spacing={1} alignItems="center">
-                                                        <Avatar src={option.avatarUrl || undefined} sx={{ width: 24, height: 24 }} />
-                                                        <Box>
-                                                            <Box sx={{ fontSize: 13, fontWeight: 500 }}>{option.fullName}</Box>
-                                                            <Box sx={{ fontSize: 11, color: 'text.secondary', lineHeight: 1 }}>{option.email}</Box>
-                                                        </Box>
-                                                    </Stack>
-                                                </Box>
-                                            )
-                                        }}
-                                        renderTags={(value, getTagProps) =>
-                                            value.map((option, index) => {
-                                                const { key, ...tagProps } = getTagProps({ index })
-                                                return (
-                                                    <Chip
-                                                        key={key}
-                                                        avatar={<Avatar src={option.avatarUrl || undefined} />}
-                                                        label={option.fullName || option.email}
-                                                        size="small"
-                                                        {...tagProps}
-                                                    />
-                                                )
-                                            })
-                                        }
-                                        renderInput={(params) => (
-                                            <TextFieldComponent
-                                                {...params}
-                                                sizeUI="sm"
-                                                placeholder="Chọn người tham gia..."
-                                                error={touched.participants && Boolean(errors.participants)}
-                                                helperText={touched.participants && (errors.participants as string)}
-                                            />
-                                        )}
-                                        sx={{
-                                            '& .MuiOutlinedInput-root': {
-                                                minHeight: 40,
-                                                padding: '3px 8px',
-                                            },
-                                        }}
+                                        value={values.participants}
+                                        onChange={(newParticipants) => setFieldValue('participants', newParticipants)}
+                                        error={touched.participants && Boolean(errors.participants)}
+                                        helperText={touched.participants && (errors.participants as string)}
                                     />
                                 </Box>
 

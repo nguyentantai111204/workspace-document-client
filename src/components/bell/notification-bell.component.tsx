@@ -9,6 +9,7 @@ import {
 } from '@mui/material'
 import NotificationsIcon from '@mui/icons-material/Notifications'
 import React, { useState, useEffect } from 'react'
+import { mutate } from 'swr'
 import { BasePopoverComponent } from '../popover/base-popover.component'
 import { NotificationItemComponent } from './notification-item.component'
 import { useNotifications } from '../../hooks/use-notifications.hook'
@@ -31,7 +32,9 @@ export const NotificationBellComponent = () => {
         markAllAsRead,
         changePage,
         acceptInvite,
-        declineInvite
+        declineInvite,
+        acceptAppointment,
+        declineAppointment
     } = useNotifications()
 
     useEffect(() => {
@@ -69,6 +72,60 @@ export const NotificationBellComponent = () => {
         } catch (error) {
             dispatch(showSnackbar({
                 message: 'Không thể từ chối lời mời',
+                severity: 'error'
+            }))
+        }
+    }
+
+    const handleAcceptAppointment = async (workspaceId: string, appointmentId: string, notificationId: string) => {
+        try {
+            const success = await acceptAppointment(workspaceId, appointmentId, notificationId)
+            if (success) {
+                dispatch(showSnackbar({
+                    message: 'Đã chấp nhận lời mời tham gia cuộc hẹn',
+                    severity: 'success'
+                }))
+                await mutate(
+                    (key) => Array.isArray(key) && (key[0] === 'workspaceAppointments' || key[0] === 'appointmentDetail') && key[1] === workspaceId,
+                    undefined,
+                    { revalidate: true }
+                )
+            } else {
+                dispatch(showSnackbar({
+                    message: 'Không thể chấp nhận cuộc hẹn (Có thể lỗi máy chủ)',
+                    severity: 'error'
+                }))
+            }
+        } catch (error) {
+            dispatch(showSnackbar({
+                message: 'Không thể chấp nhận cuộc hẹn',
+                severity: 'error'
+            }))
+        }
+    }
+
+    const handleDeclineAppointment = async (workspaceId: string, appointmentId: string, notificationId: string) => {
+        try {
+            const success = await declineAppointment(workspaceId, appointmentId, notificationId)
+            if (success) {
+                dispatch(showSnackbar({
+                    message: 'Đã từ chối lời mời tham gia cuộc hẹn',
+                    severity: 'info'
+                }))
+                await mutate(
+                    (key) => Array.isArray(key) && (key[0] === 'workspaceAppointments' || key[0] === 'appointmentDetail') && key[1] === workspaceId,
+                    undefined,
+                    { revalidate: true }
+                )
+            } else {
+                dispatch(showSnackbar({
+                    message: 'Không thể từ chối cuộc hẹn (Có thể lỗi máy chủ)',
+                    severity: 'error'
+                }))
+            }
+        } catch (error) {
+            dispatch(showSnackbar({
+                message: 'Không thể từ chối cuộc hẹn',
                 severity: 'error'
             }))
         }
@@ -143,6 +200,8 @@ export const NotificationBellComponent = () => {
                                 onMarkAsRead={markAsRead}
                                 onAcceptInvite={handleAcceptInvite}
                                 onDeclineInvite={handleDeclineInvite}
+                                onAcceptAppointment={handleAcceptAppointment}
+                                onDeclineAppointment={handleDeclineAppointment}
                             />
                         ))}
                     </Box>

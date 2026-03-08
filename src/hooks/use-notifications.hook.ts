@@ -89,6 +89,30 @@ export const useNotifications = () => {
         await markAsRead(notificationId)
     }, [markAsRead])
 
+    const acceptAppointment = useCallback(async (workspaceId: string, appointmentId: string, notificationId: string) => {
+        try {
+            const { acceptAppointmentApi } = await import('../apis/appointment/appointment.api')
+            await acceptAppointmentApi(workspaceId, appointmentId)
+            await markAsRead(notificationId)
+            return true
+        } catch (err) {
+            console.error('Failed to accept appointment:', err)
+            return false
+        }
+    }, [markAsRead])
+
+    const declineAppointment = useCallback(async (workspaceId: string, appointmentId: string, notificationId: string) => {
+        try {
+            const { rejectAppointmentApi } = await import('../apis/appointment/appointment.api')
+            await rejectAppointmentApi(workspaceId, appointmentId)
+            await markAsRead(notificationId)
+            return true
+        } catch (err) {
+            console.error('Failed to decline appointment:', err)
+            return false
+        }
+    }, [markAsRead])
+
     useEffect(() => {
         if (!isAuthenticated) return
 
@@ -127,6 +151,8 @@ export const useNotifications = () => {
         markAllAsRead,
         changePage,
         acceptInvite,
-        declineInvite
+        declineInvite,
+        acceptAppointment,
+        declineAppointment
     }
 }

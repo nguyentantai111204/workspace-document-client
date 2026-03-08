@@ -4,7 +4,8 @@ export const NotificationType = {
     SYSTEM: 'system',
     INVITE: 'invite',
     WORKSPACE: 'workspace',
-    FILE: 'file'
+    FILE: 'file',
+    APPOINTMENT: 'appointment'
 } as const
 
 export type NotificationType = (typeof NotificationType)[keyof typeof NotificationType]
@@ -23,6 +24,10 @@ export interface NotificationData {
     fileId?: string
     fileName?: string
     action?: string
+
+    appointmentId?: string
+    appointmentTitle?: string
+    event?: string
 
     [key: string]: any
 }

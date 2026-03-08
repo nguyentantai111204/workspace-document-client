@@ -24,3 +24,11 @@ export const updateAppointmentApi = async (workspaceId: string, appointmentId: s
 export const deleteAppointmentApi = async (workspaceId: string, appointmentId: string): Promise<void> => {
     await axiosInstance.delete(`/workspace/${workspaceId}/appointments/${appointmentId}`)
 }
+
+export const acceptAppointmentApi = async (workspaceId: string, appointmentId: string): Promise<void> => {
+    await axiosInstance.post(`/workspace/${workspaceId}/appointments/${appointmentId}/accept`)
+}
+
+export const rejectAppointmentApi = async (workspaceId: string, appointmentId: string): Promise<void> => {
+    await axiosInstance.post(`/workspace/${workspaceId}/appointments/${appointmentId}/reject`)
+}
