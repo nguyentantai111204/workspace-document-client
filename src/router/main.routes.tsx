@@ -7,6 +7,7 @@ import { ProfilePage } from '../pages/user/user-profile.screen'
 import { WorkspaceMembersPage } from '../pages/workspace-members/workspace-members.screen'
 import { WorkspaceChatPage } from '../pages/workspace-chat/workspace-chat.screen'
 import { WorkspaceAppointmentPage } from '../pages/workspace-appointment/workspace-appointment.screen'
+import { AppointmentDetailPage } from '../pages/workspace-appointment/appointment-detail.screen'
 
 export const mainRoutes: RouteObject[] = [
     {
@@ -47,6 +48,10 @@ export const mainRoutes: RouteObject[] = [
             {
                 path: ':workspaceId/appointments',
                 element: <WorkspaceAppointmentPage />,
+            },
+            {
+                path: ':workspaceId/appointments/:appointmentId',
+                element: <AppointmentDetailPage />,
             },
         ]
     },

@@ -1,5 +1,5 @@
 import { Box, Typography, CircularProgress, useTheme } from '@mui/material'
-import { useParams } from 'react-router-dom'
+import { useParams, useNavigate } from 'react-router-dom'
 import useSWR from 'swr'
 import dayjs from 'dayjs'
 import { CalendarComponent } from '../../components/calendar/calendar.component'
@@ -11,6 +11,7 @@ import { AppointmentCreatePart } from './parts/appointment-create/appointment-cr
 
 export const WorkspaceAppointmentPage = () => {
     const { workspaceId } = useParams()
+    const navigate = useNavigate()
     const [currentMonth, setCurrentMonth] = useState(dayjs())
     const theme = useTheme()
 
@@ -69,7 +70,7 @@ export const WorkspaceAppointmentPage = () => {
                         events={events}
                         currentMonth={currentMonth}
                         onMonthChange={setCurrentMonth}
-                        onEventClick={(event) => console.log('Clicked event', event)}
+                        onEventClick={(event) => navigate(`/workspace/${workspaceId}/appointments/${event.id}`)}
                         onAddEventClick={handleAddEventClick}
                     />
                 )}
