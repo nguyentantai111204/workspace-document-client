@@ -48,6 +48,9 @@ export interface CreateAppointmentDto {
     startTime: string // ISO string
     endTime: string // ISO string
     participants: { userId: string }[]
+    reminder?: {
+        minutesBefore: number
+    }
 }
 
 export interface UpdateAppointmentDto extends Partial<CreateAppointmentDto> {

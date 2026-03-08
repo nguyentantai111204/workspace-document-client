@@ -25,7 +25,18 @@ interface AppointmentCreateFormValues {
     startTime: string
     endTime: string
     participants: string[]
+    reminderMinutes: number
 }
+
+const REMINDER_OPTIONS = [
+    { value: 0, label: 'Đúng giờ' },
+    { value: 5, label: 'Trước 5 phút' },
+    { value: 15, label: 'Trước 15 phút' },
+    { value: 30, label: 'Trước 30 phút' },
+    { value: 60, label: 'Trước 1 giờ' },
+    { value: 120, label: 'Trước 2 giờ' },
+    { value: 1440, label: 'Trước 1 ngày' }
+]
 
 const FIELD_LABEL_SX = {
     mb: 0.5,
@@ -42,7 +53,8 @@ const getInitialValues = (selectedDate: dayjs.Dayjs | null): AppointmentCreateFo
             url: '',
             startTime: '',
             endTime: '',
-            participants: []
+            participants: [],
+            reminderMinutes: 15
         }
     }
 
@@ -52,7 +64,8 @@ const getInitialValues = (selectedDate: dayjs.Dayjs | null): AppointmentCreateFo
         url: '',
         startTime: selectedDate.hour(9).minute(0).second(0).format('YYYY-MM-DDTHH:mm'),
         endTime: selectedDate.hour(10).minute(0).second(0).format('YYYY-MM-DDTHH:mm'),
-        participants: []
+        participants: [],
+        reminderMinutes: 15
     }
 }
 
@@ -84,7 +97,10 @@ export const AppointmentCreatePart: React.FC<AppointmentCreatePartProps> = ({
                 url: values.url.trim(),
                 startTime: dayjs(values.startTime).toISOString(),
                 endTime: dayjs(values.endTime).toISOString(),
-                participants: values.participants.map(id => ({ userId: id }))
+                participants: values.participants.map(id => ({ userId: id })),
+                reminder: {
+                    minutesBefore: values.reminderMinutes
+                }
             })
 
             await mutate(
@@ -200,6 +216,29 @@ export const AppointmentCreatePart: React.FC<AppointmentCreatePartProps> = ({
                                         error={touched.participants && Boolean(errors.participants)}
                                         helperText={touched.participants && (errors.participants as string)}
                                     />
+                                </Box>
+
+                                <Box>
+                                    <InputLabel sx={FIELD_LABEL_SX}>
+                                        Nhắc nhở
+                                    </InputLabel>
+                                    <TextFieldComponent
+                                        select
+                                        sizeUI="sm"
+                                        name="reminderMinutes"
+                                        value={values.reminderMinutes}
+                                        onChange={handleChange}
+                                        onBlur={handleBlur}
+                                        SelectProps={{
+                                            native: true,
+                                        }}
+                                    >
+                                        {REMINDER_OPTIONS.map((option) => (
+                                            <option key={option.value} value={option.value}>
+                                                {option.label}
+                                            </option>
+                                        ))}
+                                    </TextFieldComponent>
                                 </Box>
 
                                 <Box>
