@@ -40,7 +40,10 @@ axiosInstance.interceptors.response.use(
   async (error: AxiosError) => {
     const originalRequest = error.config as InternalAxiosRequestConfig & { _retry?: boolean }
 
-    if (error.response?.status === 401 && !originalRequest._retry) {
+    const authEndpoints = ['/auth/login', '/auth/register', '/auth/refresh']
+    const isAuthEndpoint = authEndpoints.some(endpoint => originalRequest.url?.includes(endpoint))
+
+    if (error.response?.status === 401 && !originalRequest._retry && !isAuthEndpoint) {
       if (isRefreshing) {
         return new Promise(function (resolve, reject) {
           refreshQueue.push({ resolve, reject })

@@ -8,8 +8,8 @@ export const useAuthInitializer = () => {
     const { isAuthenticated, user } = useAppSelector((state) => state.account)
 
     useEffect(() => {
-        if (isAuthenticated && !user) {
+        if (isAuthenticated) {
             dispatch(getProfile())
         }
-    }, [dispatch, isAuthenticated, user])
+    }, [dispatch])
 }

@@ -80,6 +80,8 @@ export const accountSlice = createSlice({
             })
             .addCase(getProfile.rejected, (state, action) => {
                 state.isLoading = false
+                state.isAuthenticated = false
+                state.user = null
                 if (typeof action.payload === 'string') {
                     state.error = action.payload
                 } else if (typeof action.payload === 'object' && action.payload !== null && 'message' in action.payload) {
