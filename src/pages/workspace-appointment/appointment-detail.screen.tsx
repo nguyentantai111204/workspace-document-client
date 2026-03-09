@@ -267,7 +267,11 @@ export const AppointmentDetailPage = () => {
                 loading={isDeleting}
             >
                 <Typography variant="body1">
-                    Bạn có chắc chắn muốn xóa cuộc họp <strong>{appointment.title}</strong> này không? Hành động này không thể hoàn tác.
+                    Bạn có chắc chắn muốn xóa cuộc họp{' '}
+                    <Box component="span" sx={{ fontWeight: 700 }}>
+                        {appointment.title}
+                    </Box>{' '}
+                    này không? Hành động này không thể hoàn tác.
                 </Typography>
             </DialogComponent>
         </StackColumn>

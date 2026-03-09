@@ -66,7 +66,7 @@ export const CalendarComponent: React.FC<CalendarProps> = ({
                 <StackColumn sx={{ flex: 1, borderTop: `1px solid ${theme.palette.divider}` }}>
                     <Box sx={{ display: 'grid', gridTemplateColumns: 'repeat(7, 1fr)' }}>
                         {weekDays.map(day => (
-                            <Box key={day} sx={{ py: 2, px: 1, textAlign: 'center', fontWeight: 600, color: 'text.secondary', fontSize: '0.875rem' }}>
+                            <Box key={day} sx={{ py: { xs: 1, sm: 2 }, px: { xs: 0.5, sm: 1 }, textAlign: 'center', fontWeight: 600, color: 'text.secondary', fontSize: { xs: '0.7rem', sm: '0.875rem' } }}>
                                 {day}
                             </Box>
                         ))}
@@ -84,16 +84,19 @@ export const CalendarComponent: React.FC<CalendarProps> = ({
                                     return (
                                         <Box
                                             key={dayIndex}
-                                            onClick={() => onDateClick?.(day)}
+                                            onClick={() => {
+                                                if (onDateClick) onDateClick(day)
+                                                else if (onAddEventClick) onAddEventClick(day)
+                                            }}
                                             sx={{
-                                                p: 1.5,
+                                                p: { xs: 0.5, sm: 1.5 },
                                                 borderRight: dayIndex === 6 ? 'none' : `1px solid ${theme.palette.divider}`,
                                                 bgcolor: isCurrentMonth ? 'transparent' : alpha(theme.palette.action.hover, 0.03),
-                                                minHeight: 120,
+                                                minHeight: { xs: 80, sm: 120 },
                                                 minWidth: 0,
                                                 overflow: 'hidden',
                                                 transition: 'background-color 0.2s',
-                                                cursor: onDateClick ? 'pointer' : 'default',
+                                                cursor: (onDateClick || onAddEventClick) ? 'pointer' : 'default',
                                                 '&:hover': {
                                                     bgcolor: alpha(theme.palette.action.hover, 0.1)
                                                 },
@@ -102,15 +105,16 @@ export const CalendarComponent: React.FC<CalendarProps> = ({
                                                 }
                                             }}
                                         >
-                                            <StackRowAlignCenterJustBetween sx={{ mb: 1 }}>
+                                            <StackRowAlignCenterJustBetween sx={{ mb: { xs: 0.5, sm: 1 } }}>
                                                 <Typography
                                                     variant="body2"
                                                     sx={{
                                                         display: 'inline-flex',
                                                         alignItems: 'center',
                                                         justifyContent: 'center',
-                                                        width: 28,
-                                                        height: 28,
+                                                        width: { xs: 20, sm: 28 },
+                                                        height: { xs: 20, sm: 28 },
+                                                        fontSize: { xs: '0.7rem', sm: '0.875rem' },
                                                         borderRadius: '50%',
                                                         color: isToday ? 'primary.contrastText' : (isCurrentMonth ? 'text.primary' : 'text.disabled'),
                                                         bgcolor: isToday ? 'primary.main' : 'transparent',
@@ -125,6 +129,7 @@ export const CalendarComponent: React.FC<CalendarProps> = ({
                                                         size="small"
                                                         sx={{
                                                             opacity: 0,
+                                                            display: { xs: 'none', sm: 'inline-flex' },
                                                             transition: 'opacity 0.2s',
                                                             color: 'text.secondary',
                                                             p: 0.5,
@@ -149,12 +154,12 @@ export const CalendarComponent: React.FC<CalendarProps> = ({
                                                             onEventClick?.(event)
                                                         }}
                                                         sx={{
-                                                            px: 1,
-                                                            py: 0.5,
+                                                            px: { xs: 0.5, sm: 1 },
+                                                            py: { xs: 0.25, sm: 0.5 },
                                                             borderRadius: 1,
                                                             bgcolor: event.color ? alpha(event.color, 0.15) : alpha(theme.palette.primary.main, 0.15),
                                                             color: event.color ? event.color : 'primary.dark',
-                                                            fontSize: '0.75rem',
+                                                            fontSize: { xs: '0.625rem', sm: '0.75rem' },
                                                             fontWeight: 600,
                                                             cursor: 'pointer',
                                                             whiteSpace: 'nowrap',
@@ -163,7 +168,9 @@ export const CalendarComponent: React.FC<CalendarProps> = ({
                                                             borderLeft: `2px solid ${event.color || theme.palette.primary.main}`,
                                                         }}
                                                     >
-                                                        {event.startTime ? dayjs(event.startTime).format('HH:mm') + ' - ' : ''}
+                                                        <Box component="span" sx={{ display: { xs: 'none', md: 'inline' } }}>
+                                                            {event.startTime ? dayjs(event.startTime).format('HH:mm') + ' - ' : ''}
+                                                        </Box>
                                                         {event.title}
                                                     </Box>
                                                 ))}
@@ -174,6 +181,7 @@ export const CalendarComponent: React.FC<CalendarProps> = ({
                                                             pl: 1,
                                                             color: 'text.secondary',
                                                             fontWeight: 600,
+                                                            fontSize: { xs: '0.625rem', sm: '0.75rem' },
                                                             cursor: 'pointer',
                                                             '&:hover': {
                                                                 color: 'primary.main'
