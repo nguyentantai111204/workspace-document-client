@@ -8,15 +8,15 @@ import { MemberResponse, WorkspaceRole } from '../../apis/workspace/workspace.in
 import { updateMemberRoleApi } from '../../apis/workspace/workspace.api'
 import { useAppDispatch, useAppSelector } from '../../redux/store.redux'
 import { showSnackbar } from '../../redux/system/system.slice'
-import { InviteMemberDialog } from '../workspace/components/invite-member-dialog.component'
 import { MemberList } from './parts/member-list.part'
-import { MemberFilters } from './components/member-filters.component'
-import { MemberDeleteDialog } from './components/member-delete-dialog.component'
+import { MemberFilters } from './parts/member-filters.part'
+import { MemberDeleteDialog } from './parts/member-delete-dialog.part'
 import { PAGE_LIMIT_DEFAULT } from '../../common/constant/page-take.constant'
 import { usePagination } from '../../hooks/use-pagination.hook'
 import { PaginationComponent } from '../../components/pagination/pagination.component'
 import { canInviteMembers } from './utils/member-permissions.util'
 import { StackRow } from '../../components/mui-custom/stack/stack.mui-custom'
+import { InviteMemberDialog } from '../workspace/parts/invite-member-dialog.part'
 
 export const WorkspaceMembersPage = () => {
     const dispatch = useAppDispatch()

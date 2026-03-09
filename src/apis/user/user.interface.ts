@@ -1,4 +1,4 @@
-import { BaseEntity } from "../common/common.interface";
+import { BaseEntity } from '../common/common.interface';
 
 export interface ChangePasswordRequest {
     currentPassword: string;

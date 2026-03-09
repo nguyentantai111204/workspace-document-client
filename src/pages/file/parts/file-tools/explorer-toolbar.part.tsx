@@ -7,8 +7,8 @@ import React, { useState } from 'react'
 import { ExplorerFilter, ExplorerFilters } from './explorer-filter.part'
 import { TextFieldSearchComponent } from '../../../../components/textfield/text-field-search.component'
 import { ButtonComponent } from '../../../../components/button/button.component'
-import { ActiveFiltersDisplay } from '../../components/active-filters-display.component'
 import { getActiveFilterCount, getFilterChips, getDefaultFilters, FilterChipData } from '../../utils/filter.utils'
+import { ActiveFiltersDisplay } from '../active-filters-display.part'
 
 interface ExplorerToolbarProps {
     workspaceName?: string

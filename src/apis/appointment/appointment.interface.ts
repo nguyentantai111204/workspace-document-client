@@ -1,5 +1,5 @@
-import { AppointmentReminderTargetMode } from "../../pages/workspace-appointment/enums/appointment.enum"
-import { BaseEntity } from "../common/common.interface"
+import { AppointmentReminderTargetMode } from '../../pages/workspace-appointment/enums/appointment.enum'
+import { BaseEntity } from '../common/common.interface'
 
 export interface AppointmentParticipant {
     id: string

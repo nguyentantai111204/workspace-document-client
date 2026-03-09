@@ -1,11 +1,12 @@
 import { Box, Typography, IconButton, useTheme, useMediaQuery } from '@mui/material'
 import AddIcon from '@mui/icons-material/Add'
 import { ConversationWithUnread } from '../../../apis/chat/chat.interface'
-import { ConversationItem } from './conversation-item.component'
+import { ConversationItem } from './conversation-item.part'
 import { TextFieldSearchComponent } from '../../../components/textfield/text-field-search.component'
 import { EmptyComponent } from '../../../components/empty/empty.component'
 import { LoadingComponent } from '../../../components/loading/loading.component'
 import { ButtonComponent } from '../../../components/button/button.component'
+import { StackColumn, StackRowAlignCenterJustBetween } from '../../../components/mui-custom/stack/stack.mui-custom'
 
 interface ConversationListProps {
     conversations: ConversationWithUnread[]
@@ -28,22 +29,17 @@ export const ConversationList = ({
     const isMobile = useMediaQuery(theme.breakpoints.down('md'))
 
     return (
-        <Box
+        <StackColumn
             sx={{
                 height: '100%',
-                display: 'flex',
-                flexDirection: 'column',
                 borderRight: { md: `1px solid ${theme.palette.divider}` },
                 bgcolor: 'background.paper'
             }}
         >
-            <Box
+            <StackRowAlignCenterJustBetween
                 sx={{
                     p: { xs: 1.5, sm: 2 },
                     borderBottom: `1px solid ${theme.palette.divider}`,
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'space-between',
                     gap: 1
                 }}
             >
@@ -69,7 +65,7 @@ export const ConversationList = ({
                         <AddIcon />
                     </IconButton>
                 )}
-            </Box>
+            </StackRowAlignCenterJustBetween>
 
             {onSearchChange && (
                 <Box sx={{ p: { xs: 1, sm: 2 }, pt: { xs: 1.5, sm: 2 } }}>
@@ -113,6 +109,6 @@ export const ConversationList = ({
                     ))
                 )}
             </Box>
-        </Box>
+        </StackColumn>
     )
 }

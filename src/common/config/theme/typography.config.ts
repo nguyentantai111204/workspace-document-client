@@ -1,4 +1,4 @@
-import type { TypographyVariantsOptions } from "@mui/material/styles";
+import type { TypographyVariantsOptions } from '@mui/material/styles';
 
 export const typography: TypographyVariantsOptions = {
     fontFamily: `'Inter', 'Roboto', 'Helvetica', 'Arial', sans-serif`,

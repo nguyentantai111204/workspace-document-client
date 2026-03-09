@@ -21,7 +21,7 @@ import { useThemeMode } from '../../contexts/theme-mode.context'
 import { BreadcrumbComponent, type BreadcrumbItem } from '../../components/breadcrumb/breadcrumb.component'
 import { useState } from 'react'
 import { StackColumnAlignCenterJustCenter, StackRowAlignCenter } from '../../components/mui-custom/stack/stack.mui-custom'
-import { ShareWorkspaceDialog } from '../../pages/workspace/components/share-workspace-dialog.component'
+import { ShareWorkspaceDialog } from '../../pages/workspace/parts/share-workspace-dialog.part'
 
 interface HeaderLayoutProps {
     breadcrumbs?: BreadcrumbItem[]

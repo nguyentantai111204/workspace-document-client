@@ -1,9 +1,10 @@
 import { Box, CircularProgress } from '@mui/material'
 import { FileExplorerComponent } from '../file/parts/file-explorer.screen'
-import { EmptyWorkspaceState } from './components/empty-workspace-state.component'
+import { EmptyWorkspaceState } from './parts/empty-workspace-state.part'
 import { useState } from 'react'
-import { CreateWorkspaceDialog } from './components/create-workspace-dialog.component'
+import { CreateWorkspaceDialog } from './parts/create-workspace-dialog.part'
 import { useWorkspaces } from '../../hooks/use-workspace.hook'
+import { StackRowAlignCenterJustCenter } from '../../components/mui-custom/stack/stack.mui-custom'
 
 export const WorkspacePage = () => {
     const { workspaces, isLoading } = useWorkspaces()
@@ -11,16 +12,13 @@ export const WorkspacePage = () => {
 
     if (isLoading) {
         return (
-            <Box
+            <StackRowAlignCenterJustCenter
                 sx={{
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'center',
                     height: 'calc(100vh - 200px)',
                 }}
             >
                 <CircularProgress />
-            </Box>
+            </StackRowAlignCenterJustCenter>
         )
     }
 

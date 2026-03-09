@@ -6,8 +6,6 @@ import { ExplorerFilters } from './file-tools/explorer-filter.part'
 import { FileGrid } from './file-view/file-grid.part'
 import { FileList } from './file-view/file-list.part'
 import { FileDetailSidebar } from './file-view/file-detail.part'
-import { UploadFileModal } from '../components/upload-file.component'
-import { UpdateFileModal } from '../components/update-file.component'
 import { useWorkspace } from '../../../contexts/workspace.context'
 import { FileResponse } from '../../../apis/file/file.interface'
 import { useDebounce } from '../../../hooks/use-debounce.hook'
@@ -17,6 +15,8 @@ import { StackColumn, StackRow, StackRowAlignCenterJustCenter } from '../../../c
 import { usePagination } from '../../../hooks/use-pagination.hook'
 import { PaginationComponent } from '../../../components/pagination/pagination.component'
 import { getFilePermissions } from '../utils/file-permissions.util'
+import { UpdateFileModal } from './update-file.part'
+import { UploadFileModal } from './upload-file.part'
 
 
 export const FileExplorerComponent = () => {

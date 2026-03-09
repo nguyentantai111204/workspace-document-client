@@ -1,8 +1,8 @@
 import { Box, useTheme, Button } from '@mui/material'
 import { useRef, useEffect } from 'react'
 import { Message } from '../../../apis/chat/chat.interface'
-import { MessageItem } from './message-item.component'
-import { TypingIndicator } from './typing-indicator.component'
+import { MessageItem } from './message-item.part'
+import { TypingIndicator } from './typing-indicator.part'
 import { EmptyComponent } from '../../../components/empty/empty.component'
 import { LoadingComponent } from '../../../components/loading/loading.component'
 

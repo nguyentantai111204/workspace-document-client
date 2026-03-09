@@ -2,6 +2,7 @@ import { Box, IconButton, Typography, useTheme, Avatar } from '@mui/material'
 import ArrowBackIcon from '@mui/icons-material/ArrowBack'
 import InfoOutlinedIcon from '@mui/icons-material/InfoOutlined'
 import { ConversationWithUnread } from '../../../apis/chat/chat.interface'
+import { StackRowAlignCenter } from '../../../components/mui-custom/stack/stack.mui-custom'
 
 interface ChatHeaderProps {
     conversation: ConversationWithUnread
@@ -21,12 +22,10 @@ export const ChatHeader = ({
     const theme = useTheme()
 
     return (
-        <Box
+        <StackRowAlignCenter
             sx={{
                 height: 64,
                 px: 2,
-                display: 'flex',
-                alignItems: 'center',
                 gap: 1.5,
                 borderBottom: `1px solid ${theme.palette.divider}`,
                 bgcolor: 'background.paper',
@@ -79,6 +78,6 @@ export const ChatHeader = ({
             <IconButton onClick={onInfoClick} sx={{ color: 'text.secondary' }}>
                 <InfoOutlinedIcon />
             </IconButton>
-        </Box >
+        </StackRowAlignCenter >
     )
 }

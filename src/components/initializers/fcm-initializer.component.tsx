@@ -1,5 +1,5 @@
-import { useEffect } from "react";
-import { useFcm } from "../../hooks/use-fcm.hook";
+import { useEffect } from 'react';
+import { useFcm } from '../../hooks/use-fcm.hook';
 
 export const FcmInitializer = () => {
     const { requestPermission } = useFcm();

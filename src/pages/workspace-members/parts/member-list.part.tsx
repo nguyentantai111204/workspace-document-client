@@ -5,7 +5,7 @@ import { UserItemComponent } from '../../../components/user/user-item.component'
 import { TableColumn } from '../../../components/table/table.interface'
 import { MemberResponse, WorkspaceRole } from '../../../apis/workspace/workspace.interface'
 import React, { useState } from 'react'
-import { MemberActionMenu } from '../components/member-action-menu.component'
+import { MemberActionMenu } from './member-action-menu.part'
 import { WORKSPACE_ROLE_CONFIG } from '../constants'
 import { getMemberPermissions } from '../utils/member-permissions.util'
 

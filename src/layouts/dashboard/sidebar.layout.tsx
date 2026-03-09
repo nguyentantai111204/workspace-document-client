@@ -16,7 +16,7 @@ import {
 import { useNavigate, useLocation, useParams } from 'react-router-dom'
 import { useAppDispatch, useAppSelector } from '../../redux/store.redux'
 import { setSidebarOpen } from '../../redux/system/system.slice'
-import { WorkspaceSwitcherComponent } from '../../pages/workspace/components/workspace-switcher.component'
+import { WorkspaceSwitcherComponent } from '../../pages/workspace/parts/workspace-switcher.part'
 import { SIDEBAR_WIDTH, TIME_ANIMATION } from '../../common/constant/style.constant'
 import { useThemeMode } from '../../contexts/theme-mode.context'
 import { useWorkspace } from '../../contexts/workspace.context'
@@ -35,8 +35,8 @@ const MENU_ITEMS = mainRoutes
         path: `/${route.path}`
     }))
 
-import { CreateWorkspaceDialog } from '../../pages/workspace/components/create-workspace-dialog.component'
-import { UpdateWorkspaceDialog } from '../../pages/workspace/components/update-workspace-dialog.component'
+import { CreateWorkspaceDialog } from '../../pages/workspace/parts/create-workspace-dialog.part'
+import { UpdateWorkspaceDialog } from '../../pages/workspace/parts/update-workspace-dialog.part'
 import { useState } from 'react'
 
 import { WorkspaceResponse } from '../../apis/workspace/workspace.interface'
