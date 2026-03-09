@@ -58,7 +58,7 @@ export const AvatarUserComponent = () => {
                         <ListItemIcon>
                             <PersonIcon fontSize="small" />
                         </ListItemIcon>
-                        <ListItemText primary="Profile" />
+                        <ListItemText primary="Hồ sơ" />
                     </ListItemButton>
 
                     <ListItemButton
@@ -70,7 +70,7 @@ export const AvatarUserComponent = () => {
                         <ListItemIcon>
                             <SettingsIcon fontSize="small" />
                         </ListItemIcon>
-                        <ListItemText primary="Settings" />
+                        <ListItemText primary="Cài đặt" />
                     </ListItemButton>
                 </List>
             </BasePopoverComponent>

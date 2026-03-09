@@ -146,6 +146,33 @@ const MuiRadio: Components<Theme>['MuiRadio'] = {
 }
 
 
+const MuiInputBase: Components<Theme>['MuiInputBase'] = {
+    styleOverrides: {
+        root: ({ theme }) => ({
+            '& input:-webkit-autofill': {
+                WebkitBoxShadow: `0 0 0 1000px ${theme.palette.mode === 'dark' ? '#141B2D' : '#FFFFFF'
+                    } inset`,
+                WebkitTextFillColor: theme.palette.text.primary,
+                caretColor: theme.palette.text.primary,
+                borderRadius: 'inherit',
+                transition: 'background-color 9999s ease-out 0s'
+            },
+
+            '& input:-webkit-autofill:hover': {
+                WebkitBoxShadow: `0 0 0 1000px ${theme.palette.mode === 'dark' ? '#141B2D' : '#FFFFFF'
+                    } inset`,
+                WebkitTextFillColor: theme.palette.text.primary
+            },
+
+            '& input:-webkit-autofill:focus': {
+                WebkitBoxShadow: `0 0 0 1000px ${theme.palette.mode === 'dark' ? '#141B2D' : '#FFFFFF'
+                    } inset`,
+                WebkitTextFillColor: theme.palette.text.primary
+            }
+        })
+    }
+}
+
 export const components: Components<Theme> = {
     MuiCard,
     MuiLink,
@@ -156,6 +183,7 @@ export const components: Components<Theme> = {
     MuiMenuItem,
     MuiCheckbox,
     MuiTableCell,
+    MuiInputBase,
     MuiCardHeader,
     MuiOutlinedInput,
     MuiFormControlLabel,

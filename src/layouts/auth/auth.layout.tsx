@@ -12,7 +12,7 @@ export const AuthLayout = (): React.ReactElement => {
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'center',
-        background: (theme) => theme.palette.grey[50]
+        background: (theme) => theme.palette.mode === 'dark' ? theme.palette.background.default : theme.palette.grey[50]
       }}
     >
       <Container

@@ -22,6 +22,7 @@ import { useThemeMode } from '../../contexts/theme-mode.context'
 import { BreadcrumbComponent, type BreadcrumbItem } from '../../components/breadcrumb/breadcrumb.component'
 import { ShareDialog } from '../../pages/workspace/components/share-dialog.component'
 import { useState } from 'react'
+import { StackColumnAlignCenterJustCenter, StackRowAlignCenter } from '../../components/mui-custom/stack/stack.mui-custom'
 
 interface HeaderLayoutProps {
     breadcrumbs?: BreadcrumbItem[]
@@ -83,8 +84,7 @@ export const HeaderLayout = ({
                     <BreadcrumbComponent items={breadcrumbs} />
                 </Box>
 
-                <Stack direction="row" alignItems="center" spacing={{ xs: 0.5, sm: 1 }}>
-                    {/* Mobile Share  */}
+                <StackRowAlignCenter gap={{ xs: 0.5, sm: 1 }}>
                     <IconButton
                         onClick={() => setShareDialogOpen(true)}
                         sx={{
@@ -98,7 +98,6 @@ export const HeaderLayout = ({
                         <PersonAddOutlinedIcon />
                     </IconButton>
 
-                    {/* Tablet/Desktop */}
                     <Button
                         variant="outlined"
                         size="small"
@@ -121,12 +120,9 @@ export const HeaderLayout = ({
                         }}
                         aria-label="Toggle theme mode"
                     >
-                        <Box
+                        <StackColumnAlignCenterJustCenter
                             sx={{
                                 position: 'relative',
-                                display: 'flex',
-                                alignItems: 'center',
-                                justifyContent: 'center',
                             }}
                         >
                             <Fade in={mode === 'light'} timeout={TIME_ANIMATION}>
@@ -153,12 +149,12 @@ export const HeaderLayout = ({
                                     }}
                                 />
                             </Fade>
-                        </Box>
+                        </StackColumnAlignCenterJustCenter>
                     </IconButton>
 
                     <NotificationBellComponent />
                     <AvatarUserComponent />
-                </Stack>
+                </StackRowAlignCenter>
             </Toolbar>
 
             <ShareDialog

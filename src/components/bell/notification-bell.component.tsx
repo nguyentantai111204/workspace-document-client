@@ -15,6 +15,7 @@ import { NotificationItemComponent } from './notification-item.component'
 import { useNotifications } from '../../hooks/use-notifications.hook'
 import { useAppDispatch } from '../../redux/store.redux'
 import { showSnackbar } from '../../redux/system/system.slice'
+import { StackRowAlignCenter, StackRowAlignCenterJustCenter } from '../mui-custom/stack/stack.mui-custom'
 
 export const NotificationBellComponent = () => {
     const [anchorEl, setAnchorEl] = useState<HTMLElement | null>(null)
@@ -176,21 +177,21 @@ export const NotificationBellComponent = () => {
                 }
             >
                 {loading && notifications.length === 0 ? (
-                    <Box sx={{ display: 'flex', justifyContent: 'center', py: 4 }}>
+                    <StackRowAlignCenterJustCenter sx={{ py: 4 }}>
                         <CircularProgress />
-                    </Box>
+                    </StackRowAlignCenterJustCenter>
                 ) : notifications.length === 0 && hasLoadedOnce ? (
-                    <Box sx={{ textAlign: 'center', py: 4, px: 2 }}>
+                    <StackRowAlignCenter sx={{ py: 4, px: 2 }}>
                         <Typography variant="body2" color="text.secondary">
                             Chưa có thông báo nào
                         </Typography>
-                    </Box>
+                    </StackRowAlignCenter>
                 ) : !hasLoadedOnce ? (
-                    <Box sx={{ textAlign: 'center', py: 4, px: 2 }}>
+                    <StackRowAlignCenter sx={{ py: 4, px: 2 }}>
                         <Typography variant="body2" color="text.secondary">
                             Nhấp để tải thông báo
                         </Typography>
-                    </Box>
+                    </StackRowAlignCenter>
                 ) : (
                     <Box sx={{ height: 'auto', overflow: 'auto' }}>
                         {notifications.map((notification) => (
