@@ -1,5 +1,6 @@
 import { Box, InputBase, alpha, useTheme } from '@mui/material'
 import SearchIcon from '@mui/icons-material/Search'
+import { StackRowAlignCenterJustCenter } from '../mui-custom/stack/stack.mui-custom'
 
 interface SearchFieldComponentProps {
     placeholder?: string
@@ -46,19 +47,16 @@ export const TextFieldSearchComponent = ({
                     transition: theme.transitions.create(['background-color']),
                 }}
             >
-                <Box
+                <StackRowAlignCenterJustCenter
                     sx={{
                         padding: theme.spacing(0, 2),
                         height: '100%',
                         position: 'absolute',
                         pointerEvents: 'none',
-                        display: 'flex',
-                        alignItems: 'center',
-                        justifyContent: 'center',
                     }}
                 >
                     <SearchIcon sx={{ color: 'text.secondary' }} />
-                </Box>
+                </StackRowAlignCenterJustCenter>
                 <InputBase
                     placeholder={placeholder}
                     onChange={handleChange}

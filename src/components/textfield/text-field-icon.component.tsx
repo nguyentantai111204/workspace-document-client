@@ -1,9 +1,10 @@
-import { InputAdornment, Box } from '@mui/material'
+import { InputAdornment } from '@mui/material'
 import type { ReactNode } from 'react'
 import {
     TextFieldComponent,
     type TextFieldComponentProps,
 } from './text-field.component'
+import { StackRowAlignCenter } from '../mui-custom/stack/stack.mui-custom'
 
 export type TextFieldIconProps = TextFieldComponentProps & {
     startIcon?: ReactNode
@@ -25,26 +26,22 @@ export const TextFieldIconComponent = ({
                 ...(startIcon && {
                     startAdornment: (
                         <InputAdornment position="start">
-                            <Box
+                            <StackRowAlignCenter
                                 sx={{
-                                    display: 'flex',
-                                    alignItems: 'center',
                                     color: 'text.secondary',
                                 }}
                             >
                                 {startIcon}
-                            </Box>
+                            </StackRowAlignCenter>
                         </InputAdornment>
                     ),
                 }),
                 ...(endIcon && {
                     endAdornment: (
                         <InputAdornment position="end">
-                            <Box
+                            <StackRowAlignCenter
                                 onClick={onEndIconClick}
                                 sx={{
-                                    display: 'flex',
-                                    alignItems: 'center',
                                     color: 'text.secondary',
                                     cursor: onEndIconClick
                                         ? 'pointer'
@@ -52,7 +49,7 @@ export const TextFieldIconComponent = ({
                                 }}
                             >
                                 {endIcon}
-                            </Box>
+                            </StackRowAlignCenter>
                         </InputAdornment>
                     ),
                 }),

@@ -1,4 +1,5 @@
-import { Pagination, Box, useMediaQuery, useTheme } from '@mui/material'
+import { Pagination, useMediaQuery, useTheme } from '@mui/material'
+import { StackRowAlignCenterJustEnd } from '../mui-custom/stack/stack.mui-custom'
 
 export interface PaginationComponentProps {
     count: number
@@ -13,7 +14,7 @@ export const PaginationComponent = ({ count, page, onChange }: PaginationCompone
     if (count <= 0) return null
 
     return (
-        <Box sx={{ pt: 2, display: 'flex', justifyContent: 'flex-end' }}>
+        <StackRowAlignCenterJustEnd sx={{ pt: 2, display: 'flex', justifyContent: 'flex-end' }}>
             <Pagination
                 count={count}
                 page={page}
@@ -23,6 +24,6 @@ export const PaginationComponent = ({ count, page, onChange }: PaginationCompone
                 size={isMobile ? 'small' : 'medium'}
                 siblingCount={isMobile ? 0 : 1}
             />
-        </Box>
+        </StackRowAlignCenterJustEnd>
     )
 }

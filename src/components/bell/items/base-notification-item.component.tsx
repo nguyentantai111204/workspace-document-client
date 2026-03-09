@@ -1,7 +1,6 @@
 import {
     Avatar,
     Box,
-    Stack,
     Typography,
 } from '@mui/material'
 import WorkspacesIcon from '@mui/icons-material/Workspaces'

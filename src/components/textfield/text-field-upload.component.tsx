@@ -1,6 +1,7 @@
 import { Box, Typography, useTheme, alpha } from '@mui/material'
 import CloudUploadIcon from '@mui/icons-material/CloudUpload'
 import { ReactNode } from 'react'
+import { StackRowAlignCenterJustCenter } from '../mui-custom/stack/stack.mui-custom'
 
 interface TextFieldUploadProps {
     icon?: ReactNode
@@ -62,19 +63,16 @@ export const TextFieldUploadComponent = ({
                 }
             }}
         >
-            <Box
+            <StackRowAlignCenterJustCenter
                 sx={{
                     p: 2,
                     borderRadius: '50%',
                     bgcolor: alpha(theme.palette.primary.main, 0.1),
                     color: 'primary.main',
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'center'
                 }}
             >
                 {icon || <CloudUploadIcon sx={{ fontSize: 32 }} />}
-            </Box>
+            </StackRowAlignCenterJustCenter>
 
             <Box sx={{ textAlign: orientation === 'vertical' ? 'center' : 'left' }}>
                 <Typography variant="subtitle1" fontWeight={600} color="text.primary">

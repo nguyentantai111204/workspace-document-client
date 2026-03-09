@@ -2,7 +2,6 @@ import {
     Box,
     Checkbox,
     Typography,
-    SvgIcon,
     useTheme,
 } from '@mui/material'
 import {
@@ -13,6 +12,7 @@ import {
     type CheckboxShape,
     type CheckboxVariant,
 } from './checkbox.constant'
+import { StackRowAlignCenterJustCenter } from '../mui-custom/stack/stack.mui-custom'
 
 interface CheckboxComponentProps {
     label?: React.ReactNode
@@ -26,28 +26,14 @@ interface CheckboxComponentProps {
     sizeUI?: 'sm' | 'md'
 }
 
-const CheckIcon = () => (
-    <SvgIcon fontSize="inherit">
-        <path d="M9.5 16.5L5 12l1.4-1.4 3.1 3.1 7.1-7.1L18 8z" />
-    </SvgIcon>
-)
-
-const MinusIcon = () => (
-    <SvgIcon fontSize="inherit">
-        <rect x="5" y="11" width="14" height="2" rx="1" />
-    </SvgIcon>
-)
-
-const DotIcon = () => (
-    <SvgIcon fontSize="inherit">
-        <circle cx="12" cy="12" r="4" />
-    </SvgIcon>
-)
+import CheckIcon from '@mui/icons-material/Check'
+import RemoveIcon from '@mui/icons-material/Remove'
+import FiberManualRecordIcon from '@mui/icons-material/FiberManualRecord'
 
 const renderIcon = (type: CheckboxIconType) => {
-    if (type === 'minus') return <MinusIcon />
-    if (type === 'dot') return <DotIcon />
-    return <CheckIcon />
+    if (type === 'minus') return <RemoveIcon fontSize="inherit" />
+    if (type === 'dot') return <FiberManualRecordIcon fontSize="inherit" sx={{ fontSize: '0.6em' }} />
+    return <CheckIcon fontSize="inherit" />
 }
 
 export const CheckboxComponent = ({
@@ -73,7 +59,7 @@ export const CheckboxComponent = ({
     )
 
     const checkedIcon = (
-        <Box
+        <StackRowAlignCenterJustCenter
             sx={{
                 ...getIconSx(theme, variant, radius),
                 width: size,
@@ -81,18 +67,15 @@ export const CheckboxComponent = ({
                 backgroundColor: theme.palette.primary.main,
                 color: theme.palette.primary.contrastText,
                 borderColor: theme.palette.primary.main,
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
                 fontSize: sizeUI === 'sm' ? 14 : 16,
             }}
         >
             {renderIcon(iconType)}
-        </Box>
+        </StackRowAlignCenterJustCenter>
     )
 
     return (
-        <Box display="flex" alignItems="center">
+        <StackRowAlignCenterJustCenter>
             <Checkbox
                 disableRipple
                 icon={baseIcon}
@@ -124,6 +107,6 @@ export const CheckboxComponent = ({
                     {label}
                 </Typography>
             )}
-        </Box>
+        </StackRowAlignCenterJustCenter>
     )
 }

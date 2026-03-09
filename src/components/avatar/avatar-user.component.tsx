@@ -43,7 +43,7 @@ export const AvatarUserComponent = () => {
                         startIcon={<LogoutIcon />}
                         onClick={handleLogout}
                     >
-                        Logout
+                        Đăng xuất
                     </Button>
                 }
                 width={320}

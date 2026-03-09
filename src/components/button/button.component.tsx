@@ -4,6 +4,7 @@ import CircularProgress from '@mui/material/CircularProgress'
 import { useTheme } from '@mui/material/styles'
 import { Box } from '@mui/material'
 import type { ReactNode } from 'react'
+import { StackRowAlignCenterJustCenter } from '../mui-custom/stack/stack.mui-custom'
 
 
 export interface ButtonComponentProps
@@ -125,9 +126,9 @@ export const ButtonComponent = forwardRef<
             }}
         >
             {(icon || loading) && iconPosition === 'start' && (
-                <Box display="flex" alignItems="center">
+                <StackRowAlignCenterJustCenter>
                     {loading ? spinner : icon}
-                </Box>
+                </StackRowAlignCenterJustCenter>
             )}
 
             {children && (
@@ -142,9 +143,9 @@ export const ButtonComponent = forwardRef<
             )}
 
             {(icon || loading) && iconPosition === 'end' && (
-                <Box display="flex" alignItems="center">
+                <StackRowAlignCenterJustCenter>
                     {loading ? spinner : icon}
-                </Box>
+                </StackRowAlignCenterJustCenter>
             )}
 
             {iconOnly && loading && spinner}

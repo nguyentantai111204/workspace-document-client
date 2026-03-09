@@ -5,13 +5,13 @@ import {
     DialogActions,
     Typography,
     IconButton,
-    Box,
     useTheme,
     useMediaQuery
 } from '@mui/material'
 import CloseIcon from '@mui/icons-material/Close'
 import { ReactNode } from 'react'
 import { ButtonComponent } from '../button/button.component'
+import { StackRowAlignCenterJustEnd } from '../mui-custom/stack/stack.mui-custom'
 
 export interface DialogComponentProps {
     open: boolean
@@ -19,7 +19,6 @@ export interface DialogComponentProps {
     title: ReactNode
     children: ReactNode
 
-    // Actions
     onConfirm?: () => void
     confirmText?: string
     cancelText?: string
@@ -28,7 +27,6 @@ export interface DialogComponentProps {
     showActions?: boolean
     renderActions?: () => ReactNode
 
-    // Config
     maxWidth?: 'xs' | 'sm' | 'md' | 'lg' | 'xl'
     fullWidth?: boolean
 }
@@ -95,7 +93,7 @@ export const DialogComponent = ({
                     {renderActions ? (
                         renderActions()
                     ) : (
-                        <Box sx={{ display: 'flex', gap: 1.5, width: '100%', justifyContent: 'flex-end' }}>
+                        <StackRowAlignCenterJustEnd gap={1.5} width="100%">
                             <ButtonComponent
                                 variant="ghost"
                                 onClick={onClose}
@@ -115,7 +113,7 @@ export const DialogComponent = ({
                                     {confirmText}
                                 </ButtonComponent>
                             )}
-                        </Box>
+                        </StackRowAlignCenterJustEnd>
                     )}
                 </DialogActions>
             )}

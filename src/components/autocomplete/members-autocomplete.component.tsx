@@ -1,6 +1,7 @@
 import React from 'react'
-import { Autocomplete, Box, Stack, Avatar, Chip } from '@mui/material'
+import { Autocomplete, Box, Avatar, Chip } from '@mui/material'
 import { TextFieldComponent } from '../textfield/text-field.component'
+import { StackRowAlignCenterJustCenter } from '../mui-custom/stack/stack.mui-custom'
 
 interface Member {
     userId: string
@@ -12,7 +13,7 @@ interface Member {
 interface MembersAutocompleteComponentProps {
     members: Member[]
     loading: boolean
-    value: string[] // List of selected user IDs
+    value: string[]
     onChange: (newValue: string[]) => void
     error?: boolean
     helperText?: string | false
@@ -28,7 +29,6 @@ export const MembersAutocompleteComponent: React.FC<MembersAutocompleteComponent
     helperText,
     placeholder = 'Chọn người tham gia...'
 }) => {
-    // Filter the full member objects based on the selected IDs
     const selectedMembers = members.filter(m => value.includes(m.userId))
 
     return (
@@ -47,13 +47,13 @@ export const MembersAutocompleteComponent: React.FC<MembersAutocompleteComponent
                 const { key, ...liProps } = props as any
                 return (
                     <Box component="li" key={key} {...liProps}>
-                        <Stack direction="row" spacing={1} alignItems="center">
+                        <StackRowAlignCenterJustCenter gap={1}>
                             <Avatar src={option.avatarUrl || undefined} sx={{ width: 24, height: 24 }} />
                             <Box>
                                 <Box sx={{ fontSize: 13, fontWeight: 500 }}>{option.fullName}</Box>
                                 <Box sx={{ fontSize: 11, color: 'text.secondary', lineHeight: 1 }}>{option.email}</Box>
                             </Box>
-                        </Stack>
+                        </StackRowAlignCenterJustCenter>
                     </Box>
                 )
             }}
