@@ -1,16 +1,10 @@
-
 import {
-    Dialog,
-    DialogTitle,
-    DialogContent,
-    DialogActions,
     Typography,
     Box,
     useTheme,
     LinearProgress,
     Alert
 } from '@mui/material'
-import CloseIcon from '@mui/icons-material/Close'
 import CloudUploadOutlinedIcon from '@mui/icons-material/CloudUploadOutlined'
 import InsertDriveFileOutlinedIcon from '@mui/icons-material/InsertDriveFileOutlined'
 import DeleteOutlineOutlinedIcon from '@mui/icons-material/DeleteOutlineOutlined'
@@ -20,8 +14,8 @@ import { useWorkspace } from '../../../contexts/workspace.context'
 import { uploadFilesApi } from '../../../apis/file/file.api'
 import { formatFileSize } from '../../../common/utils/file.utils'
 import { ButtonComponent } from '../../../components/button/button.component'
-import { StackRowAlignCenterJustBetween, StackRow } from '../../../components/mui-custom/stack/stack.mui-custom'
-
+import { StackRow, StackRowAlignCenter, StackRowAlignStartJustCenter } from '../../../components/mui-custom/stack/stack.mui-custom'
+import { DialogComponent } from '../../../components/dialog/dialog.component'
 interface UploadFileModalProps {
     open: boolean
     onClose: () => void
@@ -94,6 +88,7 @@ export const UploadFileModal = ({ open, onClose, onSuccess }: UploadFileModalPro
     }
 
     const handleClose = () => {
+        if (isLoading) return
         setSelectedFiles([])
         setError(null)
         setIsLoading(false)
@@ -104,133 +99,13 @@ export const UploadFileModal = ({ open, onClose, onSuccess }: UploadFileModalPro
     }
 
     return (
-        <Dialog
+        <DialogComponent
             open={open}
-            onClose={isLoading ? undefined : handleClose}
+            onClose={handleClose}
+            title="Tải tài liệu lên"
             maxWidth="sm"
             fullWidth
-            PaperProps={{
-                sx: {
-                    borderRadius: 3,
-                    boxShadow: theme.shadows[10]
-                }
-            }}
-        >
-            <DialogTitle sx={{ m: 0, p: 2 }}>
-                <StackRowAlignCenterJustBetween>
-                    <Box>
-                        <Typography component="span" variant="h6" fontWeight={700} display="block">
-                            Tải tài liệu lên
-                        </Typography>
-                        <Typography variant="body2" color="text.secondary">
-                            Thêm tài liệu vào không gian làm việc của bạn
-                        </Typography>
-                    </Box>
-                    {!isLoading && (
-                        <ButtonComponent
-                            variant="ghost"
-                            shape="circle"
-                            sizeUI="sm"
-                            icon={<CloseIcon />}
-                            onClick={handleClose}
-                            sx={{ color: theme.palette.grey[500] }}
-                        />
-                    )}
-                </StackRowAlignCenterJustBetween>
-            </DialogTitle>
-
-            <DialogContent dividers sx={{ borderTop: 'none', borderBottom: 'none', px: 3, py: 2 }}>
-                <input
-                    type="file"
-                    ref={fileInputRef}
-                    style={{ display: 'none' }}
-                    onChange={handleFileInputChange}
-                    multiple
-                />
-
-                <TextFieldUploadComponent
-                    icon={<CloudUploadOutlinedIcon sx={{ fontSize: 40 }} />}
-                    title="Chọn tệp hoặc kéo thả vào đây"
-                    subTitle="PDF, Excel, Images (Max 25MB)"
-                    onClick={() => fileInputRef.current?.click()}
-                    onDrop={(files) => {
-                        if (files.length > 0) handleFileSelect(files)
-                    }}
-                />
-
-                {selectedFiles.length > 0 && (
-                    <Box sx={{ mt: 2, display: 'flex', flexDirection: 'column', gap: 1 }}>
-                        <Typography variant="subtitle2" fontWeight={600}>
-                            File đã chọn ({selectedFiles.length})
-                        </Typography>
-                        {selectedFiles.map((file, index) => (
-                            <Box
-                                key={index}
-                                sx={{
-                                    p: 1.5,
-                                    border: `1px solid ${theme.palette.divider} `,
-                                    borderRadius: 2,
-                                    display: 'flex',
-                                    alignItems: 'center',
-                                    gap: 2,
-                                    bgcolor: (theme) => theme.palette.background.default
-                                }}
-                            >
-                                <Box
-                                    sx={{
-                                        width: 40,
-                                        height: 40,
-                                        borderRadius: 1,
-                                        bgcolor: (theme) => theme.palette.primary.light,
-                                        display: 'flex',
-                                        alignItems: 'center',
-                                        justifyContent: 'center',
-                                        color: 'primary.main',
-                                        flexShrink: 0
-                                    }}
-                                >
-                                    <InsertDriveFileOutlinedIcon fontSize="small" />
-                                </Box>
-                                <Box sx={{ flex: 1, minWidth: 0 }}>
-                                    <Typography variant="body2" noWrap fontWeight={500}>
-                                        {file.name}
-                                    </Typography>
-                                    <Typography variant="caption" color="text.secondary">
-                                        {formatFileSize(file.size)}
-                                    </Typography>
-                                </Box>
-                                {!isLoading && (
-                                    <ButtonComponent
-                                        variant="ghost"
-                                        shape="circle"
-                                        sizeUI="sm"
-                                        icon={<DeleteOutlineOutlinedIcon fontSize="small" />}
-                                        onClick={() => handleRemoveFile(index)}
-                                        sx={{ color: theme.palette.error.main }}
-                                    />
-                                )}
-                            </Box>
-                        ))}
-                    </Box>
-                )}
-
-                {isLoading && (
-                    <Box sx={{ mt: 2 }}>
-                        <LinearProgress sx={{ borderRadius: 1, height: 6 }} />
-                        <Typography variant="caption" color="text.secondary" align="center" display="block" sx={{ mt: 1 }}>
-                            Đang tải lên {selectedFiles.length} file...
-                        </Typography>
-                    </Box>
-                )}
-
-                {error && (
-                    <Alert severity="error" sx={{ mt: 2 }}>
-                        {error}
-                    </Alert>
-                )}
-            </DialogContent>
-
-            <DialogActions sx={{ px: 3, pb: 3, pt: 1 }}>
+            renderActions={() => (
                 <StackRow spacing={1} justifyContent="flex-end" width="100%">
                     <ButtonComponent
                         onClick={handleClose}
@@ -246,10 +121,100 @@ export const UploadFileModal = ({ open, onClose, onSuccess }: UploadFileModalPro
                         icon={!isLoading ? <CloudUploadOutlinedIcon /> : undefined}
                         loading={isLoading}
                     >
-                        {isLoading ? 'Đang xử lý...' : `Tải lên(${selectedFiles.length})`}
+                        {isLoading ? 'Đang xử lý...' : `Tải lên (${selectedFiles.length})`}
                     </ButtonComponent>
                 </StackRow>
-            </DialogActions>
-        </Dialog>
+            )}
+        >
+            <Box sx={{ mb: 2 }}>
+                <Typography variant="body2" color="text.secondary">
+                    Thêm tài liệu vào không gian làm việc của bạn
+                </Typography>
+            </Box>
+
+            <input
+                type="file"
+                ref={fileInputRef}
+                style={{ display: 'none' }}
+                onChange={handleFileInputChange}
+                multiple
+            />
+
+            <TextFieldUploadComponent
+                icon={<CloudUploadOutlinedIcon sx={{ fontSize: 40 }} />}
+                title="Chọn tệp hoặc kéo thả vào đây"
+                subTitle="PDF, Excel, Images (Max 25MB)"
+                onClick={() => fileInputRef.current?.click()}
+                onDrop={(files) => {
+                    if (files.length > 0) handleFileSelect(files)
+                }}
+            />
+
+            {selectedFiles.length > 0 && (
+                <Box sx={{ mt: 2, display: 'flex', flexDirection: 'column', gap: 1 }}>
+                    <Typography variant="subtitle2" fontWeight={600}>
+                        File đã chọn ({selectedFiles.length})
+                    </Typography>
+                    {selectedFiles.map((file, index) => (
+                        <StackRowAlignCenter
+                            key={index}
+                            sx={{
+                                p: 1.5,
+                                border: `1px solid ${theme.palette.divider}`,
+                                borderRadius: 2,
+                                gap: 2,
+                                bgcolor: (theme) => theme.palette.background.default
+                            }}
+                        >
+                            <StackRowAlignStartJustCenter
+                                sx={{
+                                    width: 40,
+                                    height: 40,
+                                    borderRadius: 1,
+                                    bgcolor: (theme) => theme.palette.primary.light,
+                                    color: 'primary.main',
+                                    flexShrink: 0
+                                }}
+                            >
+                                <InsertDriveFileOutlinedIcon fontSize="small" />
+                            </StackRowAlignStartJustCenter>
+                            <Box sx={{ flex: 1, minWidth: 0 }}>
+                                <Typography variant="body2" noWrap fontWeight={500}>
+                                    {file.name}
+                                </Typography>
+                                <Typography variant="caption" color="text.secondary">
+                                    {formatFileSize(file.size)}
+                                </Typography>
+                            </Box>
+                            {!isLoading && (
+                                <ButtonComponent
+                                    variant="ghost"
+                                    shape="circle"
+                                    sizeUI="sm"
+                                    icon={<DeleteOutlineOutlinedIcon fontSize="small" />}
+                                    onClick={() => handleRemoveFile(index)}
+                                    sx={{ color: theme.palette.error.main }}
+                                />
+                            )}
+                        </StackRowAlignCenter>
+                    ))}
+                </Box>
+            )}
+
+            {isLoading && (
+                <Box sx={{ mt: 2 }}>
+                    <LinearProgress sx={{ borderRadius: 1, height: 6 }} />
+                    <Typography variant="caption" color="text.secondary" align="center" display="block" sx={{ mt: 1 }}>
+                        Đang tải lên {selectedFiles.length} file...
+                    </Typography>
+                </Box>
+            )}
+
+            {error && (
+                <Alert severity="error" sx={{ mt: 2 }}>
+                    {error}
+                </Alert>
+            )}
+        </DialogComponent>
     )
 }

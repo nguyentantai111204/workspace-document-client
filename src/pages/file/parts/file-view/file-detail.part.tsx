@@ -82,7 +82,7 @@ export const FileDetailSidebar = ({ file, onClose }: FileDetailSidebarProps) => 
                 }}
             >
                 <StackRowAlignCenterJustBetween sx={{ p: 2 }}>
-                    <StackRowAlignCenter spacing={1}>
+                    <StackRowAlignCenter gap={1}>
                         <InfoOutlinedIcon color="primary" fontSize="small" />
                         <Typography variant="subtitle2" fontWeight={600}>
                             Chi tiết
@@ -143,7 +143,7 @@ export const FileDetailSidebar = ({ file, onClose }: FileDetailSidebarProps) => 
                 </Box>
 
                 <Box sx={{ p: 2, borderTop: `1px solid ${theme.palette.divider}` }}>
-                    <StackRow spacing={1}>
+                    <StackRow gap={1}>
                         <ButtonComponent
                             variant="secondary"
                             icon={<VisibilityIcon fontSize="small" />}

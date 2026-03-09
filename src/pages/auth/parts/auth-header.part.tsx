@@ -1,12 +1,13 @@
 
-import { Box, Stack, Typography, useTheme } from '@mui/material'
+import { Box, Typography, useTheme } from '@mui/material'
+import { StackRowAlignCenter } from '../../../components/mui-custom/stack/stack.mui-custom'
 
 export const AuthHeader = () => {
     const theme = useTheme()
 
     return (
-        <Stack alignItems="center" mb={4} spacing={1}>
-            <Box display="flex" alignItems="center" gap={1.5}>
+        <StackRowAlignCenter mb={4} gap={1}>
+            <StackRowAlignCenter gap={1.5}>
                 <Box
                     component="img"
                     src="/favicon.ico"
@@ -32,11 +33,11 @@ export const AuthHeader = () => {
                 >
                     DocWorkspace
                 </Typography>
-            </Box>
+            </StackRowAlignCenter>
 
             <Typography variant="body1" color="text.secondary" fontWeight={500}>
                 Quản lý tài liệu thông minh & hiệu quả
             </Typography>
-        </Stack>
+        </StackRowAlignCenter>
     )
 }

@@ -37,7 +37,6 @@ export const RadioGroupComponent = ({
     sx,
     ...rest
 }: RadioGroupComponentProps) => {
-    // const theme = useTheme()
 
     return (
         <FormControl error={error} component="fieldset" fullWidth>

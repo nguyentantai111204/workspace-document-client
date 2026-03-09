@@ -1,6 +1,7 @@
 import { Stack, Chip, Button, Box, useTheme, useMediaQuery } from '@mui/material'
 import CloseIcon from '@mui/icons-material/Close'
 import { FilterChipData } from '../utils/filter.utils'
+import { StackRowAlignCenter } from '../../../components/mui-custom/stack/stack.mui-custom'
 
 interface ActiveFiltersDisplayProps {
     chips: FilterChipData[]
@@ -15,10 +16,8 @@ export const ActiveFiltersDisplay = ({ chips, onRemoveChip, onClearAll }: Active
     if (chips.length === 0) return null
 
     return (
-        <Box
+        <StackRowAlignCenter
             sx={{
-                display: 'flex',
-                alignItems: 'center',
                 gap: 1,
                 flexWrap: 'wrap',
                 mb: 2,
@@ -28,8 +27,7 @@ export const ActiveFiltersDisplay = ({ chips, onRemoveChip, onClearAll }: Active
                 border: `1px solid ${theme.palette.divider}`
             }}
         >
-            <Stack
-                direction="row"
+            <StackRowAlignCenter
                 spacing={1}
                 sx={{
                     flex: 1,
@@ -57,7 +55,7 @@ export const ActiveFiltersDisplay = ({ chips, onRemoveChip, onClearAll }: Active
                         variant="outlined"
                     />
                 ))}
-            </Stack>
+            </StackRowAlignCenter>
 
             <Button
                 size="small"
@@ -70,12 +68,12 @@ export const ActiveFiltersDisplay = ({ chips, onRemoveChip, onClearAll }: Active
                     px: 1.5,
                     '&:hover': {
                         color: 'error.main',
-                        bgcolor: theme.palette.error.light + '14' 
+                        bgcolor: theme.palette.error.light + '14'
                     }
                 }}
             >
                 Xóa tất cả
             </Button>
-        </Box>
+        </StackRowAlignCenter>
     )
 }

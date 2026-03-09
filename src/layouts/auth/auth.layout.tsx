@@ -2,16 +2,14 @@ import { Outlet } from 'react-router-dom'
 import { Box, Container } from '@mui/material'
 
 import { AuthCard } from './auth.card'
+import { StackRowAlignStartJustCenter } from '../../components/mui-custom/stack/stack.mui-custom'
 
 export const AuthLayout = (): React.ReactElement => {
   return (
-    <Box
+    <StackRowAlignStartJustCenter
       sx={{
         width: '100vw',
         height: '100vh',
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'center',
         background: (theme) => theme.palette.mode === 'dark' ? theme.palette.background.default : theme.palette.grey[50]
       }}
     >
@@ -29,6 +27,6 @@ export const AuthLayout = (): React.ReactElement => {
           <Outlet />
         </AuthCard>
       </Container>
-    </Box>
+    </StackRowAlignStartJustCenter>
   )
 }

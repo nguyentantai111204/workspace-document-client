@@ -65,7 +65,6 @@ const SidebarContent = ({ onItemClick }: { onItemClick?: () => void }) => {
         return <Box sx={{ p: 2 }}>Đang tải...</Box>
     }
 
-    // Workspace-specific menu items
     const workspaceMenuItems = workspaceId ? [
         {
             text: 'Thành viên',

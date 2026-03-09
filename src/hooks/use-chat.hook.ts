@@ -76,7 +76,6 @@ export const useChat = () => {
     }, [])
 
     useEffect(() => {
-        // Luôn lắng nghe sự kiện online/offline global
         chatSocketService.onUserTyping(handleUserTyping)
         chatSocketService.onUserStopTyping(handleUserStopTyping)
         chatSocketService.onUserOnline(handleUserOnline)
@@ -164,7 +163,6 @@ export const useChat = () => {
     const fetchOnlineUsers = useCallback(async (conversationId: string) => {
         try {
             const userIds = await getOnlineUsersApi(conversationId)
-            // Xử lý response linh hoạt (array hoặc wrapped object)
             let ids: string[] = []
             if (Array.isArray(userIds)) {
                 ids = userIds
@@ -176,7 +174,6 @@ export const useChat = () => {
 
             setOnlineUsers(prev => {
                 const newMap = new Map(prev)
-                // Merge users mới vào map hiện tại
                 ids.forEach(id => {
                     newMap.set(id, { userId: id, isOnline: true })
                 })

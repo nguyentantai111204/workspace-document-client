@@ -24,7 +24,6 @@ export const useNotifications = () => {
     const { notifications, unreadCount, page, total, totalPages, loading } = useAppSelector(state => state.notification)
     const isAuthenticated = useAppSelector(state => state.account?.isAuthenticated)
 
-    // Keep latest dispatch in a ref so socket callbacks are always fresh without causing effect re-runs
     const dispatchRef = useRef(dispatch)
     useEffect(() => { dispatchRef.current = dispatch }, [dispatch])
 
