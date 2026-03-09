@@ -9,7 +9,7 @@ import CloudUploadOutlinedIcon from '@mui/icons-material/CloudUploadOutlined'
 import InsertDriveFileOutlinedIcon from '@mui/icons-material/InsertDriveFileOutlined'
 import DeleteOutlineOutlinedIcon from '@mui/icons-material/DeleteOutlineOutlined'
 import { TextFieldUploadComponent } from '../../../components/textfield/text-field-upload.component'
-import { useState, useRef } from 'react'
+import { useState } from 'react'
 import { useWorkspace } from '../../../contexts/workspace.context'
 import { uploadFilesApi } from '../../../apis/file/file.api'
 import { formatFileSize } from '../../../common/utils/file.utils'
@@ -25,7 +25,6 @@ interface UploadFileModalProps {
 export const UploadFileModal = ({ open, onClose, onSuccess }: UploadFileModalProps) => {
     const theme = useTheme()
     const { currentWorkspace } = useWorkspace()
-    const fileInputRef = useRef<HTMLInputElement>(null)
 
     const [selectedFiles, setSelectedFiles] = useState<File[]>([])
     const [isLoading, setIsLoading] = useState(false)
@@ -47,12 +46,6 @@ export const UploadFileModal = ({ open, onClose, onSuccess }: UploadFileModalPro
         if (!hasError) setError(null)
 
         setSelectedFiles(prev => [...prev, ...validFiles])
-    }
-
-    const handleFileInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-        if (event.target.files && event.target.files.length > 0) {
-            handleFileSelect(Array.from(event.target.files))
-        }
     }
 
     const handleRemoveFile = (index: number) => {
@@ -92,9 +85,6 @@ export const UploadFileModal = ({ open, onClose, onSuccess }: UploadFileModalPro
         setSelectedFiles([])
         setError(null)
         setIsLoading(false)
-        if (fileInputRef.current) {
-            fileInputRef.current.value = ''
-        }
         onClose()
     }
 
@@ -132,20 +122,12 @@ export const UploadFileModal = ({ open, onClose, onSuccess }: UploadFileModalPro
                 </Typography>
             </Box>
 
-            <input
-                type="file"
-                ref={fileInputRef}
-                style={{ display: 'none' }}
-                onChange={handleFileInputChange}
-                multiple
-            />
-
             <TextFieldUploadComponent
                 icon={<CloudUploadOutlinedIcon sx={{ fontSize: 40 }} />}
                 title="Chọn tệp hoặc kéo thả vào đây"
                 subTitle="PDF, Excel, Images (Max 25MB)"
-                onClick={() => fileInputRef.current?.click()}
-                onDrop={(files) => {
+                multiple
+                onChange={(files) => {
                     if (files.length > 0) handleFileSelect(files)
                 }}
             />

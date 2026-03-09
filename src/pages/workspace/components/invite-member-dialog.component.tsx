@@ -1,17 +1,14 @@
 import { useState } from 'react'
 import {
-    Dialog,
-    DialogTitle,
-    DialogContent,
     Box,
     Typography,
-    IconButton,
     Stack,
     MenuItem,
     TextField
 } from '@mui/material'
-import CloseIcon from '@mui/icons-material/Close'
 import PersonAddIcon from '@mui/icons-material/PersonAdd'
+import { DialogComponent } from '../../../components/dialog/dialog.component'
+import { StackColumnAlignStart, StackRow } from '../../../components/mui-custom/stack/stack.mui-custom'
 import { WorkspaceRole } from '../../../apis/workspace/workspace.interface'
 import { inviteMemberApi } from '../../../apis/workspace/workspace.api'
 import { useAppDispatch } from '../../../redux/store.redux'
@@ -65,106 +62,97 @@ export const InviteMemberDialog = ({ open, onClose, workspaceId, onSuccess }: In
     }
 
     return (
-        <Dialog
+        <DialogComponent
             open={open}
             onClose={handleClose}
-            maxWidth="sm"
-            fullWidth
-            PaperProps={{
-                sx: { borderRadius: 2 },
-                elevation: 2
-            }}
-        >
-            <DialogTitle sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', p: { xs: 2.5, sm: 3 } }}>
-                <Typography component="span" variant="h6" fontWeight={700} display="block" sx={{ fontSize: { xs: '1.1rem', sm: '1.25rem' } }}>
+            title={<StackColumnAlignStart>
+                <Typography variant="h6" fontWeight={600} component="div">
                     Mời thành viên
                 </Typography>
-                <IconButton onClick={handleClose} size="small">
-                    <CloseIcon />
-                </IconButton>
-            </DialogTitle>
-
-            <DialogContent sx={{ p: { xs: 2.5, sm: 3 } }}>
-                <Typography variant="body2" color="text.secondary" sx={{ mb: { xs: 2, sm: 3 } }}>
+                <Typography variant="body2" color="text.secondary">
                     Mời người dùng mới tham gia vào workspace để cùng làm việc.
                 </Typography>
+            </StackColumnAlignStart>}
+            maxWidth="sm"
+            fullWidth
+            renderActions={() => (
+                <StackRow spacing={1} justifyContent="flex-end" width="100%">
+                    <ButtonComponent
+                        sizeUI="sm"
+                        variant="ghost"
+                        onClick={handleClose}
+                        disabled={isSubmitting}
+                    >
+                        Hủy
+                    </ButtonComponent>
+                    <ButtonComponent
+                        sizeUI="sm"
+                        variant="primary"
+                        onClick={handleSubmit}
+                        loading={isSubmitting}
+                        disabled={!selectedUser}
+                        icon={<PersonAddIcon />}
+                    >
+                        Gửi lời mời
+                    </ButtonComponent>
+                </StackRow>
+            )}
+        >
+            <Stack spacing={{ xs: 2, sm: 3 }} sx={{ pt: 2, pb: 2 }}>
+                <Box>
+                    <TextFieldSelectSearchComponent
+                        sizeUI="sm"
+                        label="Tìm kiếm người dùng"
+                        placeholder="Nhập email để tìm kiếm..."
+                        value={selectedUser}
+                        onSelectUser={setSelectedUser}
+                    />
+                </Box>
 
-                <Stack spacing={{ xs: 2, sm: 3 }}>
-                    <Box>
-                        <TextFieldSelectSearchComponent
-                            sizeUI="sm"
-                            label="Tìm kiếm người dùng"
-                            placeholder="Nhập email để tìm kiếm..."
-                            value={selectedUser}
-                            onSelectUser={setSelectedUser}
-                        />
-                    </Box>
+                <Box>
+                    <Typography variant="body2" fontWeight={500} sx={{ mb: 1 }}>
+                        Vai trò
+                    </Typography>
+                    <TextField
+                        select
+                        fullWidth
+                        size="small"
+                        value={role}
+                        onChange={(e) => setRole(e.target.value as WorkspaceRole)}
+                        sx={{
+                            '& .MuiOutlinedInput-root': {
+                                borderRadius: 2
+                            }
+                        }}
+                    >
+                        <MenuItem value={WorkspaceRole.ADMIN}>
+                            <Box>
+                                <Typography variant="body2" fontWeight={500}>Admin</Typography>
+                                <Typography variant="caption" color="text.secondary">
+                                    Có thể quản lý thành viên và cài đặt
+                                </Typography>
+                            </Box>
+                        </MenuItem>
+                        <MenuItem value={WorkspaceRole.MEMBER}>
+                            <Box>
+                                <Typography variant="body2" fontWeight={500}>Editor</Typography>
+                                <Typography variant="caption" color="text.secondary">
+                                    Có thể chỉnh sửa và tạo tài liệu
+                                </Typography>
+                            </Box>
+                        </MenuItem>
+                        <MenuItem value={WorkspaceRole.VIEWER}>
+                            <Box>
+                                <Typography variant="body2" fontWeight={500}>Viewer</Typography>
+                                <Typography variant="caption" color="text.secondary">
+                                    Chỉ có thể xem tài liệu
+                                </Typography>
+                            </Box>
+                        </MenuItem>
+                    </TextField>
+                </Box>
 
-                    <Box>
-                        <Typography variant="body2" fontWeight={500} sx={{ mb: 1 }}>
-                            Vai trò
-                        </Typography>
-                        <TextField
-                            select
-                            fullWidth
-                            size="small"
-                            value={role}
-                            onChange={(e) => setRole(e.target.value as WorkspaceRole)}
-                            sx={{
-                                '& .MuiOutlinedInput-root': {
-                                    borderRadius: 2
-                                }
-                            }}
-                        >
-                            <MenuItem value={WorkspaceRole.ADMIN}>
-                                <Box>
-                                    <Typography variant="body2" fontWeight={500}>Admin</Typography>
-                                    <Typography variant="caption" color="text.secondary">
-                                        Có thể quản lý thành viên và cài đặt
-                                    </Typography>
-                                </Box>
-                            </MenuItem>
-                            <MenuItem value={WorkspaceRole.MEMBER}>
-                                <Box>
-                                    <Typography variant="body2" fontWeight={500}>Editor</Typography>
-                                    <Typography variant="caption" color="text.secondary">
-                                        Có thể chỉnh sửa và tạo tài liệu
-                                    </Typography>
-                                </Box>
-                            </MenuItem>
-                            <MenuItem value={WorkspaceRole.VIEWER}>
-                                <Box>
-                                    <Typography variant="body2" fontWeight={500}>Viewer</Typography>
-                                    <Typography variant="caption" color="text.secondary">
-                                        Chỉ có thể xem tài liệu
-                                    </Typography>
-                                </Box>
-                            </MenuItem>
-                        </TextField>
-                    </Box>
-
-                    <Box sx={{ display: 'flex', justifyContent: 'flex-end', gap: 1, pt: { xs: 2, sm: 2.5 } }}>
-                        <ButtonComponent
-                            sizeUI="sm"
-                            variant="ghost"
-                            onClick={handleClose}
-                            disabled={isSubmitting}
-                        >
-                            Hủy
-                        </ButtonComponent>
-                        <ButtonComponent
-                            sizeUI="sm"
-                            variant="primary"
-                            onClick={handleSubmit}
-                            loading={isSubmitting}
-                            disabled={!selectedUser}
-                            icon={<PersonAddIcon />}
-                        >
-                            Gửi lời mời
-                        </ButtonComponent>
-                    </Box>
-                </Stack>
-            </DialogContent>
-        </Dialog>
+            </Stack>
+        </DialogComponent>
     )
 }

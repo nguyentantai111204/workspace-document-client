@@ -1,11 +1,12 @@
-import { Dialog, DialogTitle, DialogContent, IconButton, Typography, Box, InputLabel } from '@mui/material'
-import CloseIcon from '@mui/icons-material/Close'
+import { Typography, InputLabel } from '@mui/material'
 import AddIcon from '@mui/icons-material/Add'
 import { useWorkspace } from '../../../contexts/workspace.context'
 import { Formik, Form, FormikHelpers } from 'formik'
 import * as Yup from 'yup'
 import { TextFieldComponent } from '../../../components/textfield/text-field.component'
 import { ButtonComponent } from '../../../components/button/button.component'
+import { DialogComponent } from '../../../components/dialog/dialog.component'
+import { StackColumnAlignStart, StackRowAlignCenterJustEnd } from '../../../components/mui-custom/stack/stack.mui-custom'
 
 interface CreateWorkspaceDialogProps {
     open: boolean
@@ -46,68 +47,35 @@ export const CreateWorkspaceDialog = ({ open, onClose }: CreateWorkspaceDialogPr
     }
 
     return (
-        <Dialog
-            open={open}
-            onClose={onClose}
-            maxWidth="sm"
-            fullWidth
-            PaperProps={{
-                sx: { borderRadius: 2 }
-            }}
+        <Formik
+            initialValues={initialValues}
+            validationSchema={validationSchema}
+            onSubmit={handleSubmit}
         >
-            <DialogTitle sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', p: 3 }}>
-                <Typography component="span" variant="h6" fontWeight={700}>
-                    Tạo Workspace mới
-                </Typography>
-                <IconButton onClick={onClose} size="small">
-                    <CloseIcon />
-                </IconButton>
-            </DialogTitle>
-
-            <DialogContent sx={{ p: 3 }}>
-                <Typography variant="body2" color="text.secondary" sx={{ mb: 3 }}>
-                    Workspace là nơi bạn và team lưu trữ, sắp xếp tài liệu.
-                </Typography>
-
-                <Formik
-                    initialValues={initialValues}
-                    validationSchema={validationSchema}
-                    onSubmit={handleSubmit}
-                >
-                    {({
-                        values,
-                        errors,
-                        touched,
-                        handleChange,
-                        handleBlur,
-                        isSubmitting,
-                    }) => (
-                        <Form noValidate>
-                            <Box mb={3}>
-                                <InputLabel
-                                    sx={{
-                                        mb: 0.5,
-                                        fontSize: 13,
-                                        fontWeight: 600,
-                                        color: 'text.primary'
-                                    }}
-                                >
-                                    Tên Workspace
-                                </InputLabel>
-                                <TextFieldComponent
-                                    autoFocus
-                                    sizeUI="sm"
-                                    name="name"
-                                    placeholder="VD: Dự án Marketing, Tài liệu cá nhân..."
-                                    value={values.name}
-                                    onChange={handleChange}
-                                    onBlur={handleBlur}
-                                    error={touched.name && !!errors.name}
-                                    helperText={touched.name && errors.name}
-                                />
-                            </Box>
-
-                            <Box sx={{ display: 'flex', justifyContent: 'flex-end', gap: 1 }}>
+            {({
+                values,
+                errors,
+                touched,
+                handleChange,
+                handleBlur,
+                isSubmitting,
+            }) => (
+                <Form id="create-workspace-form" noValidate>
+                    <DialogComponent
+                        open={open}
+                        onClose={onClose}
+                        title={<StackColumnAlignStart>
+                            <Typography variant="h6" fontWeight={600} component="div">
+                                Tạo Workspace mới
+                            </Typography>
+                            <Typography variant="body2" color="text.secondary">
+                                Workspace là nơi bạn và team lưu trữ, sắp xếp tài liệu.
+                            </Typography>
+                        </StackColumnAlignStart>}
+                        maxWidth="sm"
+                        fullWidth
+                        renderActions={() => (
+                            <StackRowAlignCenterJustEnd width="100%">
                                 <ButtonComponent
                                     sizeUI="sm"
                                     variant="ghost"
@@ -120,16 +88,41 @@ export const CreateWorkspaceDialog = ({ open, onClose }: CreateWorkspaceDialogPr
                                     sizeUI="sm"
                                     variant="primary"
                                     type="submit"
+                                    form="create-workspace-form"
                                     loading={isSubmitting}
                                     icon={<AddIcon />}
                                 >
                                     Tạo Workspace
                                 </ButtonComponent>
-                            </Box>
-                        </Form>
-                    )}
-                </Formik>
-            </DialogContent>
-        </Dialog>
+                            </StackRowAlignCenterJustEnd>
+                        )}
+                    >
+                        <StackColumnAlignStart sx={{ pt: 2, pb: 2 }}>
+                            <InputLabel
+                                sx={{
+                                    mb: 0.5,
+                                    fontSize: 13,
+                                    fontWeight: 600,
+                                    color: 'text.primary'
+                                }}
+                            >
+                                Tên Workspace
+                            </InputLabel>
+                            <TextFieldComponent
+                                autoFocus
+                                sizeUI="sm"
+                                name="name"
+                                placeholder="VD: Dự án Marketing, Tài liệu cá nhân..."
+                                value={values.name}
+                                onChange={handleChange}
+                                onBlur={handleBlur}
+                                error={touched.name && !!errors.name}
+                                helperText={touched.name && errors.name}
+                            />
+                        </StackColumnAlignStart>
+                    </DialogComponent>
+                </Form>
+            )}
+        </Formik>
     )
 }

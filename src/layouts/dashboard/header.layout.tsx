@@ -19,9 +19,9 @@ import { NotificationBellComponent } from '../../components/bell/notification-be
 import { AvatarUserComponent } from '../../components/avatar/avatar-user.component'
 import { useThemeMode } from '../../contexts/theme-mode.context'
 import { BreadcrumbComponent, type BreadcrumbItem } from '../../components/breadcrumb/breadcrumb.component'
-import { ShareDialog } from '../../pages/workspace/components/share-dialog.component'
 import { useState } from 'react'
 import { StackColumnAlignCenterJustCenter, StackRowAlignCenter } from '../../components/mui-custom/stack/stack.mui-custom'
+import { ShareWorkspaceDialog } from '../../pages/workspace/components/share-workspace-dialog.component'
 
 interface HeaderLayoutProps {
     breadcrumbs?: BreadcrumbItem[]
@@ -156,7 +156,7 @@ export const HeaderLayout = ({
                 </StackRowAlignCenter>
             </Toolbar>
 
-            <ShareDialog
+            <ShareWorkspaceDialog
                 open={shareDialogOpen}
                 onClose={() => setShareDialogOpen(false)}
             />

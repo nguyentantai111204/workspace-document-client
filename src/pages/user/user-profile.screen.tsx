@@ -22,15 +22,18 @@ import PersonIcon from '@mui/icons-material/Person'
 import PhoneIcon from '@mui/icons-material/Phone'
 import PlaceIcon from '@mui/icons-material/Place'
 import PhotoCameraIcon from '@mui/icons-material/PhotoCamera'
-import { useRef, useState } from 'react'
+import { useState } from 'react'
 import { useAppDispatch, useAppSelector } from '../../redux/store.redux'
 import { useSnackbar } from '../../hooks/use-snackbar.hook'
 import { ChangePasswordRequest } from '../../apis/user/user.interface'
 import { changePasswordApi } from '../../apis/user/user.api'
 import { TextFieldComponent } from '../../components/textfield/text-field.component'
 import { TextFieldPasswordComponent } from '../../components/textfield/text-field-password.component'
+import { TextFieldUploadComponent } from '../../components/textfield/text-field-upload.component'
 import { ButtonComponent } from '../../components/button/button.component'
 import { updateProfileThunk } from '../../redux/account/account.action'
+import { StackRowAlignCenterJustEnd } from '../../components/mui-custom/stack/stack.mui-custom'
+
 
 const passwordValidationSchema = Yup.object({
     currentPassword: Yup.string().required('Vui lòng nhập mật khẩu hiện tại'),
@@ -55,17 +58,12 @@ export const ProfilePage = () => {
     const theme = useTheme()
     const isMobile = useMediaQuery(theme.breakpoints.down('sm'))
 
-    const fileInputRef = useRef<HTMLInputElement>(null)
     const [avatarPreview, setAvatarPreview] = useState<string | null>(null)
     const [avatarFile, setAvatarFile] = useState<File | null>(null)
     const [isUploadingAvatar, setIsUploadingAvatar] = useState(false)
 
-    const handleAvatarClick = () => {
-        fileInputRef.current?.click()
-    }
-
-    const handleAvatarChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-        const file = e.target.files?.[0]
+    const handleFile = (files: File[]) => {
+        const file = files[0]
         if (!file) return
 
         if (file.size > 5 * 1024 * 1024) {
@@ -79,7 +77,6 @@ export const ProfilePage = () => {
 
         setAvatarFile(file)
         setAvatarPreview(URL.createObjectURL(file))
-        e.target.value = ''
     }
 
     const handleUploadAvatar = async () => {
@@ -158,85 +155,53 @@ export const ProfilePage = () => {
                     Ảnh đại diện
                 </Typography>
 
-                <Stack direction={isMobile ? 'column' : 'row'} spacing={3} alignItems={isMobile ? 'flex-start' : 'center'}>
+                <Stack direction={isMobile ? 'column' : 'row'} spacing={4} alignItems="center">
                     <Box position="relative" sx={{ flexShrink: 0 }}>
                         <Avatar
                             src={currentAvatarSrc}
                             sx={{
-                                width: 100,
-                                height: 100,
+                                width: 120,
+                                height: 120,
                                 border: '4px solid #fff',
                                 boxShadow: 1,
-                                cursor: 'pointer',
                             }}
-                            onClick={handleAvatarClick}
-                        />
-                        <Box
-                            onClick={handleAvatarClick}
-                            sx={{
-                                position: 'absolute',
-                                bottom: 0,
-                                right: 0,
-                                bgcolor: 'primary.main',
-                                color: 'white',
-                                borderRadius: '50%',
-                                width: 32,
-                                height: 32,
-                                display: 'flex',
-                                alignItems: 'center',
-                                justifyContent: 'center',
-                                border: '2px solid white',
-                                cursor: 'pointer',
-                            }}
-                        >
-                            <PhotoCameraIcon sx={{ fontSize: 18 }} />
-                        </Box>
-                        <input
-                            type="file"
-                            ref={fileInputRef}
-                            style={{ display: 'none' }}
-                            accept="image/jpeg,image/png,image/gif,image/webp"
-                            onChange={handleAvatarChange}
                         />
                     </Box>
 
-                    <Box>
-                        <Typography variant="body2" color="text.secondary" mb={2}>
-                            Chấp nhận định dạng JPG, PNG, GIF hoặc WebP. Tối đa 5MB.
-                        </Typography>
-                        <Stack direction="row" spacing={2}>
-                            <Button
-                                variant="outlined"
-                                size="small"
-                                onClick={handleAvatarClick}
-                                disabled={isUploadingAvatar}
-                            >
-                                Chọn ảnh
-                            </Button>
-                            {avatarFile && (
-                                <>
-                                    <Button
-                                        variant="contained"
-                                        size="small"
-                                        onClick={handleUploadAvatar}
-                                        disabled={isUploadingAvatar}
-                                        startIcon={isUploadingAvatar ? <CircularProgress size={14} color="inherit" /> : undefined}
-                                    >
-                                        {isUploadingAvatar ? 'Đang tải...' : 'Tải lên'}
-                                    </Button>
-                                    <Button
-                                        color="error"
-                                        size="small"
-                                        onClick={handleRemoveAvatar}
-                                        disabled={isUploadingAvatar}
-                                    >
-                                        Hủy
-                                    </Button>
-                                </>
-                            )}
-                        </Stack>
+                    <Box flex={1} width="100%">
+                        <TextFieldUploadComponent
+                            icon={<PhotoCameraIcon sx={{ fontSize: 32 }} />}
+                            title="Chọn ảnh đại diện hoặc kéo thả vào đây"
+                            subTitle="Chấp nhận định dạng JPG, PNG, GIF hoặc WebP. Tối đa 5MB."
+                            orientation={isMobile ? 'vertical' : 'horizontal'}
+                            accept="image/jpeg,image/png,image/gif,image/webp"
+                            onChange={handleFile}
+                        />
                     </Box>
                 </Stack>
+
+                {avatarFile && (
+                    <StackRowAlignCenterJustEnd gap={2} mt={3}>
+                        <Button
+                            variant="contained"
+                            size="small"
+                            onClick={handleUploadAvatar}
+                            disabled={isUploadingAvatar}
+                            startIcon={isUploadingAvatar ? <CircularProgress size={14} color="inherit" /> : undefined}
+                        >
+                            {isUploadingAvatar ? 'Đang lưu...' : 'Lưu thay đổi'}
+                        </Button>
+                        <Button
+                            color="error"
+                            variant="outlined"
+                            size="small"
+                            onClick={handleRemoveAvatar}
+                            disabled={isUploadingAvatar}
+                        >
+                            Hủy bỏ
+                        </Button>
+                    </StackRowAlignCenterJustEnd>
+                )}
             </Paper>
 
             <Paper sx={{ p: 4, mb: 4, borderRadius: 2 }}>
