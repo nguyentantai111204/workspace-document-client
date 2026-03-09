@@ -1,3 +1,4 @@
+import { AppointmentReminderTargetMode } from "../../pages/workspace-appointment/enums/appointment.enum"
 import { BaseEntity } from "../common/common.interface"
 
 export interface AppointmentParticipant {
@@ -50,6 +51,7 @@ export interface CreateAppointmentDto {
     participants: { userId: string }[]
     reminder?: {
         minutesBefore: number
+        targetMode: AppointmentReminderTargetMode
     }
 }
 

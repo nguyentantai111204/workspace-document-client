@@ -4,12 +4,15 @@ import { Formik, Form, FormikHelpers } from 'formik'
 import dayjs from 'dayjs'
 import useSWR, { mutate } from 'swr'
 import { createWorkspaceAppointmentApi } from '../../../../apis/appointment/appointment.api'
+import { CreateAppointmentDto } from '../../../../apis/appointment/appointment.interface'
 import { listMembersApi } from '../../../../apis/workspace/workspace.api'
 import { DialogComponent } from '../../../../components/dialog/dialog.component'
 import { TextFieldComponent } from '../../../../components/textfield/text-field.component'
+import { TextFieldSelectComponent } from '../../../../components/textfield/text-field-select.component'
 import { TextFieldDateTimeComponent } from '../../../../components/textfield/text-field-date-time.component'
 import { MembersAutocompleteComponent } from '../../../../components/autocomplete/members-autocomplete.component'
-import { validationSchema } from '../../constants/appointment-create.constant'
+import { validationSchema, FIELD_LABEL_SX, getAvailableReminderOptions, DEFAULT_REMINDER_MINUTES } from '../../constants/appointment-create.constant'
+import { AppointmentReminderTargetMode } from '../../enums/appointment.enum'
 
 interface AppointmentCreatePartProps {
     open: boolean
@@ -25,48 +28,51 @@ interface AppointmentCreateFormValues {
     startTime: string
     endTime: string
     participants: string[]
-    reminderMinutes: number
+    reminderMinutes: number | ''
 }
 
-const REMINDER_OPTIONS = [
-    { value: 0, label: 'Đúng giờ' },
-    { value: 5, label: 'Trước 5 phút' },
-    { value: 15, label: 'Trước 15 phút' },
-    { value: 30, label: 'Trước 30 phút' },
-    { value: 60, label: 'Trước 1 giờ' },
-    { value: 120, label: 'Trước 2 giờ' },
-    { value: 1440, label: 'Trước 1 ngày' }
-]
-
-const FIELD_LABEL_SX = {
-    mb: 0.5,
-    fontSize: 13,
-    fontWeight: 600,
-    color: 'text.primary'
+const DEFAULT_VALUES: AppointmentCreateFormValues = {
+    title: '',
+    description: '',
+    url: '',
+    startTime: '',
+    endTime: '',
+    participants: [],
+    reminderMinutes: DEFAULT_REMINDER_MINUTES
 }
 
-const getInitialValues = (selectedDate: dayjs.Dayjs | null): AppointmentCreateFormValues => {
-    if (!selectedDate) {
-        return {
-            title: '',
-            description: '',
-            url: '',
-            startTime: '',
-            endTime: '',
-            participants: [],
-            reminderMinutes: 15
+const getInitialValues = (
+    selectedDate: dayjs.Dayjs | null
+): AppointmentCreateFormValues => {
+    if (!selectedDate) return DEFAULT_VALUES
+
+    return {
+        ...DEFAULT_VALUES,
+        startTime: selectedDate.hour(9).minute(0).second(0).toISOString(),
+        endTime: selectedDate.hour(10).minute(0).second(0).toISOString()
+    }
+}
+
+const buildAppointmentPayload = (values: AppointmentCreateFormValues): CreateAppointmentDto => {
+    const { isReminderDisabled } = getAvailableReminderOptions(values.startTime, dayjs)
+
+    const payload: CreateAppointmentDto = {
+        title: values.title.trim(),
+        description: values.description.trim(),
+        url: values.url.trim(),
+        startTime: values.startTime ? dayjs(values.startTime).toISOString() : '',
+        endTime: values.endTime ? dayjs(values.endTime).toISOString() : '',
+        participants: values.participants.map(id => ({ userId: id }))
+    }
+
+    if (!isReminderDisabled && values.reminderMinutes !== '') {
+        payload.reminder = {
+            minutesBefore: Number(values.reminderMinutes),
+            targetMode: AppointmentReminderTargetMode.SELECTED_PARTICIPANTS
         }
     }
 
-    return {
-        title: '',
-        description: '',
-        url: '',
-        startTime: selectedDate.hour(9).minute(0).second(0).format('YYYY-MM-DDTHH:mm'),
-        endTime: selectedDate.hour(10).minute(0).second(0).format('YYYY-MM-DDTHH:mm'),
-        participants: [],
-        reminderMinutes: 15
-    }
+    return payload
 }
 
 export const AppointmentCreatePart: React.FC<AppointmentCreatePartProps> = ({
@@ -91,17 +97,8 @@ export const AppointmentCreatePart: React.FC<AppointmentCreatePartProps> = ({
         { setSubmitting, resetForm }: FormikHelpers<AppointmentCreateFormValues>
     ) => {
         try {
-            await createWorkspaceAppointmentApi(workspaceId, {
-                title: values.title.trim(),
-                description: values.description.trim(),
-                url: values.url.trim(),
-                startTime: dayjs(values.startTime).toISOString(),
-                endTime: dayjs(values.endTime).toISOString(),
-                participants: values.participants.map(id => ({ userId: id })),
-                reminder: {
-                    minutesBefore: values.reminderMinutes
-                }
-            })
+            const appointmentPayload = buildAppointmentPayload(values)
+            await createWorkspaceAppointmentApi(workspaceId, appointmentPayload)
 
             await mutate(
                 (key) =>
@@ -112,7 +109,7 @@ export const AppointmentCreatePart: React.FC<AppointmentCreatePartProps> = ({
                 { revalidate: true }
             )
 
-            resetForm()
+            resetForm({ values: initialValues })
             onClose()
         } catch (error) {
             console.error('Failed to create appointment', error)
@@ -140,9 +137,11 @@ export const AppointmentCreatePart: React.FC<AppointmentCreatePartProps> = ({
                 setFieldValue
             }) => {
                 const handleCloseModal = () => {
-                    resetForm()
+                    resetForm({ values: initialValues })
                     onClose()
                 }
+
+                const { availableOptions, isReminderDisabled } = getAvailableReminderOptions(values.startTime, dayjs)
 
                 return (
                     <DialogComponent
@@ -182,7 +181,7 @@ export const AppointmentCreatePart: React.FC<AppointmentCreatePartProps> = ({
                                         <TextFieldDateTimeComponent
                                             sizeUI="sm"
                                             name="startTime"
-                                            value={dayjs(values.startTime)}
+                                            value={values.startTime ? dayjs(values.startTime) : null}
                                             onChange={(newValue) => setFieldValue('startTime', newValue ? newValue.toISOString() : '')}
                                             error={touched.startTime && Boolean(errors.startTime)}
                                             errorMessage={touched.startTime ? (errors.startTime as string) : undefined}
@@ -196,7 +195,7 @@ export const AppointmentCreatePart: React.FC<AppointmentCreatePartProps> = ({
                                         <TextFieldDateTimeComponent
                                             sizeUI="sm"
                                             name="endTime"
-                                            value={dayjs(values.endTime)}
+                                            value={values.endTime ? dayjs(values.endTime) : null}
                                             onChange={(newValue) => setFieldValue('endTime', newValue ? newValue.toISOString() : '')}
                                             error={touched.endTime && Boolean(errors.endTime)}
                                             errorMessage={touched.endTime ? (errors.endTime as string) : undefined}
@@ -222,23 +221,17 @@ export const AppointmentCreatePart: React.FC<AppointmentCreatePartProps> = ({
                                     <InputLabel sx={FIELD_LABEL_SX}>
                                         Nhắc nhở
                                     </InputLabel>
-                                    <TextFieldComponent
-                                        select
+                                    <TextFieldSelectComponent
                                         sizeUI="sm"
                                         name="reminderMinutes"
-                                        value={values.reminderMinutes}
+                                        value={isReminderDisabled ? '' : values.reminderMinutes}
                                         onChange={handleChange}
                                         onBlur={handleBlur}
-                                        SelectProps={{
-                                            native: true,
-                                        }}
-                                    >
-                                        {REMINDER_OPTIONS.map((option) => (
-                                            <option key={option.value} value={option.value}>
-                                                {option.label}
-                                            </option>
-                                        ))}
-                                    </TextFieldComponent>
+                                        disabled={isReminderDisabled}
+                                        options={isReminderDisabled ? [
+                                            { value: '', label: 'Thời gian sát giờ, không thể nhắc nhở' }
+                                        ] : availableOptions}
+                                    />
                                 </Box>
 
                                 <Box>
