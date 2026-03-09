@@ -1,4 +1,4 @@
-import { Stack, Chip, Button, Box, useTheme, useMediaQuery } from '@mui/material'
+import { Chip, Button, useTheme, useMediaQuery } from '@mui/material'
 import CloseIcon from '@mui/icons-material/Close'
 import { FilterChipData } from '../utils/filter.utils'
 import { StackRowAlignCenter } from '../../../components/mui-custom/stack/stack.mui-custom'
@@ -28,11 +28,10 @@ export const ActiveFiltersDisplay = ({ chips, onRemoveChip, onClearAll }: Active
             }}
         >
             <StackRowAlignCenter
-                spacing={1}
                 sx={{
                     flex: 1,
-                    flexWrap: 'wrap',
-                    gap: 1
+                    gap: 1,
+                    flexWrap: 'wrap'
                 }}
             >
                 {chips.map((chip) => (

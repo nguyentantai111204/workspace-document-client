@@ -14,7 +14,7 @@ import { useWorkspace } from '../../../contexts/workspace.context'
 import { uploadFilesApi } from '../../../apis/file/file.api'
 import { formatFileSize } from '../../../common/utils/file.utils'
 import { ButtonComponent } from '../../../components/button/button.component'
-import { StackRow, StackRowAlignCenter, StackRowAlignStartJustCenter } from '../../../components/mui-custom/stack/stack.mui-custom'
+import { StackColumn, StackRow, StackRowAlignCenter, StackRowAlignStartJustCenter } from '../../../components/mui-custom/stack/stack.mui-custom'
 import { DialogComponent } from '../../../components/dialog/dialog.component'
 interface UploadFileModalProps {
     open: boolean
@@ -151,7 +151,7 @@ export const UploadFileModal = ({ open, onClose, onSuccess }: UploadFileModalPro
             />
 
             {selectedFiles.length > 0 && (
-                <Box sx={{ mt: 2, display: 'flex', flexDirection: 'column', gap: 1 }}>
+                <StackColumn sx={{ mt: 2, gap: 1 }}>
                     <Typography variant="subtitle2" fontWeight={600}>
                         File đã chọn ({selectedFiles.length})
                     </Typography>
@@ -198,7 +198,7 @@ export const UploadFileModal = ({ open, onClose, onSuccess }: UploadFileModalPro
                             )}
                         </StackRowAlignCenter>
                     ))}
-                </Box>
+                </StackColumn>
             )}
 
             {isLoading && (

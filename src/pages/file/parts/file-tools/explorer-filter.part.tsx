@@ -2,7 +2,7 @@ import { Box, Typography, Divider, RadioGroup, FormControlLabel, Radio, Stack } 
 import { useState } from 'react'
 import { CheckboxComponent } from '../../../../components/checkbox/checkbox.component'
 import { ButtonComponent } from '../../../../components/button/button.component'
-import { StackColumn } from '../../../../components/mui-custom/stack/stack.mui-custom'
+import { StackColumn, StackColumnAlignStart, StackRow } from '../../../../components/mui-custom/stack/stack.mui-custom'
 
 export interface ExplorerFileTypes {
     folder: boolean
@@ -50,7 +50,7 @@ export const ExplorerFilter = ({ initialFilters, onApply, onClose, onReset }: Ex
             <Typography variant="subtitle2" fontWeight={600} gutterBottom>
                 Loại tệp
             </Typography>
-            <StackColumn spacing={1.5} mb={3}>
+            <StackColumnAlignStart gap={1.5} mb={3}>
                 <CheckboxComponent
                     label="Thư mục"
                     checked={fileTypes.folder}
@@ -69,7 +69,7 @@ export const ExplorerFilter = ({ initialFilters, onApply, onClose, onReset }: Ex
                     onChange={() => handleChangeType('document')}
                     sizeUI="sm"
                 />
-            </StackColumn>
+            </StackColumnAlignStart>
 
             <Typography variant="subtitle2" fontWeight={600} gutterBottom>
                 Thời gian
@@ -91,7 +91,7 @@ export const ExplorerFilter = ({ initialFilters, onApply, onClose, onReset }: Ex
                 />
             </RadioGroup>
 
-            <Stack direction="row" spacing={1.5}>
+            <StackRow gap={1.5}>
                 <ButtonComponent
                     variant="secondary"
                     fullWidth
@@ -106,7 +106,7 @@ export const ExplorerFilter = ({ initialFilters, onApply, onClose, onReset }: Ex
                 >
                     Áp dụng
                 </ButtonComponent>
-            </Stack>
+            </StackRow>
         </Box>
     )
 }
