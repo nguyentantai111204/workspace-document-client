@@ -10,7 +10,7 @@ import { TextFieldComponent } from '../../../../components/textfield/text-field.
 import { TextFieldSelectComponent } from '../../../../components/textfield/text-field-select.component'
 import { TextFieldDateTimeComponent } from '../../../../components/textfield/text-field-date-time.component'
 import { MembersAutocompleteComponent } from '../../../../components/autocomplete/members-autocomplete.component'
-import { validationSchema, FIELD_LABEL_SX, getAvailableReminderOptions, DEFAULT_REMINDER_MINUTES } from '../../constants/appointment-create.constant'
+import { validationSchema, FIELD_LABEL_SX, getAvailableReminderOptions, DEFAULT_REMINDER_MINUTES } from '../../constants/appointment.constant'
 import { AppointmentResponse, UpdateAppointmentDto } from '../../../../apis/appointment/appointment.interface'
 import useSWR from 'swr'
 import { AppointmentReminderTargetMode } from '../../enums/appointment.enum'
