@@ -5,6 +5,7 @@ import ZoomOutIcon from '@mui/icons-material/ZoomOut'
 import ChevronLeftIcon from '@mui/icons-material/ChevronLeft'
 import ChevronRightIcon from '@mui/icons-material/ChevronRight'
 import { useState, useEffect } from 'react'
+import { StackRowAlignCenter, StackRowAlignCenterJustCenter } from '../../../../../components/mui-custom/stack/stack.mui-custom'
 
 interface PdfPreviewProps {
     url: string
@@ -45,28 +46,24 @@ export const PdfPreview = ({ url }: PdfPreviewProps) => {
 
     if (error) {
         return (
-            <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100%' }}>
+            <StackRowAlignCenterJustCenter sx={{ height: '100%' }}>
                 <Typography color="error">{error}</Typography>
-            </Box>
+            </StackRowAlignCenterJustCenter>
         )
     }
 
     if (!pdfData) {
         return (
-            <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100%' }}>
+            <StackRowAlignCenterJustCenter sx={{ height: '100%' }}>
                 <CircularProgress />
-            </Box>
+            </StackRowAlignCenterJustCenter>
         )
     }
 
     return (
         <Box sx={{ width: '100%', height: '100%', textAlign: 'center' }}>
-            {/* Toolbar */}
-            <Stack
-                direction="row"
+            <StackRowAlignCenter
                 spacing={1}
-                justifyContent="center"
-                alignItems="center"
                 sx={{ mb: 1 }}
             >
                 <IconButton onClick={() => setScale(s => Math.max(0.6, s - 0.2))}>
@@ -94,15 +91,12 @@ export const PdfPreview = ({ url }: PdfPreviewProps) => {
                 >
                     <ChevronRightIcon />
                 </IconButton>
-            </Stack>
+            </StackRowAlignCenter>
 
-            {/* PDF */}
-            <Box
+            <StackRowAlignCenterJustCenter
                 sx={{
                     overflow: 'auto',
                     height: 'calc(100vh - 260px)',
-                    display: 'flex',
-                    justifyContent: 'center',
                 }}
             >
                 <Document
@@ -118,7 +112,7 @@ export const PdfPreview = ({ url }: PdfPreviewProps) => {
                         renderAnnotationLayer={false}
                     />
                 </Document>
-            </Box>
+            </StackRowAlignCenterJustCenter>
         </Box>
     )
 }

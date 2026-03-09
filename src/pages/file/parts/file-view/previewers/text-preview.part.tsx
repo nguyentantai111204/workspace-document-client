@@ -1,5 +1,6 @@
 import { Box, CircularProgress, Typography, useTheme } from '@mui/material'
 import { useEffect, useState } from 'react'
+import { StackRowAlignCenterJustCenter } from '../../../../../components/mui-custom/stack/stack.mui-custom'
 
 interface TextPreviewProps {
     url: string
@@ -32,17 +33,17 @@ export const TextPreview = ({ url }: TextPreviewProps) => {
 
     if (loading) {
         return (
-            <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100%', minHeight: 400 }}>
+            <StackRowAlignCenterJustCenter sx={{ height: '100%', minHeight: 400 }}>
                 <CircularProgress />
-            </Box>
+            </StackRowAlignCenterJustCenter>
         )
     }
 
     if (error) {
         return (
-            <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100%', minHeight: 400 }}>
+            <StackRowAlignCenterJustCenter sx={{ height: '100%', minHeight: 400 }}>
                 <Typography color="error">{error}</Typography>
-            </Box>
+            </StackRowAlignCenterJustCenter>
         )
     }
 
@@ -56,9 +57,9 @@ export const TextPreview = ({ url }: TextPreviewProps) => {
             maxHeight: 'calc(100vh - 200px)',
             border: `1px solid ${theme.palette.divider}`
         }}>
-            <pre style={{ margin: 0, whiteSpace: 'pre-wrap', wordBreak: 'break-word', fontFamily: 'monospace' }}>
+            <Box component="pre" sx={{ margin: 0, whiteSpace: 'pre-wrap', wordBreak: 'break-word', fontFamily: 'monospace' }}>
                 {content}
-            </pre>
+            </Box>
         </Box>
     )
 }

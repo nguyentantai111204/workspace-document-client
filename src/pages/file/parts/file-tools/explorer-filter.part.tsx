@@ -1,8 +1,8 @@
-import { Box, Typography, Divider, RadioGroup, FormControlLabel, Radio, Stack } from '@mui/material'
+import { Box, Typography, Divider, RadioGroup, FormControlLabel, Radio } from '@mui/material'
 import { useState } from 'react'
 import { CheckboxComponent } from '../../../../components/checkbox/checkbox.component'
 import { ButtonComponent } from '../../../../components/button/button.component'
-import { StackColumn, StackColumnAlignStart, StackRow } from '../../../../components/mui-custom/stack/stack.mui-custom'
+import { StackColumnAlignStart, StackRow } from '../../../../components/mui-custom/stack/stack.mui-custom'
 
 export interface ExplorerFileTypes {
     folder: boolean

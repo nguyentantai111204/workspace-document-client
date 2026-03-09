@@ -2,6 +2,7 @@ import { Box, Typography, CircularProgress } from '@mui/material'
 import { useEffect, useState } from 'react'
 import mammoth from 'mammoth'
 import DOMPurify from 'dompurify'
+import { StackRowAlignCenterJustCenter } from '../../../../../components/mui-custom/stack/stack.mui-custom'
 
 interface DocxPreviewProps {
     url: string
@@ -34,17 +35,17 @@ export const DocxPreview = ({ url }: DocxPreviewProps) => {
 
     if (loading) {
         return (
-            <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100%', minHeight: 400 }}>
+            <StackRowAlignCenterJustCenter sx={{ height: '100%', minHeight: 400 }}>
                 <CircularProgress />
-            </Box>
+            </StackRowAlignCenterJustCenter>
         )
     }
 
     if (error) {
         return (
-            <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100%', minHeight: 400 }}>
+            <StackRowAlignCenterJustCenter sx={{ height: '100%', minHeight: 400 }}>
                 <Typography color="error">{error}</Typography>
-            </Box>
+            </StackRowAlignCenterJustCenter>
         )
     }
 

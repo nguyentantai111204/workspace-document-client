@@ -7,33 +7,22 @@ export interface FilterChipData {
     value?: string
 }
 
-/**
- * Check if no file types are selected (new default state)
- */
+
 export const isNoFileTypesSelected = (fileTypes?: { folder: boolean; image: boolean; document: boolean }) => {
     if (!fileTypes) return true
     return !fileTypes.folder && !fileTypes.image && !fileTypes.document
 }
 
-/**
- * Check if any file type IS selected (has active filter)
- */
+
 export const hasFileTypeFilters = (fileTypes?: { folder: boolean; image: boolean; document: boolean }) => {
     if (!fileTypes) return false
     return fileTypes.folder || fileTypes.image || fileTypes.document
 }
 
-/**
- * Get count of active filters
- * Default state = all file types selected + dateSort 'newest'
- * Only count deviations from default
- */
 export const getActiveFilterCount = (filters?: Partial<ExplorerFilters>): number => {
     if (!filters) return 0
 
     let count = 0
-
-    // Count active file types (only if not all selected)
     if (hasFileTypeFilters(filters.fileTypes)) {
         const { folder, image, document } = filters.fileTypes!
         if (folder) count++
@@ -41,7 +30,6 @@ export const getActiveFilterCount = (filters?: Partial<ExplorerFilters>): number
         if (document) count++
     }
 
-    // Count date sort (only if not default 'newest')
     if (filters.dateSort && filters.dateSort !== 'newest') {
         count++
     }
@@ -49,15 +37,11 @@ export const getActiveFilterCount = (filters?: Partial<ExplorerFilters>): number
     return count
 }
 
-/**
- * Generate filter chips data for display
- */
 export const getFilterChips = (filters?: Partial<ExplorerFilters>): FilterChipData[] => {
     if (!filters) return []
 
     const chips: FilterChipData[] = []
 
-    // Add file type chips (display any selected types)
     if (hasFileTypeFilters(filters.fileTypes)) {
         const { folder, image, document } = filters.fileTypes!
 
@@ -89,7 +73,6 @@ export const getFilterChips = (filters?: Partial<ExplorerFilters>): FilterChipDa
         }
     }
 
-    // Add date sort chip (only if not default)
     if (filters.dateSort && filters.dateSort !== 'newest') {
         chips.push({
             key: 'dateSort-oldest',
@@ -102,9 +85,6 @@ export const getFilterChips = (filters?: Partial<ExplorerFilters>): FilterChipDa
     return chips
 }
 
-/**
- * Get default filters (all unchecked = show all)
- */
 export const getDefaultFilters = (): ExplorerFilters => ({
     fileTypes: {
         folder: false,

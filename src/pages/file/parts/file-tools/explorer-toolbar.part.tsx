@@ -52,13 +52,11 @@ export const ExplorerToolbar = ({ viewMode, onViewChange, onSearch, onFilter, is
         const newFilters = { ...currentFilters }
 
         if (chip.filterType === 'fileType' && chip.value && newFilters.fileTypes) {
-            // Remove specific file type by setting it to false
             newFilters.fileTypes = {
                 ...newFilters.fileTypes,
                 [chip.value]: false
             }
         } else if (chip.filterType === 'dateSort') {
-            // Reset to default 'newest'
             newFilters.dateSort = 'newest'
         }
 
@@ -155,7 +153,6 @@ export const ExplorerToolbar = ({ viewMode, onViewChange, onSearch, onFilter, is
                 </Stack>
             </Stack>
 
-            {/* Active Filters Display */}
             <ActiveFiltersDisplay
                 chips={filterChips}
                 onRemoveChip={handleRemoveFilter}

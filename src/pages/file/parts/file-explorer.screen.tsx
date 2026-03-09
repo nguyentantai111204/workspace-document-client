@@ -13,7 +13,7 @@ import { FileResponse } from '../../../apis/file/file.interface'
 import { useDebounce } from '../../../hooks/use-debounce.hook'
 import { useFiles } from '../../../hooks/use-file.hook'
 import { PAGE_LIMIT_DEFAULT } from '../../../common/constant/page-take.constant'
-import { StackColumn, StackRow } from '../../../components/mui-custom/stack/stack.mui-custom'
+import { StackColumn, StackRow, StackRowAlignCenterJustCenter } from '../../../components/mui-custom/stack/stack.mui-custom'
 import { usePagination } from '../../../hooks/use-pagination.hook'
 import { PaginationComponent } from '../../../components/pagination/pagination.component'
 import { getFilePermissions } from '../utils/file-permissions.util'
@@ -35,7 +35,7 @@ export const FileExplorerComponent = () => {
     const [openRenameModal, setOpenRenameModal] = useState(false)
     const debouncedSearch = useDebounce(searchQuery, 500)
 
-    const { page, setPage, resetPage } = usePagination()
+    const { page, resetPage } = usePagination()
 
     const getFileTypesParams = () => {
         if (!filters.fileTypes) return undefined
@@ -138,17 +138,17 @@ export const FileExplorerComponent = () => {
     const renderContent = () => {
         if (isLoading) {
             return (
-                <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100%' }}>
+                <StackRowAlignCenterJustCenter sx={{ height: '100%' }}>
                     <CircularProgress />
-                </Box>
+                </StackRowAlignCenterJustCenter>
             )
         }
 
         if (files.length === 0) {
             return (
-                <StackColumn sx={{ justifyContent: 'center', alignItems: 'center', height: '100%' }}>
+                <StackRowAlignCenterJustCenter sx={{ height: '100%' }}>
                     <Typography color="text.secondary">Chưa có dữ liệu</Typography>
-                </StackColumn>
+                </StackRowAlignCenterJustCenter>
             )
         }
 

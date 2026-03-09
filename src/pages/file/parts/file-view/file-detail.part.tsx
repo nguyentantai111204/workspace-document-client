@@ -1,5 +1,5 @@
 import { Box, Typography, IconButton, Divider, useTheme, alpha, Fade } from '@mui/material'
-import { StackRow, StackRowAlignCenter, StackRowAlignCenterJustBetween } from '../../../../components/mui-custom/stack/stack.mui-custom'
+import { StackRow, StackRowAlignCenter, StackRowAlignCenterJustBetween, StackRowAlignCenterJustCenter } from '../../../../components/mui-custom/stack/stack.mui-custom'
 import CloseIcon from '@mui/icons-material/Close'
 import VisibilityIcon from '@mui/icons-material/Visibility'
 import DownloadIcon from '@mui/icons-material/Download'
@@ -96,10 +96,8 @@ export const FileDetailSidebar = ({ file, onClose }: FileDetailSidebarProps) => 
                 <Divider />
 
                 <Box sx={{ p: 3, flex: 1, overflowY: 'auto' }}>
-                    <Box
+                    <StackRowAlignCenterJustCenter
                         sx={{
-                            display: 'flex',
-                            justifyContent: 'center',
                             mb: 3,
                             p: 4,
                             bgcolor: alpha(theme.palette.primary.main, 0.04),
@@ -107,7 +105,7 @@ export const FileDetailSidebar = ({ file, onClose }: FileDetailSidebarProps) => 
                         }}
                     >
                         {getFileIcon(file.mimeType, { sx: { fontSize: 80 } })}
-                    </Box>
+                    </StackRowAlignCenterJustCenter>
 
                     <Typography variant="subtitle1" fontWeight={600} align="center" gutterBottom sx={{ wordBreak: 'break-all' }}>
                         {file.name}

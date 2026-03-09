@@ -6,6 +6,7 @@ import { FileResponse } from '../../../../apis/file/file.interface'
 import { formatDateFile } from '../../../../common/utils/file.utils'
 import { getFileIcon } from '../../utils/file-icon.util'
 import { FilePermissions } from '../../utils/file-permissions.util'
+import { StackRowAlignCenterJustCenter } from '../../../../components/mui-custom/stack/stack.mui-custom'
 
 interface FileCardProps {
     file: FileResponse
@@ -79,16 +80,14 @@ export const FileCard = ({ file, selected, permissions, onSelect, onEdit, onDele
                 </IconButton>
             )}
 
-            <Box
+            <StackRowAlignCenterJustCenter
                 sx={{
-                    display: 'flex',
-                    justifyContent: 'center',
                     mb: 2,
                     mt: 1
                 }}
             >
                 {getFileIcon(file.mimeType, { sx: { fontSize: 48 } })}
-            </Box>
+            </StackRowAlignCenterJustCenter>
 
             <Typography
                 variant="subtitle2"
